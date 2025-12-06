@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=Suez+One&family=Tac+One&family=Tilt+Warp&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+:root {
+    --font-inter: 'Inter', sans-serif;
+    --font-space-grotesk: 'Space Grotesk', sans-serif;
+    --font-tilt-warp: 'Tilt Warp', cursive;
+    --font-tac-one: 'Tac One', sans-serif;
+    --font-suez-one: 'Suez One', serif;
+}
+
+/* Chrome, Safari, Opera */
+html::-webkit-scrollbar {
+    display: none;
+}
+
+/* Firefox */
+html {
+    scrollbar-width: none;
+}
+
+/* IE dan Edge lama */
+html {
+    -ms-overflow-style: none;
+}
+
+
+body {
+    font-family: var(--font-inter);
+}
+
+a {
+    font-family: var(--font-space-grotesk);
+}
+
+.inter {
+    font-family: var(--font-inter);
+}
+
+.grotesk {
+    font-family: var(--font-space-grotesk);
+}
+
+.tilt-warp {
+    font-family: var(--font-tilt-warp);
+}
+
+.tac-one {
+    font-family: var(--font-tac-one);
+}
+
+.suez-one {
+    font-family: var(--font-suez-one);
+}
+
+.section-skill-swiper {
+    height: 48px !important;
+    /* tinggi 48px */
+}
+
+.swiper-slide {
+    display: flex !important;
+    /* jadikan flex container */
+    justify-content: center !important;
+    /* horizontal center */
+    align-items: center !important;
+    /* vertical center */
+    height: 100%;
+    /* atau tinggi sesuai kebutuhan */
+    /* background-color: red ; */
+}
+
+
+.swiperService{
+    position: relative !important;
+    z-index: 5 !important;
+}
+
+.portfolioMenuText{
+    font-size: 12px !important;
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float-delay-1 {
+  animation-delay: 0.3s;
+}
+.float-delay-2 {
+  animation-delay: 1s;
+}
+.float-delay-3 {
+  animation-delay: 1.8s;
+}
+
+[x-cloak] {
+  display: none !important;
+}
