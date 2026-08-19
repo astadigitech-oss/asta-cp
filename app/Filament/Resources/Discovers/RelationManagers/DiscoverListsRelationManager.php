@@ -15,6 +15,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -33,9 +34,11 @@ class DiscoverListsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextInput::make('description')
+                Textarea::make('description')
                     ->required()
-                    ->maxLength(255),
+                    ->rows(4)
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Toggle::make('is_active')
                     ->default(true)
                     ->required(),

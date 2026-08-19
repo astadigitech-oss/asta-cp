@@ -51,7 +51,10 @@
                     </ul>
                 </div>
                 <div class="w-[40%] hidden lg:block">
-                    <img loading="lazy" class="w-full" src="{{ asset('storage/' . $service->image) }}" alt="">
+                    @php($serviceImages = is_array($service->image) ? $service->image : [$service->image])
+                    @if (!empty($serviceImages[0]))
+                        <img loading="lazy" class="w-full" src="{{ asset('storage/' . $serviceImages[0]) }}" alt="">
+                    @endif
                 </div>
             </div>
         </div>

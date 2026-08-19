@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('discovers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('year')->nullable();
             $table->boolean('show_name')->default(true);
             $table->text('short_description');
             $table->text('logo');
+            $table->string('image')->nullable();
             $table->integer('sort')->default(0);
             $table->softDeletes();
             $table->timestamps();

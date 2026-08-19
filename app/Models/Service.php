@@ -9,6 +9,10 @@ class Service extends Model
 {
     use SoftDeletes;
 
+    protected $casts = [
+        'image' => 'array',
+    ];
+
     protected $fillable = [
         'name',
         'show_name',

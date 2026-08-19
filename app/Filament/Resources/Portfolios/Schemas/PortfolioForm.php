@@ -25,6 +25,7 @@ class PortfolioForm
                         Grid::make(2)
                             ->schema([
                                 FileUpload::make('image')
+                                    ->image()
                                     ->disk('public')
                                     ->directory('images/portfolios')
                                     ->required(),
