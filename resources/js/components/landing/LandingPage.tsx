@@ -421,7 +421,7 @@ function Hero() {
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-200 sm:scale-230 md:scale-260 lg:scale-260 xl:scale-280 2xl:scale-300 translate-y-10 sm:translate-y-14 md:translate-y-16 lg:translate-y-20 translate-x-8 sm:translate-x-12 md:translate-x-16 lg:translate-x-20"
+                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-[2.8] sm:scale-[2.8] lg:scale-[2.9] translate-x-[87.3%] translate-y-[60.15%]"
                     />
                   </motion.div>
 
@@ -437,7 +437,7 @@ function Hero() {
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-180 sm:scale-200 md:scale-230 lg:scale-230 xl:scale-250 2xl:scale-270 translate-y-5 sm:translate-y-8 md:translate-y-10 lg:translate-y-12 translate-x-6 sm:translate-x-9 md:translate-x-12 lg:translate-x-14"
+                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[2.6] sm:scale-[2.5] lg:scale-[2.7] translate-x-[75.9%] translate-y-[40.5%]"
                     />
                   </motion.div>
 
@@ -480,49 +480,75 @@ function Hero() {
         </div>
 
         {/* Client strip */}
-        <div className="mt-6 rounded-2xl glass px-6 py-6 shadow-soft sm:mt-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="mt-6 rounded-2xl glass px-6 py-5 shadow-soft overflow-hidden">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground shrink-0 text-center lg:text-left z-10">
               Dipercaya oleh berbagai organisasi terkemuka
             </div>
-            <div className="grid grow grid-cols-3 items-center gap-6 sm:grid-cols-6 justify-items-center">
-              {clientsList.length > 0
-                ? clientsList.map((client) => (
-                  <div
-                    key={client.id}
-                    className="flex items-center justify-center h-12 w-full px-2"
-                    title={client.name}
-                  >
-                    {client.image ? (
-                      <img
-                        src={client.image}
-                        alt={client.name}
-                        className="max-h-20 max-w-[120px] object-contain filter opacity-70 hover:opacity-100 transition-all duration-300"
-                        onError={(e) => {
-                          const target = e.target as HTMLElement;
-                          target.style.display = "none";
-                          if (target.nextElementSibling) {
-                            (target.nextElementSibling as HTMLElement).style.display = "block";
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <span
-                      className={`text-center text-sm font-bold tracking-tight text-primary/70 ${client.image ? "hidden" : "block"
-                        }`}
-                    >
-                      {client.name}
-                    </span>
+
+            <div className="relative w-full lg:flex-1 overflow-hidden">
+              {/* Soft fade gradients on edges */}
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-background/80 to-transparent" />
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-background/80 to-transparent" />
+
+              {(() => {
+                const rawList =
+                  clientsList.length > 0
+                    ? clientsList
+                    : defaultClientNames.map((n, i) => ({ id: i, name: n, image: undefined }));
+
+                const renderTrack = (prefix: string) => (
+                  <div className="flex items-center gap-8 sm:gap-12 pr-8 sm:pr-12 shrink-0">
+                    {[...rawList, ...rawList].map((client, idx) => (
+                      <div
+                        key={`${prefix}-${client.id}-${idx}`}
+                        className="flex items-center justify-center h-10 px-3 shrink-0"
+                        title={client.name}
+                      >
+                        {client.image ? (
+                          <img
+                            src={client.image}
+                            alt={client.name}
+                            className="max-h-10 max-w-[120px] object-contain filter opacity-70 hover:opacity-100 transition-all duration-300"
+                            onError={(e) => {
+                              const target = e.target as HTMLElement;
+                              target.style.display = "none";
+                              if (target.nextElementSibling) {
+                                (target.nextElementSibling as HTMLElement).style.display = "block";
+                              }
+                            }}
+                          />
+                        ) : null}
+                        <span
+                          className={`text-center text-sm font-bold tracking-tight text-primary/70 whitespace-nowrap ${
+                            client.image ? "hidden" : "block"
+                          }`}
+                        >
+                          {client.name}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))
-                : defaultClientNames.map((n) => (
-                  <div
-                    key={n}
-                    className="text-center text-sm font-bold tracking-tight text-primary/60"
+                );
+
+                return (
+                  <motion.div
+                    className="flex items-center w-max will-change-transform"
+                    animate={{ x: ["0%", "-50%"] }}
+                    transition={{
+                      x: {
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        duration: Math.max(20, rawList.length * 4),
+                        ease: "linear",
+                      },
+                    }}
                   >
-                    {n}
-                  </div>
-                ))}
+                    {renderTrack("track-1")}
+                    {renderTrack("track-2")}
+                  </motion.div>
+                );
+              })()}
             </div>
           </div>
         </div>
