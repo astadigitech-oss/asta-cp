@@ -154,7 +154,7 @@ function SectionHeading({
   invert?: boolean;
 }) {
   return (
-    <div className={`max-w-3xl ${center ? "mx-auto text-center" : ""}`}>
+    <div className={`max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl ${center ? "mx-auto text-center" : ""}`}>
       <Eyebrow>{eyebrow}</Eyebrow>
       <h2
         className={`mt-4 font-display text-3xl font-bold leading-[1.1] sm:text-4xl md:text-5xl ${invert ? "text-primary-foreground" : "text-primary"
@@ -316,7 +316,7 @@ function Hero() {
     <section id="top" className="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6">
       <OceanBackdrop />
 
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid items-center gap-14 lg:grid-cols-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -326,7 +326,7 @@ function Hero() {
             className="lg:col-span-7"
           >
             <Eyebrow>Agensi Digital Premium · Est. 2022</Eyebrow>
-            <h1 className="mt-5 font-display text-[2.5rem] font-bold leading-[1.02] tracking-tight text-primary sm:text-6xl lg:text-[4.25rem]">
+            <h1 className="mt-5 font-display text-[2.5rem] font-bold leading-[1.02] tracking-tight text-primary sm:text-6xl lg:text-[4.25rem] 2xl:text-[4.75rem] 3xl:text-[5.25rem]">
               Membangun{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-l from-secondary via-gradient-accent to-primary bg-clip-text text-transparent">
@@ -348,7 +348,7 @@ function Hero() {
               </span>{" "}
               terbaik untuk bisnis modern.
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-6 max-w-xl xl:max-w-2xl 2xl:max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg xl:text-xl">
               Asta Digital Agency adalah studio teknologi yang membangun website,
               aplikasi, dan sistem informasi terbaik — dirancang dengan standar enterprise
               dan desain yang elegan serta imersif.
@@ -395,7 +395,7 @@ function Hero() {
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative lg:col-span-5"
           >
-            <div className="relative mx-auto aspect-square w-full max-w-[520px]">
+            <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px]">
               {/* mesh orb */}
               <div className="absolute inset-0 rounded-[42%_58%_45%_55%/55%_40%_60%_45%] gradient-mesh opacity-90 blur-[2px]" />
               <div className="absolute inset-6 rounded-[52%_48%_40%_60%/45%_55%_45%_55%] gradient-hero shadow-glass" />
@@ -410,7 +410,7 @@ function Hero() {
 
               {/* Main Visual Content: Laptop Base + Robot Overlay */}
               <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-2">
-                <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full flex items-center justify-center overflow-visible">
 
                   {/* Laptop Asset */}
                   <motion.div
@@ -421,7 +421,7 @@ function Hero() {
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-300 translate-y-60 translate-x-85 md:scale-300 md:translate-y-85 md:translate-x-125"
+                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-200 sm:scale-230 md:scale-260 lg:scale-260 xl:scale-280 2xl:scale-300 translate-y-10 sm:translate-y-14 md:translate-y-16 lg:translate-y-20 translate-x-8 sm:translate-x-12 md:translate-x-16 lg:translate-x-20"
                     />
                   </motion.div>
 
@@ -437,7 +437,7 @@ function Hero() {
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-270 translate-y-35 translate-x-70 md:scale-270 md:translate-y-55 md:translate-x-100"
+                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-180 sm:scale-200 md:scale-230 lg:scale-230 xl:scale-250 2xl:scale-270 translate-y-5 sm:translate-y-8 md:translate-y-10 lg:translate-y-12 translate-x-6 sm:translate-x-9 md:translate-x-12 lg:translate-x-14"
                     />
                   </motion.div>
 
@@ -695,7 +695,7 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
 
   return (
     <section id="tentang" className="relative overflow-hidden py-6 sm:py-6 lg:py-6">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid items-start gap-14 lg:grid-cols-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1000,7 +1000,7 @@ function Services() {
   return (
     <section ref={sectionRef} id="layanan" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
       <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-70" />
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1297,7 +1297,7 @@ function Portfolio() {
 
   return (
     <section ref={sectionRef} id="portofolio" className="relative py-6 sm:py-6 lg:py-6">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1477,14 +1477,14 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
 
   return (
     <section ref={sectionRef} id="discover" className="relative overflow-hidden bg-[#eef7fa] py-6 sm:py-6 lg:py-6">
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-3xl mx-auto"
+          className="text-center max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl mx-auto"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-[#00a3be]/40 bg-white/90 px-3.5 py-1 text-[11px] font-bold tracking-widest text-[#0093ab] shadow-sm uppercase">
             <span className="h-2 w-2 rounded-full bg-[#00a3be]" />
@@ -1493,7 +1493,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
           <h2 className="mt-4 font-display text-3xl font-bold leading-[1.15] sm:text-4xl md:text-5xl text-gray-900 tracking-tight">
             Temukan solusi teknologi tepat untuk pertumbuhan Anda.
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-3 text-sm sm:text-base text-gray-600 max-w-2xl 2xl:max-w-3xl mx-auto leading-relaxed">
             Dapatkan berbagai penawaran layanan unggulan, konsultasi gratis, dan paket solusi digital dari Asta Digital Agency.
           </p>
         </motion.div>
@@ -1730,7 +1730,7 @@ function WhyUs() {
   return (
     <section id="keunggulan" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
       <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-60" />
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1743,7 +1743,7 @@ function WhyUs() {
           />
         </motion.div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-2">
+        <div className="mt-14 grid gap-5 lg:grid-cols-2 2xl:grid-cols-4">
           {advantages.map((a, i) => (
             <motion.div
               key={a.title}
@@ -1792,7 +1792,7 @@ function Stats() {
   return (
     <section className="relative -mt-6 pb-6 sm:pb-6">
       <WaveDivider from="var(--surface)" to="var(--background)" />
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {bigStats.map((s, i) => (
             <motion.div
@@ -1837,7 +1837,7 @@ const steps = [
 function Process() {
   return (
     <section id="proses" className="relative py-6 sm:py-6 lg:py-6">
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2032,7 +2032,7 @@ function Testimonials() {
   return (
     <section id="testimoni" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
       <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-60" />
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2065,7 +2065,7 @@ function Testimonials() {
           ].map((g, gi) => (
             <div
               key={`ghost-${gi}`}
-              className={`pointer-events-none absolute w-full max-w-2xl rounded-[32px] border border-white/40 ${g.bg} shadow-soft`}
+              className={`pointer-events-none absolute w-full max-w-2xl 2xl:max-w-3xl 3xl:max-w-4xl rounded-[32px] border border-white/40 ${g.bg} shadow-soft`}
               style={{
                 height: 380,
                 transformOrigin: "top center",
@@ -2099,7 +2099,7 @@ function Testimonials() {
                 }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
                 style={{ transformOrigin: "top center", pointerEvents: isActive ? "auto" : "none" }}
-                className="absolute w-full max-w-2xl cursor-grab select-none overflow-hidden rounded-[32px] border border-white/60 bg-white shadow-glass backdrop-blur-md active:cursor-grabbing"
+                className="absolute w-full max-w-2xl 2xl:max-w-3xl 3xl:max-w-4xl cursor-grab select-none overflow-hidden rounded-[32px] border border-white/60 bg-white shadow-glass backdrop-blur-md active:cursor-grabbing"
               >
                 {/* Gradient top banner */}
                 <div className={`relative bg-gradient-to-br ${cardColor} px-8 pt-8 pb-10`}>
@@ -2196,7 +2196,7 @@ function Testimonials() {
 function CTA() {
   return (
     <section className="relative py-6 sm:py-6">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -2230,7 +2230,7 @@ function CTA() {
             />
           </svg>
 
-          <div className="relative mx-auto max-w-3xl text-center text-primary-foreground">
+          <div className="relative mx-auto max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl text-center text-primary-foreground">
             <Eyebrow>
               <div className="text-white">
                 Siap memulai proyek Anda berikutnya?
@@ -2243,7 +2243,7 @@ function CTA() {
               </span>{" "}
               bersama.
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/75 sm:text-base">
+            <p className="mx-auto mt-5 max-w-xl 2xl:max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
               Konsultasi gratis 30 menit bersama tim senior kami — tanpa syarat apapun.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -2306,7 +2306,7 @@ function Contact() {
   };
   return (
     <section id="kontak" className="relative py-12 sm:py-16 lg:py-20">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2455,7 +2455,7 @@ function Footer() {
       <div className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
       <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-secondary/40 blur-3xl" />
 
-      <div className="relative mx-auto max-w-[1400px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10">
+      <div className="relative mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5"> 

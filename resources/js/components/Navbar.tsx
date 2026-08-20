@@ -107,7 +107,7 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="relative z-[100] w-full flex justify-center">
-        <div className="w-full max-w-[1395px] items-center h-[90px] flex justify-between px-5 lg:px-10">
+        <div className="w-full max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] items-center h-[90px] flex justify-between px-5 lg:px-10 xl:px-12 2xl:px-16">
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
