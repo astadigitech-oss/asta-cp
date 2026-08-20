@@ -186,7 +186,7 @@ class LandingController extends Controller
         ]);
 
         $firstName = $validated['first_name'] ?? $validated['name'] ?? 'Guest';
-        $lastName = $validated['last_name'] ?? '';
+        $lastName = !empty($validated['last_name']) ? $validated['last_name'] : null;
 
         $message = $validated['message'];
         if (!empty($validated['organization'])) {
@@ -197,12 +197,16 @@ class LandingController extends Controller
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
+            'phone' => !empty($validated['phone']) ? $validated['phone'] : null,
             'message' => $message,
             'status' => 'not_answered',
         ]);
 
-        Mailer::to(config('mail.contact_to'))->send(new ContactMessage($mail));
+        try {
+            Mailer::to(config('mail.contact_to'))->send(new ContactMessage($mail));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed sending contact notification email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',

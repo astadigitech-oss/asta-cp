@@ -24,19 +24,20 @@ class MailForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('first_name')
+                                    ->label('Nama Depan / Nama')
                                     ->required()
                                     ->disabled(),
                                 TextInput::make('last_name')
-                                    ->disabled()
-                                    ->required(),
+                                    ->label('Nama Belakang')
+                                    ->disabled(),
                                 TextInput::make('email')
                                     ->email()
                                     ->disabled()
-                                    ->label('API key')
+                                    ->label('Email')
                                     ->copyable(copyMessage: 'Copied!', copyMessageDuration: 1500)
                                     ->required(),
                                 TextInput::make('phone')
-                                    ->label('API key')
+                                    ->label('Nomor Telepon')
                                     ->disabled()
                                     ->copyable(copyMessage: 'Copied!', copyMessageDuration: 1500)
                                     ->tel(),

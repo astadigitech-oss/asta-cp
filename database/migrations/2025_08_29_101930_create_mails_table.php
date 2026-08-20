@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('mails', function (Blueprint $table) {
             $table->uuid('id')->primary();
                 $table->string('first_name');
-                $table->string('last_name');
-                $table->string('phone');
+                $table->string('last_name')->nullable();
+                $table->string('phone')->nullable();
                 $table->string('email');
                 $table->text('message');
                 $table->enum('status', ['answered', 'not_answered'])->default('not_answered');
