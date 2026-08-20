@@ -19,8 +19,6 @@
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="bg-background text-foreground antialiased">
-    <div id="react-app">
-        
-    </div>
+    <div id="react-app"></div>
 </body>
 </html>
