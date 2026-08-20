@@ -27,6 +27,9 @@ class DiscoversTable
                     ->searchable(),
                 IconColumn::make('show_name')
                     ->boolean(),
+                IconColumn::make('is_pinned')
+                    ->label('Pinned')
+                    ->boolean(),
                 TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

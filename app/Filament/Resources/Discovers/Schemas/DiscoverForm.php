@@ -27,14 +27,25 @@ class DiscoverForm
                                     ->required()
                                     ->disk('public')
                                     ->directory('images/logos'),
-                                Grid::make(1)
+                                FileUpload::make('image')
+                                    ->label('Background / Timeline Image')
+                                    ->disk('public')
+                                    ->directory('images/discovers'),
+                                Grid::make(2)
                                     ->schema([
                                         TextInput::make('name')
                                             ->required(),
+                                        TextInput::make('year')
+                                            ->label('Timeline (Format Angka)')
+                                            ->placeholder('Contoh: 2026/01'),
                                         Toggle::make('show_name')
                                             ->required()
                                             ->default(true),
-                                    ])
+                                        Toggle::make('is_pinned')
+                                            ->label('Pin ke Timeline')
+                                            ->helperText('Discovery pinned akan tampil paling atas di timeline landing page dan navbar.')
+                                            ->default(false),
+                                    ])->columnSpanFull(),
                             ])
                     ])->columnSpanFull(),
                 Section::make('Description')

@@ -34,10 +34,12 @@ class ServiceForm
                                 FileUpload::make('image')
                                     ->required()
                                     ->image()
+                                    ->multiple()
+                                    ->reorderable()
                                     ->directory('images/service')
                                     ->disk('public')
                                     ->visibility('public')
-                                    ->helperText('Buat gambar di detail service nya'),
+                                    ->helperText('Buat gambar di detail service nya (bisa lebih dari satu)'),
                             ])
                     ])->columnSpanFull(),
 

@@ -21,5 +21,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'chef@astadigitalagency.com',
             'password' => Hash::make('Selat.170426'),
         ]);
+
+        $this->call([
+            TestimonialSeeder::class,
+        ]);
     }
 }

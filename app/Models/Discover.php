@@ -12,10 +12,20 @@ class Discover extends Model
     protected $fillable = [
         'short_description',
         'name',
+        'year',
         'logo',
+        'image',
         'show_name',
         'sort',
+        'is_pinned',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_pinned' => 'boolean',
+        ];
+    }
 
     public function DiscoverLists()
     {
