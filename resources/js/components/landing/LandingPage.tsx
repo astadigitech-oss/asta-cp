@@ -325,7 +325,7 @@ function Hero() {
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
-            <Eyebrow>Agensi Digital Premium · Est. 2015</Eyebrow>
+            <Eyebrow>Agensi Digital Premium · Est. 2022</Eyebrow>
             <h1 className="mt-5 font-display text-[2.5rem] font-bold leading-[1.02] tracking-tight text-primary sm:text-6xl lg:text-[4.25rem]">
               Membangun{" "}
               <span className="relative inline-block">
@@ -2458,8 +2458,8 @@ function Footer() {
       <div className="relative mx-auto max-w-[1400px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-2.5">
-                <img src={logo} alt="Asta Digital Agency" className="mb-4 h-auto w-[135px] p-1" />
+            <div className="flex items-center gap-2.5"> 
+                <img src={logo} alt="Asta Digital Agency" className="mb -4 h-auto w-[135px] p-1" />
               {/* <div className="font-display text-lg font-bold text-white">ASTA Digital Agency</div> */}
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
