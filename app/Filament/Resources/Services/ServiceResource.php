@@ -25,7 +25,7 @@ class ServiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Bisnis';
+    protected static string | UnitEnum | null $navigationGroup = 'Business';
 
     public static function form(Schema $schema): Schema
     {

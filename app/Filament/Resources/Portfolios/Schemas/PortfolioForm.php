@@ -18,13 +18,14 @@ class PortfolioForm
     {
         return $schema
             ->components([
-                Section::make('Data General')
-                    ->description('Información general portfolio')
+                Section::make('General Data')
+                    ->description('General portfolio information')
                     ->icon(Heroicon::DocumentText)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 FileUpload::make('image')
+                                    ->label('Portfolio Image')
                                     ->image()
                                     ->disk('public')
                                     ->directory('images/portfolios')
@@ -32,19 +33,24 @@ class PortfolioForm
                                 Grid::make(1)
                                     ->schema([
                                         TextInput::make('name')
+                                            ->label('Portfolio Name')
+                                            ->placeholder('e.g. Mobile Banking App')
                                             ->required(),
                                         Select::make('type')
+                                            ->label('Category / Type')
                                             ->options(['mobile' => 'Mobile', 'desktop' => 'Desktop'])
                                             ->default('mobile')
                                             ->required(),
                                     ])
                             ])
                     ])->columnSpanFull(),
-                Section::make('Descripción')
-                    ->description('Descripción del portfolio')
+                Section::make('Portfolio Description')
+                    ->description('Detailed description of the portfolio')
                     ->icon(Heroicon::DocumentText)
                     ->schema([
                         RichEditor::make('description')
+                            ->label('Description')
+                            ->helperText('Write detailed portfolio description here')
                             ->required()
                             ->columnSpanFull(),
                     ])->columnSpanFull()

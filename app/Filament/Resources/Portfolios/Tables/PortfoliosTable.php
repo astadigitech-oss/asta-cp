@@ -19,21 +19,33 @@ class PortfoliosTable
         return $table
             ->columns([
                 ImageColumn::make('image')
+                    ->label('Image')
                     ->imageWidth(100)
                     ->imageHeight(100)
                     ->disk('public'),
                 TextColumn::make('name')
+                    ->label('Portfolio Name')
                     ->searchable(),
-                TextColumn::make('type'),
+                TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'mobile' => 'info',
+                        'desktop' => 'success',
+                        default => 'gray',
+                    }),
                 TextColumn::make('deleted_at')
+                    ->label('Deleted At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
