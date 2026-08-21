@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Portfolios\Schemas;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -48,9 +47,10 @@ class PortfolioForm
                     ->description('Detailed description of the portfolio')
                     ->icon(Heroicon::DocumentText)
                     ->schema([
-                        RichEditor::make('description')
+                        Textarea::make('description')
                             ->label('Description')
-                            ->helperText('Write detailed portfolio description here')
+                            ->placeholder('Write detailed portfolio description here...')
+                            ->rows(6)
                             ->required()
                             ->columnSpanFull(),
                     ])->columnSpanFull()

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Services\Schemas;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -74,11 +73,13 @@ class ServiceForm
                     ->schema([
                         Textarea::make('short_description')
                             ->label('Short Description')
+                            ->rows(3)
                             ->required()
                             ->helperText('Short description displayed in menu')
                             ->columnSpanFull(),
-                        RichEditor::make('description')
+                        Textarea::make('description')
                             ->label('Detailed Description')
+                            ->rows(6)
                             ->required()
                             ->helperText('Full detailed description of the service')
                             ->columnSpanFull(),
