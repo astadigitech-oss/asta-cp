@@ -23,9 +23,9 @@ class TestimonialResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleBottomCenterText;
 
-    protected static ?string $recordTitleAttribute = 'Testimoni';
+    protected static ?string $recordTitleAttribute = 'Testimonial';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Klien & Kontak';
+    protected static string | UnitEnum | null $navigationGroup = 'Clients & Contacts';
 
     public static function form(Schema $schema): Schema
     {

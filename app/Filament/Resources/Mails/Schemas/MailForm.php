@@ -17,34 +17,34 @@ class MailForm
     {
         return $schema
             ->components([
-                Section::make('Data Sender')
-                    ->description('Information of sender')
+                Section::make('Sender Information')
+                    ->description('Sender contact details')
                     ->icon(Heroicon::UserCircle)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('first_name')
-                                    ->label('Nama Depan / Nama')
+                                    ->label('First Name')
                                     ->required()
                                     ->disabled(),
                                 TextInput::make('last_name')
-                                    ->label('Nama Belakang')
+                                    ->label('Last Name')
                                     ->disabled(),
                                 TextInput::make('email')
                                     ->email()
                                     ->disabled()
-                                    ->label('Email')
+                                    ->label('Email Address')
                                     ->copyable(copyMessage: 'Copied!', copyMessageDuration: 1500)
                                     ->required(),
                                 TextInput::make('phone')
-                                    ->label('Nomor Telepon')
+                                    ->label('Phone Number')
                                     ->disabled()
                                     ->copyable(copyMessage: 'Copied!', copyMessageDuration: 1500)
                                     ->tel(),
                             ])
                     ])->columnSpanFull(),
-                Section::make('Status Answered')
-                    ->description('Information of status')
+                Section::make('Message Status')
+                    ->description('Message response status')
                     ->icon(Heroicon::CheckCircle)
                     ->schema([
                         Select::make('status')
@@ -58,11 +58,12 @@ class MailForm
                             ->default('not_answered')
                             ->preload()
                     ])->columnSpanFull(),
-                Section::make('Message')
-                    ->description('Information of message')
+                Section::make('Message Content')
+                    ->description('Incoming message details')
                     ->icon(Heroicon::ChatBubbleLeftRight)
                     ->schema([
                         Textarea::make('message')
+                            ->label('Message')
                             ->disabled()
                             ->required()
                             ->rows(10),

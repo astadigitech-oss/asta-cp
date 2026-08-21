@@ -25,7 +25,7 @@ class PortfolioResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Portfolio';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Bisnis';
+    protected static string | UnitEnum | null $navigationGroup = 'Business';
 
     public static function form(Schema $schema): Schema
     {

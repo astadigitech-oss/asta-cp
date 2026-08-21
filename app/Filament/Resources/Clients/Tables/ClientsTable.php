@@ -20,20 +20,25 @@ class ClientsTable
         return $table
             ->columns([
                 ImageColumn::make('image')
+                    ->label('Logo')
                     ->disk('public')
                     ->imageWidth(50)
                     ->imageHeight(50),
                 TextColumn::make('name')
+                    ->label('Client Name')
                     ->searchable(),
                 TextColumn::make('deleted_at')
+                    ->label('Deleted At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

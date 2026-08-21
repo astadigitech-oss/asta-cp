@@ -17,46 +17,47 @@ class TestimonialForm
     {
         return $schema
             ->components([
-                Section::make('Foto / Avatar')
-                    ->description('Upload foto profil pemberi testimoni (opsional)')
+                Section::make('Photo / Avatar')
+                    ->description('Upload testimonial provider profile photo (optional)')
                     ->icon(Heroicon::Photo)
                     ->schema([
                         FileUpload::make('avatar')
+                            ->label('Avatar')
                             ->image()
                             ->directory('images/testimonials')
                             ->disk('public')
                             ->visibility('public')
-                            ->helperText('Foto profil atau logo (opsional)'),
+                            ->helperText('Profile photo or logo (optional)'),
                     ])->columnSpanFull(),
 
-                Section::make('Informasi Klien')
-                    ->description('Detail pemberi testimoni')
+                Section::make('Client Information')
+                    ->description('Details of testimonial provider')
                     ->icon(Heroicon::User)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Nama Klien')
+                                    ->label('Client Name')
                                     ->required()
-                                    ->helperText('Misal: Surya Aditama'),
+                                    ->helperText('e.g. Surya Aditama'),
                                 TextInput::make('role')
-                                    ->label('Jabatan / Posisi')
-                                    ->helperText('Misal: Head of IT'),
+                                    ->label('Position / Role')
+                                    ->helperText('e.g. Head of IT'),
                                 TextInput::make('org')
-                                    ->label('Perusahaan / Instansi')
-                                    ->helperText('Misal: Dinas Kominfo / PT Mitra Andalan'),
+                                    ->label('Company / Organization')
+                                    ->helperText('e.g. Ministry of ICT / Acme Inc.'),
                                 TextInput::make('tag')
-                                    ->label('Tag / Kategori')
-                                    ->helperText('Misal: Government, Enterprise, Education'),
+                                    ->label('Tag / Category')
+                                    ->helperText('e.g. Government, Enterprise, Education'),
                             ]),
                     ])->columnSpanFull(),
 
-                Section::make('Isi Testimoni & Pengaturan')
-                    ->description('Kutipan testimoni dan status publikasi')
+                Section::make('Testimonial Content & Settings')
+                    ->description('Testimonial quote and publication status')
                     ->icon(Heroicon::ChatBubbleBottomCenterText)
                     ->schema([
                         Textarea::make('quote')
-                            ->label('Pesan / Testimoni')
+                            ->label('Testimonial Quote')
                             ->required()
                             ->rows(4)
                             ->columnSpanFull(),
@@ -70,12 +71,12 @@ class TestimonialForm
                                     ->maxValue(5)
                                     ->required(),
                                 TextInput::make('sort')
-                                    ->label('Urutan (Sort)')
+                                    ->label('Sort Order')
                                     ->numeric()
                                     ->default(0)
                                     ->required(),
                                 Toggle::make('is_active')
-                                    ->label('Tampilkan di Landing Page')
+                                    ->label('Display on Landing Page')
                                     ->default(true)
                                     ->required(),
                             ]),

@@ -21,18 +21,19 @@ class TestimonialsTable
         return $table
             ->columns([
                 ImageColumn::make('avatar')
+                    ->label('Avatar')
                     ->disk('public')
                     ->circular()
                     ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record?->name ?? 'User') . '&background=0D8ABC&color=fff'),
                 TextColumn::make('name')
-                    ->label('Nama')
+                    ->label('Client Name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('role')
-                    ->label('Jabatan')
+                    ->label('Role / Position')
                     ->searchable(),
                 TextColumn::make('org')
-                    ->label('Instansi / Perusahaan')
+                    ->label('Company / Organization')
                     ->searchable(),
                 TextColumn::make('tag')
                     ->label('Tag')
@@ -41,12 +42,13 @@ class TestimonialsTable
                     ->label('Rating')
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label('Active')
                     ->boolean(),
                 TextColumn::make('sort')
-                    ->label('Urutan')
+                    ->label('Sort Order')
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

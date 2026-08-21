@@ -18,12 +18,13 @@ class DiscoverForm
         return $schema
             ->components([
                 Section::make('General Data')
-                    ->description('The general data of the discover.')
+                    ->description('General information about the discover entry')
                     ->icon(Heroicon::ClipboardDocumentList)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 FileUpload::make('logo')
+                                    ->label('Logo')
                                     ->required()
                                     ->disk('public')
                                     ->directory('images/logos'),
@@ -34,27 +35,29 @@ class DiscoverForm
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('name')
+                                            ->label('Discover Name')
                                             ->required(),
                                         TextInput::make('year')
-                                            ->label('Timeline (Format Angka)')
-                                            ->placeholder('Contoh: 2026/01'),
+                                            ->label('Timeline (Number Format)')
+                                            ->placeholder('e.g. 2026/01'),
                                         Toggle::make('show_name')
+                                            ->label('Show Name')
                                             ->required()
                                             ->default(true),
                                         Toggle::make('is_pinned')
-                                            ->label('Pin ke Timeline')
-                                            ->helperText('Discovery pinned akan tampil paling atas di timeline landing page dan navbar.')
+                                            ->label('Pin to Timeline')
+                                            ->helperText('Pinned discoveries will appear at the top of the timeline on the landing page and navbar.')
                                             ->default(false),
                                     ])->columnSpanFull(),
                             ])
                     ])->columnSpanFull(),
-                Section::make('Description')
+                Section::make('Admin Description')
                     ->icon(Heroicon::OutlinedDocumentText)
-                    ->description('The description of the discover.')
+                    ->description('Internal description notes for admin')
                     ->schema([
                         Textarea::make('short_description')
-                        ->required()
-                        ->helperText('Hanya jadi deskripsi admin saja, tidak muncul ke halamna utama')
+                            ->label('Short Description')
+                            ->helperText('Internal admin description only, will not appear on the main landing page')
                             ->required()
                             ->columnSpanFull(),
                     ])->columnSpanFull(),

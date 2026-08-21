@@ -14,11 +14,13 @@ class ClientForm
         return $schema
             ->components([
                 FileUpload::make('image')
+                    ->label('Client Logo / Photo')
                     ->required()
                     ->disk('public')
                     ->directory('images/clients')
                     ->image(),
                 TextInput::make('name')
+                    ->label('Client / Company Name')
                     ->required(),
             ]);
     }

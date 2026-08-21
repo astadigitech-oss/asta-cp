@@ -18,20 +18,22 @@ class ServiceForm
     {
         return $schema
             ->components([
-                Section::make('Image')
-                    ->description('Information about the image')
+                Section::make('Media & Images')
+                    ->description('Logo and supporting image settings')
                     ->icon(Heroicon::Photo)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 FileUpload::make('logo')
+                                    ->label('Service Logo')
                                     ->required()
                                     ->image()
                                     ->directory('images/service')
                                     ->disk('public')
                                     ->visibility('public')
-                                    ->helperText('Buat logo service nya'),
+                                    ->helperText('Service logo image'),
                                 FileUpload::make('image')
+                                    ->label('Detail Images')
                                     ->required()
                                     ->image()
                                     ->multiple()
@@ -39,41 +41,46 @@ class ServiceForm
                                     ->directory('images/service')
                                     ->disk('public')
                                     ->visibility('public')
-                                    ->helperText('Buat gambar di detail service nya (bisa lebih dari satu)'),
+                                    ->helperText('Images for service detail page (multiple allowed)'),
                             ])
                     ])->columnSpanFull(),
 
                 Section::make('Main Data')
-                    ->description('Information about the service')
+                    ->description('General service information')
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->helperText('Buat nama service nya')
+                                    ->label('Service Name')
+                                    ->helperText('Name of the service')
                                     ->required(),
                                 Toggle::make('show_name')
-                                    ->helperText('Buat menyembunyikan nama service')
+                                    ->label('Show Name')
+                                    ->helperText('Toggle to display service name')
                                     ->default(true)
                                     ->required(),
                             ]),
                         Textarea::make('header')
+                            ->label('Service Header')
                             ->required()
-                            ->helperText('Buat service header nya, yang bold')
+                            ->helperText('Main service header text')
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
 
-                Section::make('Description')
-                    ->description('Information description about the service')
+                Section::make('Service Description')
+                    ->description('Short summary and detailed service description')
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
                         Textarea::make('short_description')
+                            ->label('Short Description')
                             ->required()
-                            ->helperText('Buat deskripsi singkat service nya yang ada di menu')
+                            ->helperText('Short description displayed in menu')
                             ->columnSpanFull(),
                         RichEditor::make('description')
+                            ->label('Detailed Description')
                             ->required()
-                            ->helperText('Buat deskripsi detail service nya')
+                            ->helperText('Full detailed description of the service')
                             ->columnSpanFull(),
                     ])->columnSpanFull()
             ]);

@@ -20,21 +20,27 @@ class ServicesTable
         return $table
             ->columns([
                 ImageColumn::make('logo')
+                    ->label('Logo')
                     ->disk('public')
                     ->imageWidth(50),
                 TextColumn::make('name')
+                    ->label('Service Name')
                     ->searchable(),
                 IconColumn::make('show_name')
+                    ->label('Show Name')
                     ->boolean(),
                 TextColumn::make('deleted_at')
+                    ->label('Deleted At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
