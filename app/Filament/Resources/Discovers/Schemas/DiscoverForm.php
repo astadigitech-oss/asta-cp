@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Discovers\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -55,8 +56,12 @@ class DiscoverForm
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->description('Internal description notes for admin')
                     ->schema([
-                        Textarea::make('short_description')
+                        RichEditor::make('short_description')
                             ->label('Short Description')
+                            ->extraInputAttributes(['style' => 'min-height: 180px;'])
+                            ->toolbarButtons([
+                                'blockquote', 'bold', 'bulletList', 'h2', 'h3', 'italic', 'link', 'orderedList', 'redo', 'strike', 'underline', 'undo',
+                            ])
                             ->helperText('Internal admin description only, will not appear on the main landing page')
                             ->required()
                             ->columnSpanFull(),

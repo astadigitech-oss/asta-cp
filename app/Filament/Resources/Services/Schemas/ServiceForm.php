@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Services\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -71,15 +72,21 @@ class ServiceForm
                     ->description('Short summary and detailed service description')
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
-                        Textarea::make('short_description')
+                        RichEditor::make('short_description')
                             ->label('Short Description')
-                            ->rows(3)
+                            ->extraInputAttributes(['style' => 'min-height: 150px;'])
+                            ->toolbarButtons([
+                                'blockquote', 'bold', 'bulletList', 'h2', 'h3', 'italic', 'link', 'orderedList', 'redo', 'strike', 'underline', 'undo',
+                            ])
                             ->required()
                             ->helperText('Short description displayed in menu')
                             ->columnSpanFull(),
-                        Textarea::make('description')
+                        RichEditor::make('description')
                             ->label('Detailed Description')
-                            ->rows(6)
+                            ->extraInputAttributes(['style' => 'min-height: 200px;'])
+                            ->toolbarButtons([
+                                'attachFiles', 'blockquote', 'bold', 'bulletList', 'codeBlock', 'h2', 'h3', 'italic', 'link', 'orderedList', 'redo', 'strike', 'underline', 'undo',
+                            ])
                             ->required()
                             ->helperText('Full detailed description of the service')
                             ->columnSpanFull(),

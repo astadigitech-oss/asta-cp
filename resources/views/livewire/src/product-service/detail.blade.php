@@ -19,7 +19,7 @@
                     <h1 class="text-[28px] lg:text-[32px] font-bold inter">
                         {{ $service->header }}
                     </h1>
-                    <p class="text-[16px]">{!! $service->description !!}</p>
+                    <div class="portfolio-content text-[16px]">{!! $service->description !!}</div>
                     <ul class="font-bold space-y-[20px]">
                         <li class="  flex items-start gap-[10px]">
                             <svg width="23" height="23" viewBox="0 0 23 23" fill="none"

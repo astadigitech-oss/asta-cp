@@ -52,7 +52,7 @@
                         <x-service-card link="/product-service/{{ $service->id }}" :secondBg="true"
                             src="{{ $service->logo }}" hidden="{{ $service->show_name === 0 ? 'hidden' : '' }}"
                             title="{{ $service->name }}" style="suez-one text-[20px]">
-                            {{ Str::limit($service->short_description, 130, '...') }}
+                            {{ Str::limit(strip_tags($service->short_description), 130, '...') }}
                         </x-service-card>
                     </div>
                 @endforeach
@@ -67,7 +67,7 @@
                                         title="{{ $service->name }}"
                                         hidden="{{ $service->show_name === 0 ? 'hidden' : '' }}"
                                         link="/product-service/{{ $service->id }}" style="suez-one text-[20px]">
-                                        {{ Str::limit($service->short_description, 130, '...') }}
+                                        {{ Str::limit(strip_tags($service->short_description), 130, '...') }}
                                     </x-service-card>
                                 </div>
                             </div>
