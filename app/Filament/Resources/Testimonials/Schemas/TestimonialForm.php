@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Testimonials\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -56,10 +57,13 @@ class TestimonialForm
                     ->description('Testimonial quote and publication status')
                     ->icon(Heroicon::ChatBubbleBottomCenterText)
                     ->schema([
-                        Textarea::make('quote')
+                        RichEditor::make('quote')
                             ->label('Testimonial Quote')
+                            ->extraInputAttributes(['style' => 'min-height: 180px;'])
+                            ->toolbarButtons([
+                                'blockquote', 'bold', 'bulletList', 'italic', 'link', 'orderedList', 'redo', 'strike', 'underline', 'undo',
+                            ])
                             ->required()
-                            ->rows(4)
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([

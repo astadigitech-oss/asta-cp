@@ -14,6 +14,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -32,8 +33,12 @@ class ServiceListMainsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Textarea::make('description')
+                RichEditor::make('description')
                     ->required()
+                    ->extraInputAttributes(['style' => 'min-height: 150px;'])
+                    ->toolbarButtons([
+                        'bold', 'bulletList', 'italic', 'link', 'orderedList', 'undo', 'redo',
+                    ])
                     ->columnSpanFull(),
             ]);
     }

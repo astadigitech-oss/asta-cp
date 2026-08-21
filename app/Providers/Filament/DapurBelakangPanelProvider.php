@@ -19,6 +19,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\HtmlString;
+
 class DapurBelakangPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -31,6 +34,29 @@ class DapurBelakangPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): HtmlString => new HtmlString('
+                    <style>
+                        .fi-fo-rich-editor-main {
+                            display: block !important;
+                        }
+                        .fi-fo-rich-editor-content {
+                            display: block !important;
+                            min-height: 250px !important;
+                            padding: 1rem !important;
+                        }
+                        .fi-fo-rich-editor .ProseMirror {
+                            min-height: 220px !important;
+                            text-align: left !important;
+                            outline: none !important;
+                        }
+                        .fi-fo-rich-editor .ProseMirror p:first-child {
+                            margin-top: 0 !important;
+                        }
+                    </style>
+                ')
+            )
             ->spa()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

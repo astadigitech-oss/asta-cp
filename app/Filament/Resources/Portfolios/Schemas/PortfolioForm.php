@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Portfolios\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -47,10 +47,26 @@ class PortfolioForm
                     ->description('Detailed description of the portfolio')
                     ->icon(Heroicon::DocumentText)
                     ->schema([
-                        Textarea::make('description')
+                        RichEditor::make('description')
                             ->label('Description')
                             ->placeholder('Write detailed portfolio description here...')
-                            ->rows(6)
+                            ->extraInputAttributes(['style' => 'min-height: 200px;'])
+                            ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'h2',
+                                'h3',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'underline',
+                                'undo',
+                            ])
                             ->required()
                             ->columnSpanFull(),
                     ])->columnSpanFull()

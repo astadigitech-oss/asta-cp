@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="space-y-[34px] text-center sm:text-start max-w-[450px] lg:max-w-[540px]">
                                     <h1 class="text-[48px] inter font-bold leading-[28px]">{{ $mobile->name }}</h1>
-                                    {!! $mobile->description !!}
+                                    <div class="portfolio-content">{!! $mobile->description !!}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="space-y-[34px] text-center sm:text-start max-w-[450px] lg:max-w-[540px]">
                                     <h1 class="text-[48px] inter font-bold leading-[28px]">{{ $desktop->name }}</h1>
-                                    {!! $desktop->description !!}
+                                    <div class="portfolio-content">{!! $desktop->description !!}</div>
                                 </div>
                             </div>
                         @endforeach 
