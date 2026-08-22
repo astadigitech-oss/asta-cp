@@ -34,6 +34,12 @@ class PortfoliosTable
                         'desktop' => 'success',
                         default => 'gray',
                     }),
+                TextColumn::make('demo_url')
+                    ->label('Live Demo')
+                    ->url(fn ($record) => $record->demo_url, true)
+                    ->openUrlInNewTab()
+                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
                     ->label('Deleted At')
                     ->dateTime()

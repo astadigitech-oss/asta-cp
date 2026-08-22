@@ -40,6 +40,11 @@ class PortfolioForm
                                             ->options(['mobile' => 'Mobile', 'desktop' => 'Desktop'])
                                             ->default('mobile')
                                             ->required(),
+                                        TextInput::make('demo_url')
+                                            ->label('Link Live Demo')
+                                            ->placeholder('e.g. https://example.com (Opsional)')
+                                            ->url()
+                                            ->nullable(),
                                     ])
                             ])
                     ])->columnSpanFull(),
