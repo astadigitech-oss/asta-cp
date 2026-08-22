@@ -42,6 +42,17 @@
                                 <div class="space-y-[34px] text-center sm:text-start max-w-[450px] lg:max-w-[540px]">
                                     <h1 class="text-[48px] inter font-bold leading-[28px]">{{ $mobile->name }}</h1>
                                     <div class="portfolio-content">{!! $mobile->description !!}</div>
+                                    @if(!empty($mobile->demo_url))
+                                        <div class="pt-2">
+                                            <a href="{{ $mobile->demo_url }}" target="_blank" rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#004AAD] hover:bg-blue-800 text-white font-bold rounded-full transition-all duration-300 shadow-md">
+                                                <span>Live Demo</span>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -61,6 +72,17 @@
                                 <div class="space-y-[34px] text-center sm:text-start max-w-[450px] lg:max-w-[540px]">
                                     <h1 class="text-[48px] inter font-bold leading-[28px]">{{ $desktop->name }}</h1>
                                     <div class="portfolio-content">{!! $desktop->description !!}</div>
+                                    @if(!empty($desktop->demo_url))
+                                        <div class="pt-2">
+                                            <a href="{{ $desktop->demo_url }}" target="_blank" rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#004AAD] hover:bg-blue-800 text-white font-bold rounded-full transition-all duration-300 shadow-md">
+                                                <span>Live Demo</span>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach 

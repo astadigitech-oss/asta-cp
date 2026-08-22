@@ -43,6 +43,7 @@ import {
   Tag,
   Pin,
   LinkedinIcon,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1252,6 +1253,7 @@ interface PortfolioProject {
   type: string;
   description: string;
   span: string;
+  demo_url?: string;
 }
 
 const defaultProjects: PortfolioProject[] = [
@@ -1291,6 +1293,7 @@ function Portfolio() {
         category: catLabel,
         type: item.type || "desktop",
         description: item.description || "Deskripsi portofolio tidak tersedia.",
+        demo_url: item.demo_url,
         span: spans[index % spans.length],
       };
     })
@@ -1447,15 +1450,27 @@ function Portfolio() {
                       <p className="text-xs text-gray-500 font-medium">Tertarik membangun aplikasi atau sistem serupa?</p>
                       <p className="text-sm font-bold text-gray-900">Konsultasikan kebutuhan teknologi Anda dengan tim Asta.</p>
                     </div>
-                    <Button
-                      asChild
-                      onClick={() => setSelectedProject(null)}
-                      className="rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 py-3 font-semibold shadow-md"
-                    >
-                      <a href="#kontak">
-                        Hubungi Tim Kami <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-3">
+                      {selectedProject.demo_url && (
+                        <Button
+                          asChild
+                          className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 font-semibold shadow-md transition-all"
+                        >
+                          <a href={selectedProject.demo_url} target="_blank" rel="noopener noreferrer">
+                            Live Demo <ExternalLink className="ml-2 h-4 w-4" />
+                          </a>
+                        </Button>
+                      )}
+                      <Button
+                        asChild
+                        onClick={() => setSelectedProject(null)}
+                        className="rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 py-3 font-semibold shadow-md"
+                      >
+                        <a href="#kontak">
+                          Hubungi Tim Kami <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

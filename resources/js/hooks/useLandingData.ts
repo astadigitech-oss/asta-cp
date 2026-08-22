@@ -45,6 +45,7 @@ export interface PortfolioItem {
   image?: string;
   category?: string;
   type?: string;
+  demo_url?: string;
 }
 
 export interface TestimonialItem {

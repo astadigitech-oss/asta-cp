@@ -61,6 +61,7 @@ class LandingController extends Controller
                 'type' => $portfolio->type,
                 'category' => $portfolio->type, // Alias for React category filter
                 'image' => $this->formatImageUrl($portfolio->image),
+                'demo_url' => $portfolio->demo_url,
             ];
         });
 
@@ -135,6 +136,7 @@ class LandingController extends Controller
             'type' => $portfolio->type,
             'category' => $portfolio->type,
             'image' => $this->formatImageUrl($portfolio->image),
+            'demo_url' => $portfolio->demo_url,
             'created_at' => $portfolio->created_at ? $portfolio->created_at->format('d M Y') : null,
         ]);
     }
