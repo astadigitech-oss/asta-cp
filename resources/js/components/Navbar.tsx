@@ -5,6 +5,8 @@ import p1 from "../assets/portfolio-1.jpg";
 import p2 from "../assets/portfolio-2.jpg";
 import p3 from "../assets/portfolio-3.jpg";
 import { useLandingData } from "../hooks/useLandingData";
+import { useTranslation } from "../i18n/useTranslation";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 interface ServiceItem {
   id: number;
@@ -42,20 +44,20 @@ interface DiscoverItem {
 const defaultNewsItems: DiscoverItem[] = [
   {
     id: "mock-1",
-    name: "Kenapa Bisnis Anda Membutuhkan Sistem Digital Terintegrasi?",
-    short_description: "Pelajari bagaimana sistem digital terintegrasi meningkatkan efisiensi.",
+    name: "Why Your Business Needs an Integrated Digital System",
+    short_description: "Learn how integrated digital systems improve efficiency.",
     image: p1,
   },
   {
     id: "mock-2",
-    name: "ERP: Solusi untuk Mengelola Bisnis dalam Satu Sistem",
-    short_description: "Mengintegrasikan berbagai proses bisnis keuangan & operasional.",
+    name: "ERP: The Solution to Manage Business in One System",
+    short_description: "Integrating various financial & operational processes.",
     image: p2,
   },
   {
     id: "mock-3",
-    name: "Website Saja Tidak Cukup, Saatnya ke Custom System",
-    short_description: "Temukan kapan bisnis Anda membutuhkan sistem kustom.",
+    name: "A Website is Not Enough: Time for a Custom System",
+    short_description: "Discover when your business needs a custom system.",
     image: p3,
   },
 ];
@@ -66,6 +68,7 @@ const stripHtml = (html?: string) => {
 };
 
 export function Navbar() {
+  const { t } = useTranslation();
   const { data: landingData } = useLandingData();
   const [portfolioTab, setPortfolioTab] = useState<"Mobile" | "Desktop">("Mobile");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -114,7 +117,6 @@ export function Navbar() {
             <img src={logo} alt="Asta Digital Agency" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
-            {/* <span className="font-bold text-xl text-[#004AAD] tracking-tight">ASTA</span> */}
           </a>
 
           {/* Desktop Navigation */}
@@ -126,7 +128,7 @@ export function Navbar() {
                 after:content-[''] after:absolute after:left-0 after:bottom-4 after:w-full after:h-[2px] after:bg-[#004AAD]
                 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
             >
-              Beranda
+              {t("nav.home")}
             </a>
 
             {/* Product & Services Dropdown */}
@@ -134,11 +136,11 @@ export function Navbar() {
               <button
                 className="flex items-center gap-1.5 text-[18px] font-medium text-gray-700 group-hover:text-[#004AAD] transition-colors py-8 cursor-pointer"
               >
-                Produk & Layanan
+                {t("nav.services")}
                 <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform group-hover:rotate-180" />
               </button>
 
-              {/* Mega Dropdown Panel - Pure CSS Group Hover (100% Bulletproof) */}
+              {/* Mega Dropdown Panel */}
               <div
                 className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
                   opacity-0 invisible pointer-events-none
@@ -148,7 +150,7 @@ export function Navbar() {
               >
                 <div className="space-y-4">
                   <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-                    Produk & Layanan
+                    {t("nav.services")}
                   </p>
                   <div className="grid grid-cols-3 gap-6">
                     {services.length > 0 ? (
@@ -165,16 +167,15 @@ export function Navbar() {
                             {service.name}
                           </h4>
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                            {stripHtml(service.short_description) || "Solusi teknologi terbaik dari Asta Digital."}
+                            {stripHtml(service.short_description) || t("services.default_web_desc")}
                           </p>
                         </a>
                       ))
                     ) : (
-                      // Default mock services
                       [
-                        { title: "Web Apps Development", desc: "Aplikasi berbasis web modern, cepat & responsif." },
-                        { title: "Mobile Apps Development", desc: "Aplikasi Android & iOS performa tinggi." },
-                        { title: "Layanan IT & Konsultasi", desc: "Dukungan IT dan konsultasi arsitektur sistem." },
+                        { title: t("services.default_web_title"), desc: t("services.default_web_desc") },
+                        { title: t("services.default_mobile_title"), desc: t("services.default_mobile_desc") },
+                        { title: t("services.default_it_title"), desc: t("services.default_it_desc") },
                       ].map((s, idx) => (
                         <a
                           key={idx}
@@ -195,7 +196,7 @@ export function Navbar() {
                       href="/#layanan"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors"
                     >
-                      Lihat Semua Layanan <ArrowRight className="w-4 h-4" />
+                      {t("nav.all_services")} <ArrowRight className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
@@ -207,11 +208,11 @@ export function Navbar() {
               <button
                 className="flex items-center gap-1.5 text-[18px] font-medium text-gray-700 group-hover:text-[#004AAD] transition-colors py-8 cursor-pointer"
               >
-                Portofolio
+                {t("nav.portfolio")}
                 <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform group-hover:rotate-180" />
               </button>
 
-              {/* Mega Dropdown Panel - Pure CSS Group Hover */}
+              {/* Mega Dropdown Panel */}
               <div
                 className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[850px] bg-white shadow-2xl rounded-2xl border border-gray-100 z-50 overflow-hidden flex
                   opacity-0 invisible pointer-events-none
@@ -221,7 +222,7 @@ export function Navbar() {
               >
                 {/* Left Tabs */}
                 <div className="w-[220px] bg-[#004AAD] p-6 text-white flex flex-col gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">Platform</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">{t("nav.platform")}</p>
                   <button
                     onClick={() => setPortfolioTab("Mobile")}
                     className={`w-full py-3 px-4 rounded-xl text-left font-semibold text-base transition-all cursor-pointer ${
@@ -230,7 +231,7 @@ export function Navbar() {
                         : "text-white hover:bg-white/10"
                     }`}
                   >
-                    Mobile Apps
+                    {t("nav.mobile_apps")}
                   </button>
                   <button
                     onClick={() => setPortfolioTab("Desktop")}
@@ -240,7 +241,7 @@ export function Navbar() {
                         : "text-white hover:bg-white/10"
                     }`}
                   >
-                    Desktop & Web
+                    {t("nav.desktop_web")}
                   </button>
                 </div>
 
@@ -248,7 +249,7 @@ export function Navbar() {
                 <div className="flex-1 p-6 flex flex-col justify-between">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pb-3">
-                      Portofolio {portfolioTab}
+                      {t("nav.portfolio")} {portfolioTab === "Mobile" ? t("nav.mobile_apps") : t("nav.desktop_web")}
                     </p>
                     <div className="grid grid-cols-2 gap-4">
                       {(portfolioTab === "Mobile" ? mobiles : desktops).length > 0 ? (
@@ -267,13 +268,13 @@ export function Navbar() {
                             )}
                             <div className="min-w-0">
                               <h5 className="font-bold text-sm text-gray-900 group-hover/item:text-[#004AAD] truncate">{p.name}</h5>
-                              <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{stripHtml(p.description) || "Lihat detail portofolio"}</p>
-                              </div>
+                              <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{stripHtml(p.description) || t("portfolio.view_project")}</p>
+                            </div>
                           </a>
                         ))
                       ) : (
                         <div className="col-span-2 text-sm text-gray-500 py-6 text-center">
-                          Portofolio {portfolioTab} akan ditampilkan di sini.
+                          {t("portfolio.default_empty_msg")}
                         </div>
                       )}
                     </div>
@@ -284,7 +285,7 @@ export function Navbar() {
                       href="/#portofolio"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors"
                     >
-                      Lihat Semua Portofolio <ArrowRight className="w-4 h-4" />
+                      {t("nav.all_portfolios")} <ArrowRight className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
@@ -296,11 +297,11 @@ export function Navbar() {
               <button
                 className="flex items-center gap-1.5 text-[18px] font-medium text-gray-700 group-hover:text-[#004AAD] transition-colors py-8 cursor-pointer"
               >
-                Temukan
+                {t("nav.discover")}
                 <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform group-hover:rotate-180" />
               </button>
 
-              {/* Mega Dropdown Panel - Pure CSS Group Hover */}
+              {/* Mega Dropdown Panel */}
               <div
                 className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
                   opacity-0 invisible pointer-events-none
@@ -310,7 +311,7 @@ export function Navbar() {
               >
                 <div className="grid grid-cols-12 gap-8">
                   <div className="col-span-8 border-r border-gray-100 pr-6">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Temukan</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">{t("nav.discover")}</p>
                     <div className="grid grid-cols-2 gap-4">
                       {discovers.length > 0 ? (
                         discovers.map((disc) => (
@@ -332,19 +333,19 @@ export function Navbar() {
                       ) : (
                         <>
                           <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">Tentang Asta</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">Profil dan visi misi perusahaan.</p>
+                            <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
+                            <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
                           </a>
                           <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">Karir & Mitraship</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">Gabung dengan tim Asta Digital.</p>
+                            <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
+                            <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
                           </a>
                         </>
                       )}
                     </div>
                   </div>
 
-                  {/* Story card box with Auto-Sliding News */}
+                  {/* Story card box */}
                   <div
                     className="col-span-4 flex flex-col justify-between"
                     onMouseEnter={() => setIsPaused(true)}
@@ -353,7 +354,7 @@ export function Navbar() {
                     <div>
                       <div className="flex items-center justify-between">
                         <h4 className="text-lg font-bold text-[#004AAD]">
-                          Cerita <span className="text-[#38B6FF]">Asta</span>
+                          {t("nav.asta_story")}
                         </h4>
                         {/* Slide dots indicator */}
                         <div className="flex items-center gap-1.5">
@@ -381,11 +382,11 @@ export function Navbar() {
                           {/* Slide 0: Default Text */}
                           <div className="w-full shrink-0 h-full p-4 text-xs text-gray-700 leading-relaxed flex items-center select-none">
                             <p>
-                              Di balik layar setiap sistem yang berjalan lancar, ada tim IT kami yang selalu siap memecahkan setiap tantangan teknologi.
+                              {t("about.mission_desc")}
                             </p>
                           </div>
 
-                          {/* Slide 1..N: Image Berita (Sorted by newest) */}
+                          {/* Slide 1..N: Image Berita */}
                           {newsItems.map((item, idx) => (
                             <a
                               key={item.id || idx}
@@ -400,12 +401,12 @@ export function Navbar() {
                               <div className="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-900/40 to-transparent p-3.5 flex flex-col justify-end text-white">
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#38B6FF]">
-                                    Berita Terbaru
+                                    {t("nav.latest_news")}
                                   </span>
                                   {item.is_pinned && (
                                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#A2FF0A]">
                                       <Pin className="h-3 w-3 fill-[#A2FF0A]" aria-hidden="true" />
-                                      Pinned
+                                      {t("nav.pinned")}
                                     </span>
                                   )}
                                 </div>
@@ -428,7 +429,7 @@ export function Navbar() {
                       href="/#discover"
                       className="inline-flex items-center justify-between text-xs font-semibold text-white bg-[#004AAD] px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors mt-4 shadow-sm"
                     >
-                      Pelajari Selengkapnya <ArrowRight className="w-3.5 h-3.5" />
+                      {t("nav.learn_more")} <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </div>
@@ -436,24 +437,28 @@ export function Navbar() {
             </div>
           </nav>
 
-          {/* Right Contact Button */}
-          <div className="hidden xl:block">
+          {/* Right Section: Language Switcher & Contact Button */}
+          <div className="hidden xl:flex items-center gap-4">
+            <LanguageSwitcher />
             <a
               href="/#kontak"
               className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#004AAD] text-white font-semibold text-base hover:bg-blue-700 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
-              Hubungi Kami
+              {t("nav.contact")}
             </a>
           </div>
 
           {/* Mobile Burger Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-100 cursor-pointer"
-            aria-label="Buka/Tutup Navigasi"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="flex items-center gap-2 xl:hidden">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-100 cursor-pointer"
+              aria-label={t("nav.menu_aria")}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
@@ -465,38 +470,38 @@ export function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
-                Beranda
+                {t("nav.home")}
               </a>
               <a
                 href="/#layanan"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
-                Produk & Layanan
+                {t("nav.services")}
               </a>
               <a
                 href="/#portofolio"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
-                Portofolio
+                {t("nav.portfolio")}
               </a>
               <a
                 href="/#discover"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
-                Temukan
+                {t("nav.discover")}
               </a>
             </div>
 
-            <div className="pt-6">
+            <div className="pt-6 space-y-3">
               <a
                 href="/#kontak"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md"
               >
-                Hubungi Kami
+                {t("nav.contact")}
               </a>
             </div>
           </div>

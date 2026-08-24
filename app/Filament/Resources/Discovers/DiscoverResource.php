@@ -26,7 +26,7 @@ class DiscoverResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Discover';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Klien & Kontak';
+    protected static string | UnitEnum | null $navigationGroup = 'Clients & Contacts';
 
     public static function form(Schema $schema): Schema
     {

@@ -16,8 +16,8 @@ class EditMail extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('Sudah Dijawab')
-            ->label('Sudah Dijawab')
+            Action::make('mark_as_answered')
+            ->label('Mark as Answered')
             ->requiresConfirmation()
             ->color('success')
             ->successRedirectUrl(route('filament.dapur-belakang.resources.mails.index'))

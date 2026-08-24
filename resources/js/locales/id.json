@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
+    "description": "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan.",
+    "og_title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
+    "og_description": "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis."
+  },
+  "nav": {
+    "home": "Beranda",
+    "services": "Produk & Layanan",
+    "portfolio": "Portofolio",
+    "discover": "Temukan",
+    "about": "Tentang Asta",
+    "process": "Proses",
+    "contact": "Hubungi Kami",
+    "all_services": "Lihat Semua Layanan",
+    "all_portfolios": "Lihat Semua Portofolio",
+    "learn_more": "Pelajari Selengkapnya",
+    "platform": "Platform",
+    "mobile_apps": "Mobile Apps",
+    "desktop_web": "Desktop & Web",
+    "asta_story": "Cerita Asta",
+    "latest_news": "Berita Terbaru",
+    "pinned": "Pinned",
+    "menu_aria": "Buka/Tutup Navigasi"
+  },
+  "hero": {
+    "eyebrow": "Agensi Digital Premium · Est. 2022",
+    "title_1": "Membangun ",
+    "title_highlight": "pengalaman digital",
+    "title_2": " terbaik untuk bisnis modern.",
+    "description": "Asta Digital Agency adalah studio teknologi yang membangun website, aplikasi, dan sistem informasi terbaik — dirancang dengan standar enterprise dan desain yang elegan serta imersif.",
+    "cta_start": "Mulai Proyek",
+    "cta_portfolio": "Lihat Portofolio",
+    "trust_security": "Keamanan Siap terjamin",
+    "trust_award": "Kualitas Penghargaan",
+    "trust_fast": "Fast & Scalable",
+    "stat_projects": "PROYEK",
+    "stat_clients": "KLIEN",
+    "stat_years": "TAHUN",
+    "stat_satisfaction": "KEPUASAN",
+    "trusted_by": "DIPERCAYA OLEH INSTANSI & PERUSAHAAN TERKEMUKA"
+  },
+  "about": {
+    "eyebrow": "Tentang Kami",
+    "title": "Mitra Teknologi Terpercaya untuk Transformasi Digital Anda",
+    "description": "Kami menggabungkan keahlian rekayasa perangkat lunak, desain UI/UX yang estetis, dan pemikiran strategis untuk menghadirkan produk digital yang berdampak nyata pada bisnis.",
+    "vision_title": "Visi Kami",
+    "vision_desc": "Menjadi agensi teknologi terdepan yang memajukan pertumbuhan bisnis dan pelayanan publik melalui solusi perangkat lunak inovatif.",
+    "mission_title": "Misi Kami",
+    "mission_desc": "Menghadirkan sistem digital berkinerja tinggi, aman, dan mudah digunakan yang disesuaikan secara khusus dengan kebutuhan setiap klien.",
+    "company_story": "Cerita & Perjalanan Perusahaan",
+    "cta_discover": "Jelajahi Detail"
+  },
+  "services": {
+    "eyebrow": "Layanan Kami",
+    "title": "Solusi Teknologi Terintegrasi yang Disesuaikan Kebutuhan Anda",
+    "description": "Dari sistem kustom hingga aplikasi mobile enterprise, kami menyediakan solusi digital end-to-end yang dirancang untuk performa, keamanan, dan skalabilitas.",
+    "view_detail": "Lihat Detail",
+    "empty": "Belum ada layanan yang tersedia saat ini.",
+    "default_web_title": "Web Apps Development",
+    "default_web_desc": "Aplikasi berbasis web modern, cepat & responsif.",
+    "default_mobile_title": "Mobile Apps Development",
+    "default_mobile_desc": "Aplikasi Android & iOS performa tinggi.",
+    "default_it_title": "Layanan IT & Konsultasi",
+    "default_it_desc": "Dukungan IT dan konsultasi arsitektur sistem.",
+    "modal": {
+      "features": "Fitur Utama & Keunggulan",
+      "gallery": "Galeri Tampilan",
+      "cta": "Konsultasi Layanan Ini",
+      "close": "Tutup"
+    }
+  },
+  "portfolio": {
+    "eyebrow": "Portofolio",
+    "title": "Proyek Unggulan & Sistem Kustom",
+    "description": "Temukan bagaimana kami membantu para mitra mentransformasikan ide mereka menjadi produk perangkat lunak yang berdampak.",
+    "tab_all": "Semua",
+    "tab_mobile": "Mobile Apps",
+    "tab_desktop": "Desktop & Web",
+    "view_project": "Lihat Detail Proyek",
+    "live_demo": "Live Demo",
+    "empty": "Belum ada portofolio untuk kategori ini.",
+    "default_empty_msg": "Portofolio akan ditampilkan di sini.",
+    "modal": {
+      "category": "Kategori",
+      "created_at": "Tanggal Rilis",
+      "description": "Deskripsi Proyek",
+      "visit_demo": "Buka Live Demo",
+      "close": "Tutup"
+    }
+  },
+  "discover": {
+    "eyebrow": "Temukan & Wawasan",
+    "title": "Jelajahi Cerita, Inovasi & Berita Terbaru",
+    "description": "Dapatkan informasi terbaru mengenai perkembangan teknologi, pencapaian perusahaan, dan wawasan industri dari Asta Digital.",
+    "search_placeholder": "Cari artikel, cerita, atau wawasan...",
+    "category_all": "Semua Kategori",
+    "pinned_badge": "Pinned",
+    "read_more": "Baca Selengkapnya",
+    "empty": "Tidak ada berita atau artikel yang sesuai dengan pencarian.",
+    "modal": {
+      "published": "Diterbitkan",
+      "close": "Tutup"
+    }
+  },
+  "why_us": {
+    "eyebrow": "Mengapa Kami",
+    "title": "Mengapa Perusahaan Modern Memilih Asta",
+    "description": "Kami menghadirkan keunggulan teknis, komunikasi transparan, dan dedikasi penuh pada setiap proyek.",
+    "reason_1_title": "Keamanan & Arsitektur Enterprise",
+    "reason_1_desc": "Dirancang dengan kode bersih, arsitektur terukur, dan standar keamanan ketat untuk melindungi data Anda.",
+    "reason_2_title": "Desain Berbasis Pengguna & Modern",
+    "reason_2_desc": "Dibuat dengan prinsip desain berpusat pada pengguna yang menjamin navigasi intuitif dan memuaskan.",
+    "reason_3_title": "Dukungan Ahli Berdedikasi",
+    "reason_3_desc": "Bantuan teknis berkelanjutan, pemeliharaan, dan panduan strategis sepanjang perjalanan digital Anda."
+  },
+  "stats": {
+    "eyebrow": "Dampak Kami",
+    "title": "Menghadirkan Dampak Terukur di Berbagai Sektor",
+    "description": "Pencapaian kami mencerminkan komitmen terhadap keunggulan, kualitas hasil, dan kepuasan klien."
+  },
+  "process": {
+    "eyebrow": "Proses Kerja",
+    "title": "Bagaimana Kami Membawa Visi Anda Menjadi Kenyataan",
+    "description": "Alur kerja pengembangan terstruktur yang teruji, memastikan transparansi dan kualitas pada setiap tahap.",
+    "step_1_title": "Analisis & Perencanaan",
+    "step_1_desc": "Kami menganalisis kebutuhan proyek, pengguna, dan menentukan arsitektur sistem.",
+    "step_2_title": "Desain UI/UX & Prototyping",
+    "step_2_desc": "Merancang antarmuka intuitif dan wireframe interaktif untuk pengalaman pengguna yang lancar.",
+    "step_3_title": "Pengembangan & Kode",
+    "step_3_desc": "Membangun kode frontend dan backend yang andal dengan pengujian otomatis dan integrasi berkelanjutan.",
+    "step_4_title": "Peluncuran & Pemeliharaan",
+    "step_4_desc": "Peluncuran ke lingkungan produksi dengan pemantauan terus-menerus, pembaruan, dan dukungan berdedikasi."
+  },
+  "testimonials": {
+    "eyebrow": "Testimoni",
+    "title": "Apa Kata Klien Tentang Kami",
+    "description": "Ulasan jujur dari para pemimpin instansi dan mitra bisnis yang mempercayakan solusinya kepada Asta Digital Agency."
+  },
+  "cta": {
+    "title": "Siap Mentransformasi Bisnis Anda Secara Digital?",
+    "description": "Mari berkolaborasi untuk membangun aplikasi web, aplikasi mobile, atau sistem enterprise berkualitas tinggi sesuai tujuan Anda.",
+    "button": "Jadwalkan Konsultasi Gratis"
+  },
+  "contact": {
+    "eyebrow": "Hubungi Kami",
+    "title": "Mari Diskusikan Proyek Besar Anda Berikutnya",
+    "description": "Isi formulir di bawah ini atau hubungi tim kami secara langsung. Kami siap merealisasikan visi teknologi Anda.",
+    "info_email": "Alamat Email",
+    "info_phone": "Telepon & WhatsApp",
+    "info_office": "Kantor Pusat",
+    "info_office_address": "Surakarta, Jawa Tengah, Indonesia",
+    "form": {
+      "first_name": "Nama Depan",
+      "last_name": "Nama Belakang",
+      "full_name": "Nama Lengkap",
+      "organization": "Perusahaan / Organisasi",
+      "email": "Alamat Email",
+      "phone": "Nomor Telepon",
+      "message": "Pesan / Detail Proyek",
+      "placeholder_first_name": "contoh: Budi",
+      "placeholder_last_name": "contoh: Santoso",
+      "placeholder_organization": "contoh: PT Inovasi Tekno",
+      "placeholder_email": "contoh: budi@example.com",
+      "placeholder_phone": "contoh: 0812-3456-7890",
+      "placeholder_message": "Ceritakan kebutuhan proyek, anggaran, atau linimasa Anda...",
+      "submit": "Kirim Pesan",
+      "submitting": "Mengirim Pesan...",
+      "success_title": "Pesan Berhasil Terkirim!",
+      "success_desc": "Terima kasih telah menghubungi kami. Tim kami akan segera merespon Anda.",
+      "error_title": "Gagal Mengirim Pesan",
+      "error_desc": "Terjadi kesalahan saat mengirim pesan. Silakan coba lagi."
+    }
+  },
+  "footer": {
+    "description": "PT Asta Digital Agency adalah studio teknologi premium yang membangun website, aplikasi, dan sistem informasi enterprise modern.",
+    "quick_links": "Tautan Cepat",
+    "services_title": "Layanan",
+    "contact_title": "Kontak",
+    "copyright": "Hak Cipta Dilindungi Undang-Undang."
+  },
+  "common": {
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "close": "Tutup",
+    "back": "Kembali",
+    "try_again": "Coba Lagi",
+    "back_home": "Ke Beranda",
+    "error_title": "Halaman Gagal Dimuat",
+    "error_desc": "Terjadi kesalahan di sisi kami. Anda dapat mencoba memuat ulang atau kembali ke halaman utama.",
+    "error_details": "Detail Kesalahan",
+    "not_found_title": "Halaman Tidak Ditemukan",
+    "not_found_desc": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
+    "language": "Bahasa",
+    "english": "English",
+    "indonesian": "Bahasa Indonesia"
+  }
+}
