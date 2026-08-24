@@ -53,6 +53,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData, TestimonialItem } from "@/hooks/useLandingData";
+import { stripHtml } from "@/components/lib/utils";
 import axios from "axios";
 import {
   Dialog,
@@ -1081,7 +1082,7 @@ function Services() {
                       </h3>
                     )}
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">
-                      {s.short_description || s.header || "Solusi produk dan layanan unggulan Asta Digital."}
+                      {stripHtml(s.short_description) || s.header || "Solusi produk dan layanan unggulan Asta Digital."}
                     </p>
                     <button
                       onClick={(e) => {
@@ -1208,7 +1209,7 @@ function Services() {
                         {selectedService.serviceListMains.map((item) => (
                           <li key={item.id} className="flex items-start gap-2.5 bg-blue-50/50 p-3 rounded-xl border border-blue-100/60 text-xs font-medium text-gray-800">
                             <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
-                            <span>{item.description}</span>
+                            <span>{stripHtml(item.description)}</span>
                           </li>
                         ))}
                       </ul>
@@ -1600,7 +1601,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                     {/* Description */}
                     {item.short_description && (
                       <p className="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed line-clamp-3 font-normal">
-                        {item.short_description}
+                        {stripHtml(item.short_description)}
                       </p>
                     )}
                   </div>
@@ -1706,7 +1707,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                           Informasi & Deskripsi Lengkap
                         </h4>
                         <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
-                          {selectedDiscover.short_description}
+                          {stripHtml(selectedDiscover.short_description)}
                         </p>
                       </div>
                     )}
@@ -1721,7 +1722,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                           {selectedDiscover.DiscoverLists.map((list) => (
                             <li key={list.id} className="flex items-start gap-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/60 text-xs sm:text-sm font-medium text-gray-800">
                               <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
-                              <span className="whitespace-pre-line">{list.description}</span>
+                              <span className="whitespace-pre-line">{stripHtml(list.description)}</span>
                             </li>
                           ))}
                         </ul>
@@ -2164,7 +2165,7 @@ function Testimonials() {
                 {/* Card body */}
                 <div className="px-8 pb-8 pt-6">
                   <blockquote className="font-display text-[1.05rem] font-semibold leading-relaxed text-primary sm:text-lg">
-                    &ldquo;{t.quote}&rdquo;
+                    &ldquo;{stripHtml(t.quote)}&rdquo;
                   </blockquote>
                   <figcaption className="mt-6 flex items-center gap-4">
                     <TestimonialAvatar avatar={t.avatar} name={t.name} colorClass={cardColor} />
