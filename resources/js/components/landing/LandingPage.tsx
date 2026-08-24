@@ -117,12 +117,12 @@ function OceanBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 gradient-ocean" />
-      <div className="absolute -left-40 top-20 h-[520px] w-[520px] rounded-full bg-[oklch(0.78_0.14_195/0.35)] blur-3xl" />
-      <div className="absolute -right-32 top-40 h-[460px] w-[460px] rounded-full bg-[oklch(0.55_0.14_235/0.35)] blur-3xl" />
+      <div className="absolute -left-40 top-20 h-[520px] w-[520px] rounded-full bg-[oklch(0.78_0.14_195/0.25)] blur-2xl will-change-transform" />
+      <div className="absolute -right-32 top-40 h-[460px] w-[460px] rounded-full bg-[oklch(0.55_0.14_235/0.25)] blur-2xl will-change-transform" />
       <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-background" />
       {/* particles */}
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-30"
         style={{
           backgroundImage:
             "radial-gradient(circle at 20% 30%, oklch(1 0 0 / 0.6) 1px, transparent 1.5px), radial-gradient(circle at 70% 80%, oklch(1 0 0 / 0.5) 1px, transparent 1.5px), radial-gradient(circle at 40% 70%, oklch(0.78 0.14 195 / 0.6) 1px, transparent 1.5px)",
@@ -315,7 +315,7 @@ function Hero() {
   const clientsList = (landingData?.clients && landingData.clients.length > 0) ? landingData.clients : [];
 
   return (
-    <section id="top" className="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6">
+    <section id="top" className="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6 xl:pt-34">
       <OceanBackdrop />
 
       <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
@@ -323,7 +323,7 @@ function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
@@ -393,7 +393,7 @@ function Hero() {
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative lg:col-span-5"
           >
@@ -418,7 +418,7 @@ function Hero() {
                   <motion.div
                     animate={{ y: [0, -3, 0] }}
                     transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 flex items-center justify-center z-10"
+                    className="absolute inset-0 flex items-center justify-center z-10 will-change-transform"
                   >
                     <img
                       src={laptopImg}
@@ -434,7 +434,7 @@ function Hero() {
                       rotate: [-0.8, 0.8, -0.8]
                     }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 flex items-center justify-center z-20"
+                    className="absolute inset-0 flex items-center justify-center z-20 will-change-transform"
                   >
                     <img
                       src={robotImg}
@@ -454,6 +454,7 @@ function Hero() {
                   "left-4 bottom-10",
                   "right-6 bottom-0",
                 ][i];
+                const floatDelay = ["", "float-delay-1", "float-delay-2", "float-delay-3"][i];
                 return (
                   <motion.div
                     key={s.label}
@@ -462,10 +463,8 @@ function Hero() {
                     transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
                     className={`absolute ${pos}`}
                   >
-                    <motion.div
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut" }}
-                      className="rounded-2xl glass px-4 py-3 shadow-glass"
+                    <div
+                      className={`floating ${floatDelay} rounded-2xl glass px-4 py-3 shadow-glass will-change-transform`}
                     >
                       <div className="font-display text-2xl font-bold text-primary">
                         <Counter to={s.value} suffix={s.suffix} />
@@ -473,7 +472,7 @@ function Hero() {
                       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {s.label}
                       </div>
-                    </motion.div>
+                    </div>
                   </motion.div>
                 );
               })}
@@ -806,7 +805,7 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
                     className={`group relative w-[78%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-white/70 p-7 shadow-glass backdrop-blur-md transition-all duration-300 hover:-translate-y-1 sm:w-auto sm:shrink ${i % 3 === 0 ? "rounded-tl-[8px]" : ""
                       } ${i % 3 === 1 ? "rounded-br-[8px]" : ""}`}
                   >
-                    <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent/15 blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     <span className="relative grid h-12 w-12 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-soft transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <v.icon className="h-5 w-5 text-white" />
                     </span>
@@ -1057,8 +1056,8 @@ function Services() {
                   className={`${s.span} group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-white/75 p-7 shadow-glass backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 cursor-pointer sm:w-auto sm:shrink`}
                 >
                   {/* gradient border wash */}
-                  <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-accent/20 via-transparent to-secondary/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="pointer-events-none absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-accent/25 blur-3xl" />
+                  <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-accent/20 via-transparent to-secondary/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="pointer-events-none absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-accent/20 blur-2xl" />
 
                   <div className="relative flex h-full flex-col">
                     <div className="flex items-start justify-between gap-4">
@@ -1381,7 +1380,7 @@ function Portfolio() {
                   src={p.img}
                   alt={p.title}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-95" />
                 <div className="absolute inset-x-6 bottom-6 flex items-end justify-between gap-4 text-primary-foreground">
@@ -1795,7 +1794,7 @@ function WhyUs() {
               transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
               className="group relative flex items-start gap-5 overflow-hidden rounded-[28px] border border-white/60 bg-white/75 p-6 shadow-glass backdrop-blur-md transition-all hover:-translate-y-0.5"
             >
-              <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-accent/20 blur-3xl" />
+              <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-accent/15 blur-2xl" />
               <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-soft">
                 <a.icon className="h-6 w-6 text-white" />
               </span>
@@ -1845,7 +1844,7 @@ function Stats() {
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] border border-white/60 bg-white/80 p-4 shadow-glass backdrop-blur-md sm:aspect-auto sm:rounded-[26px] sm:p-6"
             >
-              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent/25 blur-2xl" />
+              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent/20 blur-xl" />
               <s.icon className="h-5 w-5 text-secondary sm:h-6 sm:w-6" />
               <div>
                 <div className="font-display text-3xl font-bold leading-none text-primary sm:mt-3 sm:text-4xl">
@@ -2102,8 +2101,6 @@ function Testimonials() {
             { scale: 0.76, y: 82, x: 48, rotateZ: 9, opacity: 0.38, bg: "bg-white/80" },
             { scale: 0.69, y: 108, x: 62, rotateZ: 12, opacity: 0.26, bg: "bg-white/60" },
             { scale: 0.62, y: 132, x: 74, rotateZ: 15, opacity: 0.17, bg: "bg-white/45" },
-            { scale: 0.55, y: 154, x: 84, rotateZ: 18, opacity: 0.11, bg: "bg-white/30" },
-            { scale: 0.48, y: 174, x: 93, rotateZ: 21, opacity: 0.07, bg: "bg-white/20" },
           ].map((g, gi) => (
             <div
               key={`ghost-${gi}`}
@@ -2247,17 +2244,13 @@ function CTA() {
           className="relative overflow-hidden rounded-[36px] gradient-hero p-10 shadow-glass sm:p-16"
         >
           {/* floating shapes */}
-          <div className="pointer-events-none absolute -left-16 top-6 h-56 w-56 rounded-[45%_55%_50%_50%] bg-accent/25 blur-2xl" />
-          <div className="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-[oklch(0.55_0.14_235/0.35)] blur-3xl" />
-          <motion.div
-            animate={{ y: [0, -14, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-10 top-10 hidden h-16 w-16 rounded-2xl glass-dark md:block"
+          <div className="pointer-events-none absolute -left-16 top-6 h-56 w-56 rounded-[45%_55%_50%_50%] bg-accent/20 blur-xl" />
+          <div className="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-[oklch(0.55_0.14_235/0.25)] blur-2xl" />
+          <div
+            className="floating float-delay-1 absolute right-10 top-10 hidden h-16 w-16 rounded-2xl glass-dark md:block will-change-transform"
           />
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-8 left-16 hidden h-10 w-10 rounded-full glass-dark md:block"
+          <div
+            className="floating float-delay-2 absolute bottom-8 left-16 hidden h-10 w-10 rounded-full glass-dark md:block will-change-transform"
           />
 
           {/* subtle waves */}
@@ -2494,8 +2487,8 @@ function Footer() {
         />
       </svg>
 
-      <div className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
-      <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-secondary/40 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-accent/15 blur-2xl" />
+      <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-secondary/30 blur-2xl" />
 
       <div className="relative mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid gap-10 lg:grid-cols-12">
