@@ -212,7 +212,7 @@ class LandingController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Pesan Anda telah berhasil dikirim ke Admin Asta!',
+            'message' => __('messages.contact_success'),
             'data' => $mail,
         ], 201);
     }

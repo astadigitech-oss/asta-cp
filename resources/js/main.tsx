@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from './routeTree.gen';
+import { LanguageProvider } from './i18n/useTranslation';
 import '../css/app.css';
 
 // QueryClient instance yang akan di-share ke router context
@@ -26,8 +27,10 @@ const rootElement = document.getElementById('react-app');
 if (rootElement && !rootElement.innerHTML.trim()) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </LanguageProvider>
   );
-}
+}

@@ -23,9 +23,9 @@ class MailResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelopeOpen;
 
-    protected static ?string $recordTitleAttribute = 'Pesan';
+    protected static ?string $recordTitleAttribute = 'Message';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Klien & Kontak';
+    protected static string | UnitEnum | null $navigationGroup = 'Clients & Contacts';
 
     public static function getNavigationBadge(): ?string
     {

@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
+    "description": "PT Asta Digital Agency builds modern applications, websites, and information systems for government institutions, SMEs, schools, and enterprises.",
+    "og_title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
+    "og_description": "Reliable and trusted digital transformation for institutions and businesses."
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Products & Services",
+    "portfolio": "Portfolio",
+    "discover": "Discover",
+    "about": "About Asta",
+    "process": "Process",
+    "contact": "Contact Us",
+    "all_services": "View All Services",
+    "all_portfolios": "View All Portfolios",
+    "learn_more": "Learn More",
+    "platform": "Platform",
+    "mobile_apps": "Mobile Apps",
+    "desktop_web": "Desktop & Web",
+    "asta_story": "Asta Story",
+    "latest_news": "Latest News",
+    "pinned": "Pinned",
+    "menu_aria": "Toggle Navigation"
+  },
+  "hero": {
+    "eyebrow": "Premium Digital Agency · Est. 2022",
+    "title_1": "Building the best ",
+    "title_highlight": "digital experience",
+    "title_2": " for modern business.",
+    "description": "Asta Digital Agency is a technology studio that builds the best websites, apps, and information systems — crafted with enterprise standards and elegant, immersive designs.",
+    "cta_start": "Start Project",
+    "cta_portfolio": "View Portfolio",
+    "trust_security": "Enterprise Security",
+    "trust_award": "Award-winning Quality",
+    "trust_fast": "Fast & Scalable",
+    "stat_projects": "PROJECTS",
+    "stat_clients": "CLIENTS",
+    "stat_years": "YEARS",
+    "stat_satisfaction": "SATISFACTION",
+    "trusted_by": "TRUSTED BY LEADING INSTITUTIONS & COMPANIES"
+  },
+  "about": {
+    "eyebrow": "About Us",
+    "title": "Reliable Technology Partner for Your Digital Transformation",
+    "description": "We combine software engineering expertise, aesthetic UI/UX design, and strategic thinking to deliver digital products that create real business impact.",
+    "vision_title": "Our Vision",
+    "vision_desc": "To become a leading technology agency that empowers business growth and public services through innovative software solutions.",
+    "mission_title": "Our Mission",
+    "mission_desc": "Delivering high-performance, secure, and user-friendly digital systems customized to every client's unique requirements.",
+    "company_story": "Company Story & Timeline",
+    "cta_discover": "Explore Details"
+  },
+  "services": {
+    "eyebrow": "Our Services",
+    "title": "Integrated Technology Solutions tailored to your needs.",
+    "description": "From custom software to enterprise mobile apps, we deliver end-to-end digital solutions designed for performance, security, and scalability.",
+    "view_detail": "View Details",
+    "empty": "No services available at the moment.",
+    "default_web_title": "Web Apps Development",
+    "default_web_desc": "Modern, fast & responsive web applications.",
+    "default_mobile_title": "Mobile Apps Development",
+    "default_mobile_desc": "High performance Android & iOS applications.",
+    "default_it_title": "IT Consulting & Services",
+    "default_it_desc": "IT support and system architecture consultancy.",
+    "modal": {
+      "features": "Main Features & Key Strengths",
+      "gallery": "Interface Gallery",
+      "cta": "Consult About This Service",
+      "close": "Close"
+    }
+  },
+  "portfolio": {
+    "eyebrow": "Portfolio",
+    "title": "Featured Projects & Custom Systems",
+    "description": "Discover how we help our partners transform their ideas into impactful software products.",
+    "tab_all": "All",
+    "tab_mobile": "Mobile Apps",
+    "tab_desktop": "Desktop & Web",
+    "view_project": "View Project Detail",
+    "live_demo": "Live Demo",
+    "empty": "No portfolio items available for this category.",
+    "default_empty_msg": "Portfolio items will be displayed here.",
+    "modal": {
+      "category": "Category",
+      "created_at": "Published Date",
+      "description": "Project Overview",
+      "visit_demo": "Open Live Demo",
+      "close": "Close"
+    }
+  },
+  "discover": {
+    "eyebrow": "Discover & Insights",
+    "title": "Explore Stories, Innovation & News",
+    "description": "Stay updated with the latest technological developments, company achievements, and industry insights from Asta Digital.",
+    "search_placeholder": "Search articles, stories, or insights...",
+    "category_all": "All Categories",
+    "pinned_badge": "Pinned",
+    "read_more": "Read Full Story",
+    "empty": "No items found matching your search.",
+    "modal": {
+      "published": "Published",
+      "close": "Close"
+    }
+  },
+  "why_us": {
+    "eyebrow": "Why Choose Us",
+    "title": "Why Modern Companies Choose Asta",
+    "description": "We bring technical excellence, transparent communication, and dedication to every project.",
+    "reason_1_title": "Enterprise Security & Architecture",
+    "reason_1_desc": "Designed with clean code, scalable architecture, and strict security compliance to protect your data.",
+    "reason_2_title": "User-Centric & Modern Design",
+    "reason_2_desc": "Crafted with user-centered design principles that ensure intuitive navigation and delight users.",
+    "reason_3_title": "Dedicated Expert Support",
+    "reason_3_desc": "Continuous technical assistance, maintenance, and strategic guidance throughout your digital journey."
+  },
+  "stats": {
+    "eyebrow": "Our Impact",
+    "title": "Delivering Measurable Impact Across Industries",
+    "description": "Our numbers reflect our commitment to excellence, quality delivery, and client satisfaction."
+  },
+  "process": {
+    "eyebrow": "Work Process",
+    "title": "How We Bring Your Vision to Life",
+    "description": "A proven, structured development workflow ensuring transparency and quality at every stage.",
+    "step_1_title": "Discovery & Planning",
+    "step_1_desc": "We analyze your project requirements, user needs, and define project architecture.",
+    "step_2_title": "UI/UX Design & Prototyping",
+    "step_2_desc": "Designing intuitive interfaces and interactive wireframes for seamless user experience.",
+    "step_3_title": "Engineering & Development",
+    "step_3_desc": "Building robust frontend and backend code with automated testing and continuous integration.",
+    "step_4_title": "Deployment & Maintenance",
+    "step_4_desc": "Seamless deployment to production with continuous monitoring, updates, and dedicated support."
+  },
+  "testimonials": {
+    "eyebrow": "Testimonials",
+    "title": "What Our Clients Say About Us",
+    "description": "Real feedback from institutional leaders and business partners who trust Asta Digital Agency."
+  },
+  "cta": {
+    "title": "Ready to Transform Your Business Digitally?",
+    "description": "Let's collaborate to build high-quality web applications, mobile apps, or enterprise systems tailored to your goals.",
+    "button": "Schedule Free Consultation"
+  },
+  "contact": {
+    "eyebrow": "Contact Us",
+    "title": "Let's Discuss Your Next Big Project",
+    "description": "Fill out the form below or reach out directly to our team. We're ready to bring your tech vision to life.",
+    "info_email": "Email Address",
+    "info_phone": "Phone & WhatsApp",
+    "info_office": "Headquarters",
+    "info_office_address": "Surakarta, Central Java, Indonesia",
+    "form": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "full_name": "Full Name",
+      "organization": "Company / Organization",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Message / Project Details",
+      "placeholder_first_name": "e.g. John",
+      "placeholder_last_name": "e.g. Doe",
+      "placeholder_organization": "e.g. PT Tech Innovation",
+      "placeholder_email": "e.g. john@example.com",
+      "placeholder_phone": "e.g. +62 812-3456-7890",
+      "placeholder_message": "Tell us about your project requirements, budget, or timeline...",
+      "submit": "Send Message",
+      "submitting": "Sending Message...",
+      "success_title": "Message Sent Successfully!",
+      "success_desc": "Thank you for reaching out. Our team will get back to you shortly.",
+      "error_title": "Failed to Send Message",
+      "error_desc": "An error occurred while sending your message. Please try again."
+    }
+  },
+  "footer": {
+    "description": "PT Asta Digital Agency is a premium technology studio building modern websites, applications, and enterprise systems.",
+    "quick_links": "Quick Links",
+    "services_title": "Services",
+    "contact_title": "Contact",
+    "copyright": "All Rights Reserved."
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close",
+    "back": "Back",
+    "try_again": "Try Again",
+    "back_home": "Back to Home",
+    "error_title": "Failed to Load Page",
+    "error_desc": "An error occurred on our side. You can try refreshing or go back to home page.",
+    "error_details": "Error Details",
+    "not_found_title": "Page Not Found",
+    "not_found_desc": "The page you are looking for does not exist or has been moved.",
+    "language": "Language",
+    "english": "English",
+    "indonesian": "Indonesian"
+  }
+}
