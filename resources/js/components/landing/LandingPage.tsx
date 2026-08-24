@@ -1108,7 +1108,7 @@ function Services() {
 
         {/* Service Detail Dialog / Modal */}
         <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
-          <DialogContent className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
+          <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
             {selectedService && (
               <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
                 {/* Header Image or Banner */}
@@ -1409,7 +1409,7 @@ function Portfolio() {
 
         {/* Portfolio Detail Dialog / Modal */}
         <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
-          <DialogContent className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
+          <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
             {selectedProject && (
               <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
                 {/* Header Image */}
