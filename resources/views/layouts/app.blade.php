@@ -19,6 +19,9 @@
         gtag('config', 'G-599R2RLEDJ');
     </script>
 @endenv
+    {{-- Preconnect Google Fonts untuk performa loading font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>

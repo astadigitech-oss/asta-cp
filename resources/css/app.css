@@ -207,7 +207,7 @@ a {
 }
 
 .floating {
-  animation: float 3s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -215,18 +215,29 @@ a {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 }
 
 .float-delay-1 {
-  animation-delay: 0.3s;
+  animation-delay: 0.5s;
 }
 .float-delay-2 {
-  animation-delay: 1s;
+  animation-delay: 1.2s;
 }
 .float-delay-3 {
-  animation-delay: 1.8s;
+  animation-delay: 2s;
+}
+
+/* Matikan animasi untuk pengguna yang prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .floating {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 [x-cloak] {
@@ -426,11 +437,13 @@ a {
 }
 @utility glass {
   background: color-mix(in oklab, white 65%, transparent);
-  backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
   border: 1px solid color-mix(in oklab, white 70%, transparent);
 }
 @utility glass-dark {
   background: color-mix(in oklab, oklch(0.22 0.06 245) 45%, transparent);
-  backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
   border: 1px solid oklch(1 0 0 / 0.12);
 }
