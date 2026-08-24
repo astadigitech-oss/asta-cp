@@ -113,7 +113,9 @@
     "reason_2_title": "Desain Berbasis Pengguna & Modern",
     "reason_2_desc": "Dibuat dengan prinsip desain berpusat pada pengguna yang menjamin navigasi intuitif dan memuaskan.",
     "reason_3_title": "Dukungan Ahli Berdedikasi",
-    "reason_3_desc": "Bantuan teknis berkelanjutan, pemeliharaan, dan panduan strategis sepanjang perjalanan digital Anda."
+    "reason_3_desc": "Bantuan teknis berkelanjutan, pemeliharaan, dan panduan strategis sepanjang perjalanan digital Anda.",
+    "reason_4_title": "Pengiriman Cepat & Skalabel",
+    "reason_4_desc": "Perangkat lunak berkinerja tinggi yang dibangun untuk kecepatan, skalabilitas, dan pertumbuhan bisnis jangka panjang."
   },
   "stats": {
     "eyebrow": "Dampak Kami",
@@ -123,15 +125,19 @@
   "process": {
     "eyebrow": "Proses Kerja",
     "title": "Bagaimana Kami Membawa Visi Anda Menjadi Kenyataan",
-    "description": "Alur kerja pengembangan terstruktur yang teruji, memastikan transparansi dan kualitas pada setiap tahap.",
-    "step_1_title": "Analisis & Perencanaan",
-    "step_1_desc": "Kami menganalisis kebutuhan proyek, pengguna, dan menentukan arsitektur sistem.",
-    "step_2_title": "Desain UI/UX & Prototyping",
-    "step_2_desc": "Merancang antarmuka intuitif dan wireframe interaktif untuk pengalaman pengguna yang lancar.",
-    "step_3_title": "Pengembangan & Kode",
-    "step_3_desc": "Membangun kode frontend dan backend yang andal dengan pengujian otomatis dan integrasi berkelanjutan.",
-    "step_4_title": "Peluncuran & Pemeliharaan",
-    "step_4_desc": "Peluncuran ke lingkungan produksi dengan pemantauan terus-menerus, pembaruan, dan dukungan berdedikasi."
+    "description": "Alur kerja 6 tahap terstruktur dan teruji, memastikan transparansi dan kualitas pada setiap tahap.",
+    "step_1_title": "Penemuan",
+    "step_1_desc": "Memahami tujuan, pengguna, dan ruang lingkup proyek.",
+    "step_2_title": "Strategi",
+    "step_2_desc": "Arsitektur sistem, timeline, dan perencanaan alokasi biaya.",
+    "step_3_title": "Desain",
+    "step_3_desc": "Alur UX, sistem desain, dan visual interaktif premium.",
+    "step_4_title": "Pengembangan",
+    "step_4_desc": "Pengembangan iteratif dengan tinjauan dan demonstrasi mingguan.",
+    "step_5_title": "Peluncuran",
+    "step_5_desc": "Deployment terkelola ke produksi dan pembekalan tim.",
+    "step_6_title": "Dukungan",
+    "step_6_desc": "Perawatan berkelanjutan, optimasi, dan evolusi jangka panjang."
   },
   "testimonials": {
     "eyebrow": "Testimoni",

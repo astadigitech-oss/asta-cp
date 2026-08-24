@@ -113,7 +113,9 @@
     "reason_2_title": "User-Centric & Modern Design",
     "reason_2_desc": "Crafted with user-centered design principles that ensure intuitive navigation and delight users.",
     "reason_3_title": "Dedicated Expert Support",
-    "reason_3_desc": "Continuous technical assistance, maintenance, and strategic guidance throughout your digital journey."
+    "reason_3_desc": "Continuous technical assistance, maintenance, and strategic guidance throughout your digital journey.",
+    "reason_4_title": "Fast & Scalable Delivery",
+    "reason_4_desc": "High-performance software built for speed, scalability, and long-term business growth."
   },
   "stats": {
     "eyebrow": "Our Impact",
@@ -123,15 +125,19 @@
   "process": {
     "eyebrow": "Work Process",
     "title": "How We Bring Your Vision to Life",
-    "description": "A proven, structured development workflow ensuring transparency and quality at every stage.",
-    "step_1_title": "Discovery & Planning",
-    "step_1_desc": "We analyze your project requirements, user needs, and define project architecture.",
-    "step_2_title": "UI/UX Design & Prototyping",
-    "step_2_desc": "Designing intuitive interfaces and interactive wireframes for seamless user experience.",
-    "step_3_title": "Engineering & Development",
-    "step_3_desc": "Building robust frontend and backend code with automated testing and continuous integration.",
-    "step_4_title": "Deployment & Maintenance",
-    "step_4_desc": "Seamless deployment to production with continuous monitoring, updates, and dedicated support."
+    "description": "A proven, 6-stage structured development workflow ensuring transparency and quality at every stage.",
+    "step_1_title": "Discovery",
+    "step_1_desc": "Understanding project goals, target users, and overall technical scope.",
+    "step_2_title": "Strategy",
+    "step_2_desc": "System architecture, milestone roadmap, and resource planning.",
+    "step_3_title": "Design",
+    "step_3_desc": "User flows, design system, and premium interactive visuals.",
+    "step_4_title": "Development",
+    "step_4_desc": "Iterative software engineering with regular weekly reviews.",
+    "step_5_title": "Launch",
+    "step_5_desc": "Managed production deployment and team enablement.",
+    "step_6_title": "Support",
+    "step_6_desc": "Continuous maintenance, optimization, and long-term scaling."
   },
   "testimonials": {
     "eyebrow": "Testimonials",
