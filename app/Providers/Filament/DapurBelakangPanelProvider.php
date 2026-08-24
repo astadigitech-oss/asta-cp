@@ -31,6 +31,9 @@ class DapurBelakangPanelProvider extends PanelProvider
             ->id('dapur-belakang')
             ->path('dapur-belakang')
             ->login()
+            ->brandLogo(asset('images/logo-dark.png'))
+            ->darkModeBrandLogo(asset('images/logo-white.png'))
+            ->brandLogoHeight('2.5rem')
             ->colors([
                 'primary' => Color::Amber,
             ])
