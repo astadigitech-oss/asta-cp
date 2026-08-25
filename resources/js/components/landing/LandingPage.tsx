@@ -1800,16 +1800,27 @@ function Testimonials() {
           {testimonials.map((tItem, i) => {
             const offset = (i - idx + len) % len;
             const isActive = offset === 0;
+            // Show up to 2 cards stacked behind the active one
+            const stackPos = offset <= 2 ? offset : len - offset <= 2 ? -(len - offset) : null;
+            if (stackPos === null) return null;
+
             const cardColor = testimonialGradients[i % testimonialGradients.length];
             const starCount = tItem.rating ?? 5;
+
+            // Stack offsets: active = 0, behind-1 = slightly down+shrink, behind-2 = more
+            const stackScale = isActive ? 1 : stackPos === 1 ? 0.95 : 0.9;
+            const stackY = isActive ? 0 : stackPos === 1 ? 18 : 32;
+            const stackOpacity = isActive ? 1 : stackPos === 1 ? 0.6 : 0.35;
+            const stackZ = isActive ? 30 : stackPos === 1 ? 20 : 10;
 
             return (
               <motion.figure
                 key={tItem.id || tItem.name}
                 animate={{
-                  scale: isActive ? 1 : 0.9,
-                  opacity: isActive ? 1 : 0,
-                  zIndex: isActive ? 30 : 10,
+                  scale: stackScale,
+                  opacity: stackOpacity,
+                  y: stackY,
+                  zIndex: stackZ,
                 }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
                 style={{ transformOrigin: "top center", pointerEvents: isActive ? "auto" : "none" }}
