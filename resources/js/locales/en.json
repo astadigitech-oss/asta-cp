@@ -50,7 +50,15 @@
     "mission_title": "Our Mission",
     "mission_desc": "Delivering high-performance, secure, and user-friendly digital systems customized to every client's unique requirements.",
     "company_story": "Company Story & Timeline",
-    "cta_discover": "Explore Details"
+    "cta_discover": "Explore Details",
+    "val_1_title": "Professional",
+    "val_1_desc": "Enterprise-grade execution and delivery standards.",
+    "val_2_title": "Transparent",
+    "val_2_desc": "Clear communication, measurable milestones, and comprehensive documentation.",
+    "val_3_title": "Innovative",
+    "val_3_desc": "Modern technology stacks and industry best practices.",
+    "val_4_title": "Human-Centric",
+    "val_4_desc": "Designed around real human needs in every practical context."
   },
   "services": {
     "eyebrow": "Our Services",
