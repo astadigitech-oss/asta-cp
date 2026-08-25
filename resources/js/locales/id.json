@@ -50,7 +50,15 @@
     "mission_title": "Misi Kami",
     "mission_desc": "Menghadirkan sistem digital berkinerja tinggi, aman, dan mudah digunakan yang disesuaikan secara khusus dengan kebutuhan setiap klien.",
     "company_story": "Cerita & Perjalanan Perusahaan",
-    "cta_discover": "Jelajahi Detail"
+    "cta_discover": "Jelajahi Detail",
+    "val_1_title": "Profesional",
+    "val_1_desc": "Standar pengerjaan dan pengiriman setara enterprise.",
+    "val_2_title": "Transparan",
+    "val_2_desc": "Komunikasi jelas, milestone terukur, dan dokumentasi lengkap.",
+    "val_3_title": "Inovatif",
+    "val_3_desc": "Teknologi modern dan praktik terbaik industri.",
+    "val_4_title": "Mengutamakan Manusia",
+    "val_4_desc": "Dirancang untuk kebutuhan nyata manusia di setiap konteks."
   },
   "services": {
     "eyebrow": "Layanan Kami",
