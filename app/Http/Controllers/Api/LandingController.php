@@ -76,6 +76,18 @@ class LandingController extends Controller
         $discovers = Discover::with(['DiscoverLists' => function ($query) {
             $query->where('is_active', true)->orderBy('sort', 'asc');
         }])->orderByDesc('is_pinned')->orderByDesc('created_at')->get()->map(function ($discover) {
+            $discoverImages = is_array($discover->image)
+                ? $discover->image
+                : (is_string($discover->image) && !empty($discover->image)
+                    ? (json_decode($discover->image, true) ?: [$discover->image])
+                    : []);
+
+            $formattedImages = collect($discoverImages)
+                ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img) : null)
+                ->filter()
+                ->values()
+                ->all();
+
             return [
                 'id' => $discover->id,
                 'name' => $discover->name,
@@ -84,7 +96,7 @@ class LandingController extends Controller
                 'show_name' => $discover->show_name,
                 'is_pinned' => $discover->is_pinned,
                 'logo' => $this->formatImageUrl($discover->logo),
-                'image' => $this->formatImageUrl($discover->image),
+                'image' => $formattedImages,
                 'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
                 'DiscoverLists' => $discover->DiscoverLists,
             ];

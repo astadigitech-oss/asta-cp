@@ -44,6 +44,7 @@ import {
   Pin,
   LinkedinIcon,
   ExternalLink,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -445,9 +446,15 @@ interface DiscoverData {
   year?: string;
   short_description?: string;
   is_pinned?: boolean;
-  image?: string;
+  image?: string | string[];
   logo?: string;
   DiscoverLists?: any[];
+}
+
+function getDiscoverImages(image?: string | string[]): string[] {
+  if (!image) return [];
+  if (Array.isArray(image)) return image.filter(Boolean);
+  return [image];
 }
 
 const defaultDiscovers: DiscoverData[] = [
@@ -467,6 +474,7 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedTimelineImage, setSelectedTimelineImage] = useState<DiscoverData | null>(null);
+  const [timelineImgIndex, setTimelineImgIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const zoomRef = useRef(1);
   const posRef = useRef({ x: 0, y: 0 });
@@ -532,10 +540,19 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedTimelineImage(null);
+      setTimelineImgIndex(0);
       zoomRef.current = 1;
       posRef.current = { x: 0, y: 0 };
       setZoomLevel(1);
     }
+  };
+
+  const handleSwitchTimelineImage = (newIdx: number) => {
+    setTimelineImgIndex(newIdx);
+    zoomRef.current = 1;
+    posRef.current = { x: 0, y: 0 };
+    setZoomLevel(1);
+    applyTransform(1, 0, 0);
   };
 
   const timelineItems = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
@@ -656,16 +673,25 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
 
             {/* Large image connected to selected timeline/discover event */}
             <div
-              onClick={() => setSelectedTimelineImage(activeItem)}
+              onClick={() => {
+                setSelectedTimelineImage(activeItem);
+                setTimelineImgIndex(0);
+              }}
               className="group relative mt-6 overflow-hidden rounded-[32px] border border-white/60 shadow-glass cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
             >
               <img
-                src={activeItem.image || p3}
+                src={getDiscoverImages(activeItem.image)[0] || p3}
                 alt={activeItem.name}
                 className="h-64 w-full object-cover sm:h-80 transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
+              {getDiscoverImages(activeItem.image).length > 1 && (
+                <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs font-semibold text-white border border-white/20">
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  <span>{getDiscoverImages(activeItem.image).length} foto</span>
+                </div>
+              )}
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-primary-foreground">
                 <div>
                   {activeItem.year && (
@@ -686,102 +712,154 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
         </div>
       </div>
 
-      {/* Dedicated Timeline News Image Dialog Modal — Full Image + Zoom */}
+      {/* Dedicated Timeline News Image Dialog Modal — Full Image + Zoom + Multi-Image Slider */}
       <Dialog open={!!selectedTimelineImage} onOpenChange={handleOpenChange}>
         <DialogContentFullscreen>
-          {selectedTimelineImage && (
-            <>
-              {/* ── Top bar: nama & tahun ── */}
-              <div className="flex items-center justify-between gap-2 px-4 py-3 bg-black/95 border-b border-white/10 shrink-0 z-10">
-                <div className="flex items-center gap-2 min-w-0">
-                  {selectedTimelineImage.year && (
-                    <span className="flex items-center gap-1 shrink-0 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider">
-                      <Calendar className="h-3 w-3" />
-                      {selectedTimelineImage.year}
-                    </span>
-                  )}
-                  <h2 className="text-sm font-bold text-white truncate">
-                    {selectedTimelineImage.name}
-                  </h2>
-                </div>
-                {/* Desktop zoom controls */}
-                <div className="hidden sm:flex items-center gap-1 shrink-0">
-                  <button onClick={handleZoomOut} disabled={zoomLevel <= 1}
-                    className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Zoom Out">
-                    <ZoomOut className="h-4 w-4" />
-                  </button>
-                  <span className="w-10 text-center text-xs font-mono text-white/50">{Math.round(zoomLevel * 100)}%</span>
-                  <button onClick={handleZoomIn} disabled={zoomLevel >= 4}
-                    className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Zoom In">
-                    <ZoomIn className="h-4 w-4" />
-                  </button>
-                  <button onClick={handleZoomReset} disabled={zoomLevel === 1}
-                    className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Reset">
-                    <RotateCcw className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+          {selectedTimelineImage && (() => {
+            const timelineImages = getDiscoverImages(selectedTimelineImage.image);
+            const currentImg = timelineImages[timelineImgIndex] || p3;
+            const hasMultiple = timelineImages.length > 1;
 
-              {/* ── Image viewer (flex-1 = fills remaining height) ── */}
-              <div
-                ref={containerRef}
-                className="relative flex-1 overflow-hidden bg-gray-950 select-none"
-                style={{ cursor: zoomLevel > 1 ? "grab" : "default" }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                <img
-                  ref={imgRef}
-                  src={selectedTimelineImage.image || p3}
-                  alt={selectedTimelineImage.name}
-                  draggable={false}
-                  className="h-full w-full object-contain"
-                  style={{ transformOrigin: "center center" }}
-                />
-
-                {/* Mobile floating zoom buttons */}
-                <div className="sm:hidden absolute bottom-4 right-4 flex flex-col gap-2 z-20">
-                  <button onClick={handleZoomIn} disabled={zoomLevel >= 4}
-                    className="grid h-11 w-11 place-items-center rounded-full bg-black/70 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-95 disabled:opacity-30 transition-all">
-                    <ZoomIn className="h-5 w-5" />
-                  </button>
-                  {zoomLevel > 1 && (
-                    <button onClick={handleZoomReset}
-                      className="grid h-11 w-11 place-items-center rounded-full bg-cyan-500/80 backdrop-blur-md text-white border border-cyan-400/30 shadow-lg active:scale-95 transition-all">
+            return (
+              <>
+                {/* ── Top bar: nama & tahun ── */}
+                <div className="flex items-center justify-between gap-2 px-4 py-3 bg-black/95 border-b border-white/10 shrink-0 z-10">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {selectedTimelineImage.year && (
+                      <span className="flex items-center gap-1 shrink-0 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider">
+                        <Calendar className="h-3 w-3" />
+                        {selectedTimelineImage.year}
+                      </span>
+                    )}
+                    <h2 className="text-sm font-bold text-white truncate">
+                      {selectedTimelineImage.name}
+                    </h2>
+                    {hasMultiple && (
+                      <span className="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded-full shrink-0">
+                        {timelineImgIndex + 1} / {timelineImages.length}
+                      </span>
+                    )}
+                  </div>
+                  {/* Desktop zoom controls */}
+                  <div className="hidden sm:flex items-center gap-1 shrink-0">
+                    <button onClick={handleZoomOut} disabled={zoomLevel <= 1}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Zoom Out">
+                      <ZoomOut className="h-4 w-4" />
+                    </button>
+                    <span className="w-10 text-center text-xs font-mono text-white/50">{Math.round(zoomLevel * 100)}%</span>
+                    <button onClick={handleZoomIn} disabled={zoomLevel >= 4}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Zoom In">
+                      <ZoomIn className="h-4 w-4" />
+                    </button>
+                    <button onClick={handleZoomReset} disabled={zoomLevel === 1}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Reset">
                       <RotateCcw className="h-4 w-4" />
                     </button>
-                  )}
-                  <button onClick={handleZoomOut} disabled={zoomLevel <= 1}
-                    className="grid h-11 w-11 place-items-center rounded-full bg-black/70 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-95 disabled:opacity-30 transition-all">
-                    <ZoomOut className="h-5 w-5" />
-                  </button>
+                  </div>
                 </div>
 
-                {/* Mobile zoom percent badge */}
-                {zoomLevel > 1 && (
-                  <div className="sm:hidden absolute top-3 right-3 rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-1 text-[11px] font-mono text-white/70 pointer-events-none">
-                    {Math.round(zoomLevel * 100)}%
-                  </div>
-                )}
-              </div>
+                {/* ── Image viewer (flex-1 = fills remaining height) ── */}
+                <div
+                  ref={containerRef}
+                  className="relative flex-1 overflow-hidden bg-gray-950 select-none"
+                  style={{ cursor: zoomLevel > 1 ? "grab" : "default" }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  <img
+                    ref={imgRef}
+                    src={currentImg}
+                    alt={selectedTimelineImage.name}
+                    draggable={false}
+                    className="h-full w-full object-contain"
+                    style={{ transformOrigin: "center center" }}
+                  />
 
-              {/* ── Bottom bar: nama & tanggal ── */}
-              <div className="shrink-0 px-4 py-3 bg-black/95 border-t border-white/10 flex items-center gap-3 z-10">
-                <Tag className="h-4 w-4 text-cyan-400 shrink-0" />
-                <span className="text-white text-sm font-semibold flex-1 min-w-0 truncate">
-                  {selectedTimelineImage.name}
-                </span>
-                {selectedTimelineImage.year && (
-                  <span className="text-white/40 text-xs font-mono shrink-0">{selectedTimelineImage.year}</span>
-                )}
-              </div>
-            </>
-          )}
+                  {/* Previous / Next buttons for multiple images */}
+                  {hasMultiple && (
+                    <>
+                      <button
+                        onClick={() => handleSwitchTimelineImage((timelineImgIndex - 1 + timelineImages.length) % timelineImages.length)}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 grid h-10 w-10 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95"
+                        title="Previous Image"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handleSwitchTimelineImage((timelineImgIndex + 1) % timelineImages.length)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 grid h-10 w-10 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95"
+                        title="Next Image"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Mobile floating zoom buttons */}
+                  <div className="sm:hidden absolute bottom-4 right-4 flex flex-col gap-2 z-20">
+                    <button onClick={handleZoomIn} disabled={zoomLevel >= 4}
+                      className="grid h-11 w-11 place-items-center rounded-full bg-black/70 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-95 disabled:opacity-30 transition-all">
+                      <ZoomIn className="h-5 w-5" />
+                    </button>
+                    {zoomLevel > 1 && (
+                      <button onClick={handleZoomReset}
+                        className="grid h-11 w-11 place-items-center rounded-full bg-cyan-500/80 backdrop-blur-md text-white border border-cyan-400/30 shadow-lg active:scale-95 transition-all">
+                        <RotateCcw className="h-4 w-4" />
+                      </button>
+                    )}
+                    <button onClick={handleZoomOut} disabled={zoomLevel <= 1}
+                      className="grid h-11 w-11 place-items-center rounded-full bg-black/70 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-95 disabled:opacity-30 transition-all">
+                      <ZoomOut className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Mobile zoom percent badge */}
+                  {zoomLevel > 1 && (
+                    <div className="sm:hidden absolute top-3 right-3 rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-1 text-[11px] font-mono text-white/70 pointer-events-none">
+                      {Math.round(zoomLevel * 100)}%
+                    </div>
+                  )}
+                </div>
+
+                {/* ── Bottom bar: thumbnail strip or title & year ── */}
+                <div className="shrink-0 px-4 py-3 bg-black/95 border-t border-white/10 flex items-center justify-between gap-3 z-10">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Tag className="h-4 w-4 text-cyan-400 shrink-0" />
+                    <span className="text-white text-sm font-semibold truncate">
+                      {selectedTimelineImage.name}
+                    </span>
+                    {selectedTimelineImage.year && (
+                      <span className="text-white/40 text-xs font-mono shrink-0">{selectedTimelineImage.year}</span>
+                    )}
+                  </div>
+
+                  {/* Thumbnail selectors for multiple images */}
+                  {hasMultiple && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      {timelineImages.map((img, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleSwitchTimelineImage(i)}
+                          className={`h-9 w-9 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                            timelineImgIndex === i
+                              ? "border-cyan-400 scale-105 shadow-md shadow-cyan-500/20"
+                              : "border-white/30 opacity-60 hover:opacity-100"
+                          }`}
+                        >
+                          <img src={img} alt={`Thumb ${i + 1}`} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
         </DialogContentFullscreen>
       </Dialog>
     </section>
@@ -1280,6 +1358,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDiscover, setSelectedDiscover] = useState<DiscoverData | null>(null);
+  const [discoverImgIndex, setDiscoverImgIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
 
   const totalPages = Math.ceil(discoversList.length / DISCOVERS_PER_PAGE) || 1;
@@ -1303,6 +1382,11 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
     }
+  };
+
+  const handleOpenDiscover = (item: DiscoverData) => {
+    setSelectedDiscover(item);
+    setDiscoverImgIndex(0);
   };
 
   return (
@@ -1339,6 +1423,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
 
           <div className="grid flex-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {paginatedDiscovers.map((item, index) => {
+              const images = getDiscoverImages(item.image);
               return (
                 <motion.div
                   key={item.id || index}
@@ -1346,16 +1431,22 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  onClick={() => setSelectedDiscover(item)}
+                  onClick={() => handleOpenDiscover(item)}
                   className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
                 >
                   <div>
                     <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
                       <img
-                        src={item.image || p1}
+                        src={images[0] || p1}
                         alt={item.name}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
+                      {images.length > 1 && (
+                        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+                          <ImageIcon className="h-3 w-3" />
+                          <span>{images.length}</span>
+                        </span>
+                      )}
                       {item.is_pinned && (
                         <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#004AAD] shadow-sm">
                           <Pin className="h-3 w-3 fill-[#004AAD]" aria-hidden="true" />
@@ -1387,7 +1478,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedDiscover(item);
+                        handleOpenDiscover(item);
                       }}
                       className="w-full rounded-xl gradient-accent hover:bg-gradient-accent text-white font-semibold text-xs sm:text-sm py-2.5 sm:py-3 transition-all shadow-sm cursor-pointer"
                     >
@@ -1418,79 +1509,149 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
         )}
 
         {/* Discover Detail Dialog */}
-        <Dialog open={!!selectedDiscover} onOpenChange={(open) => !open && setSelectedDiscover(null)}>
+        <Dialog
+          open={!!selectedDiscover}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedDiscover(null);
+              setDiscoverImgIndex(0);
+            }
+          }}
+        >
           <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-5xl max-h-[85vh] overflow-hidden rounded-2xl border border-gray-100 bg-white p-0 shadow-2xl sm:max-h-[90vh] sm:rounded-3xl">
-            {selectedDiscover && (
-              <div className="flex max-h-[85vh] flex-col overflow-hidden sm:max-h-[90vh]">
-                <div className="min-h-0 flex-1 overflow-y-auto">
-                  <DialogHeader className="relative h-48 sm:h-72 w-full shrink-0 overflow-hidden bg-gray-900 p-0 text-left">
-                    {selectedDiscover.image ? (
-                      <img
-                        src={selectedDiscover.image}
-                        alt={selectedDiscover.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex flex-col justify-end">
-                        {selectedDiscover.logo && (
-                          <img src={selectedDiscover.logo} alt={selectedDiscover.name} className="w-16 h-16 object-contain mb-4" />
+            {selectedDiscover && (() => {
+              const discoverImages = getDiscoverImages(selectedDiscover.image);
+              const hasMultiple = discoverImages.length > 1;
+              const currentImg = discoverImages[discoverImgIndex];
+
+              return (
+                <div className="flex max-h-[85vh] flex-col overflow-hidden sm:max-h-[90vh]">
+                  <div className="min-h-0 flex-1 overflow-y-auto">
+                    <DialogHeader className="relative h-52 sm:h-72 w-full shrink-0 overflow-hidden bg-gray-900 p-0 text-left">
+                      {currentImg ? (
+                        <img
+                          src={currentImg}
+                          alt={selectedDiscover.name}
+                          className="h-full w-full object-cover transition-all duration-300"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex flex-col justify-end">
+                          {selectedDiscover.logo && (
+                            <img src={selectedDiscover.logo} alt={selectedDiscover.name} className="w-16 h-16 object-contain mb-4" />
+                          )}
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+
+                      {/* Multiple image navigation buttons */}
+                      {hasMultiple && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDiscoverImgIndex((prev) => (prev - 1 + discoverImages.length) % discoverImages.length);
+                            }}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95 cursor-pointer"
+                            title="Previous Image"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDiscoverImgIndex((prev) => (prev + 1) % discoverImages.length);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95 cursor-pointer"
+                            title="Next Image"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+
+                      <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex flex-wrap items-end justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            {selectedDiscover.year && (
+                              <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur-sm">
+                                {selectedDiscover.year}
+                              </span>
+                            )}
+                            {hasMultiple && (
+                              <span className="inline-block rounded-full bg-black/50 text-white/90 border border-white/20 px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
+                                {discoverImgIndex + 1} / {discoverImages.length}
+                              </span>
+                            )}
+                          </div>
+                          <DialogTitle className="font-display text-2xl font-bold leading-tight text-white sm:text-4xl">
+                            {selectedDiscover.name}
+                          </DialogTitle>
+                        </div>
+
+                        {/* Thumbnail switcher */}
+                        {hasMultiple && (
+                          <div className="flex items-center gap-1.5 shrink-0 bg-black/40 backdrop-blur-sm p-1 rounded-xl border border-white/20">
+                            {discoverImages.map((thumb, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setDiscoverImgIndex(idx)}
+                                className={`h-7 w-7 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                                  discoverImgIndex === idx
+                                    ? "border-cyan-400 scale-110 shadow-md"
+                                    : "border-white/30 opacity-60 hover:opacity-100"
+                                }`}
+                              >
+                                <img src={thumb} alt={`Thumb ${idx + 1}`} className="h-full w-full object-cover" />
+                              </button>
+                            ))}
+                          </div>
                         )}
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-                    <div className="absolute bottom-6 left-6 right-6 flex flex-wrap items-end justify-between gap-3">
-                      <div>
-                        {selectedDiscover.year && (
-                          <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-2 backdrop-blur-sm">
-                            {selectedDiscover.year}
-                          </span>
-                        )}
-                        <DialogTitle className="font-display text-2xl font-bold leading-tight text-white sm:text-4xl">
-                          {selectedDiscover.name}
-                        </DialogTitle>
-                      </div>
+                    </DialogHeader>
+
+                    <div className="space-y-5 px-6 py-7 sm:space-y-6 sm:px-10 sm:py-9">
+                      {selectedDiscover.short_description && (
+                        <div>
+                          <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
+                            {stripHtml(selectedDiscover.short_description)}
+                          </p>
+                        </div>
+                      )}
+
+                      {selectedDiscover.DiscoverLists && selectedDiscover.DiscoverLists.length > 0 && (
+                        <div className="pt-4 border-t border-gray-100">
+                          <ul className="grid sm:grid-cols-2 gap-3">
+                            {selectedDiscover.DiscoverLists.map((list) => (
+                              <li key={list.id} className="flex items-start gap-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/60 text-xs sm:text-sm font-medium text-gray-800">
+                                <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
+                                <span className="whitespace-pre-line">{stripHtml(list.description)}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  </DialogHeader>
-
-                  <div className="space-y-5 px-6 py-7 sm:space-y-6 sm:px-10 sm:py-9">
-                    {selectedDiscover.short_description && (
-                      <div>
-                        <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
-                          {stripHtml(selectedDiscover.short_description)}
-                        </p>
-                      </div>
-                    )}
-
-                    {selectedDiscover.DiscoverLists && selectedDiscover.DiscoverLists.length > 0 && (
-                      <div className="pt-4 border-t border-gray-100">
-                        <ul className="grid sm:grid-cols-2 gap-3">
-                          {selectedDiscover.DiscoverLists.map((list) => (
-                            <li key={list.id} className="flex items-start gap-2.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/60 text-xs sm:text-sm font-medium text-gray-800">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
-                              <span className="whitespace-pre-line">{stripHtml(list.description)}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
+
+                  <DialogFooter className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/70 px-6 py-6 sm:px-10 sm:py-7">
+                    <div className="flex w-full flex-wrap items-center justify-between gap-4">
+                      <Button
+                        asChild
+                        onClick={() => setSelectedDiscover(null)}
+                        className="rounded-full bg-[#004AAD] px-6 py-3 font-semibold text-white shadow-md hover:bg-blue-800"
+                      >
+                        <a href="#kontak">
+                          {t("contact.form.submit")} <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </DialogFooter>
                 </div>
-
-                <DialogFooter className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/70 px-6 py-6 sm:px-10 sm:py-7">
-                  <div className="flex w-full flex-wrap items-center justify-between gap-4">
-                    <Button
-                      asChild
-                      onClick={() => setSelectedDiscover(null)}
-                      className="rounded-full bg-[#004AAD] px-6 py-3 font-semibold text-white shadow-md hover:bg-blue-800"
-                    >
-                      <a href="#kontak">
-                        {t("contact.form.submit")} <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </DialogFooter>
-              </div>
-            )}
+              );
+            })()}
           </DialogContent>
         </Dialog>
       </div>
