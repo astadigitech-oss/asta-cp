@@ -53,7 +53,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
-import { useLandingData, TestimonialItem } from "@/hooks/useLandingData";
+import { useLandingData, TestimonialItem, ClientItem } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { useTranslation } from "@/i18n/useTranslation";
 import axios from "axios";
@@ -265,13 +265,19 @@ function SectionPagination({ currentPage, totalPages, onPageChange }: SectionPag
   );
 }
 
-/* ────────────────────────────────────────────────────────────────
- *  Hero
- * ──────────────────────────────────────────────────────────────── */
+const defaultClientNames = [
+  "Telkom Indonesia",
+  "Bank Mandiri",
+  "Kemenkes RI",
+  "Universitas Indonesia",
+  "Pertamina",
+  "Astra International",
+];
 
-function Hero() {
+function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
   const { t } = useTranslation();
   const { data: landingData } = useLandingData();
+  const clients = clientsList && clientsList.length > 0 ? clientsList : (landingData?.clients || []);
 
   const heroStats = [
     { value: 20, suffix: "+", label: t("hero.stat_projects") },
@@ -431,6 +437,104 @@ function Hero() {
             </div>
           </motion.div>
         </div>
+
+        {/* Trusted by Clients Bar */}
+        <div className="mt-12 rounded-2xl glass px-6 py-5 shadow-soft sm:mt-14 overflow-hidden">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground shrink-0 text-center lg:text-left whitespace-nowrap">
+              {t("hero.trusted_by") || "Dipercaya oleh berbagai organisasi terkemuka"}
+            </div>
+
+            {/* Logo Display Area */}
+            {(() => {
+              const displayClients =
+                clients.length > 0
+                  ? clients
+                  : defaultClientNames.map((name, idx) => ({ id: idx + 1, name, image: undefined as string | undefined }));
+
+              const isAutoScroll = displayClients.length >= 5;
+
+              if (isAutoScroll) {
+                // Infinite smooth scrolling track (duplicated sets for seamless 0% -> -50% loop)
+                const marqueeList = [...displayClients, ...displayClients];
+                return (
+                  <div className="relative w-full overflow-hidden flex-1 flex items-center min-h-[48px]">
+                    {/* Left & Right gradient masks for subtle fade edges */}
+                    <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white/90 via-white/50 to-transparent z-10 hidden sm:block" />
+                    <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white/90 via-white/50 to-transparent z-10 hidden sm:block" />
+
+                    <div className="flex w-max items-center gap-8 sm:gap-14 animate-marquee">
+                      {marqueeList.map((client, idx) => (
+                        <div
+                          key={`${client.id || client.name}-${idx}`}
+                          className="flex shrink-0 items-center justify-center h-12 px-3 transition-transform duration-300 hover:scale-105"
+                          title={client.name}
+                        >
+                          {client.image ? (
+                            <img
+                              src={client.image}
+                              alt={client.name}
+                              className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
+                              onError={(e) => {
+                                const target = e.target as HTMLElement;
+                                target.style.display = "none";
+                                if (target.nextElementSibling) {
+                                  (target.nextElementSibling as HTMLElement).style.display = "block";
+                                }
+                              }}
+                            />
+                          ) : null}
+                          <span
+                            className={`text-center text-sm font-bold tracking-tight text-primary/70 whitespace-nowrap ${
+                              client.image ? "hidden" : "block"
+                            }`}
+                          >
+                            {client.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Static centered/left flex layout for 1-4 items
+              return (
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 sm:gap-12 w-full flex-1">
+                  {displayClients.map((client) => (
+                    <div
+                      key={client.id}
+                      className="flex items-center justify-center h-12 px-3 transition-transform duration-300 hover:scale-105"
+                      title={client.name}
+                    >
+                      {client.image ? (
+                        <img
+                          src={client.image}
+                          alt={client.name}
+                          className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
+                          onError={(e) => {
+                            const target = e.target as HTMLElement;
+                            target.style.display = "none";
+                            if (target.nextElementSibling) {
+                              (target.nextElementSibling as HTMLElement).style.display = "block";
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <span
+                        className={`text-center text-sm font-bold tracking-tight text-primary/70 whitespace-nowrap ${
+                          client.image ? "hidden" : "block"
+                        }`}
+                      >
+                        {client.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -580,52 +684,49 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
   return (
     <section id="tentang" className="relative overflow-hidden py-6 sm:py-6 lg:py-6">
       <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
-        <div className="grid items-start gap-14 lg:grid-cols-12">
+        <div className="grid items-stretch gap-8 lg:gap-10 xl:gap-14 lg:grid-cols-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="min-w-0 lg:col-span-5"
+            className="min-w-0 lg:col-span-5 flex flex-col justify-between"
           >
-            <SectionHeading
-              center={false}
-              eyebrow={t("about.eyebrow")}
-              title={t("about.title")}
-              desc={t("about.description")}
-            />
+            <div>
+              <SectionHeading
+                center={false}
+                eyebrow={t("about.eyebrow")}
+                title={t("about.title")}
+                desc={t("about.description")}
+              />
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="min-w-0 rounded-2xl glass p-5 shadow-soft">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
-                  {t("about.vision_title")}
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="min-w-0 rounded-2xl glass p-5 shadow-soft">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
+                    {t("about.vision_title")}
+                  </div>
+                  <p className="mt-2 break-words text-sm leading-relaxed text-foreground/80">
+                    {t("about.vision_desc")}
+                  </p>
                 </div>
-                <p className="mt-2 break-words text-sm leading-relaxed text-foreground/80">
-                  {t("about.vision_desc")}
-                </p>
-              </div>
-              <div className="min-w-0 rounded-2xl glass p-5 shadow-soft">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
-                  {t("about.mission_title")}
+                <div className="min-w-0 rounded-2xl glass p-5 shadow-soft">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
+                    {t("about.mission_title")}
+                  </div>
+                  <p className="mt-2 break-words text-sm leading-relaxed text-foreground/80">
+                    {t("about.mission_desc")}
+                  </p>
                 </div>
-                <p className="mt-2 break-words text-sm leading-relaxed text-foreground/80">
-                  {t("about.mission_desc")}
-                </p>
               </div>
             </div>
 
-            <div className="mt-6 min-w-0 rounded-2xl glass p-6 shadow-glass">
-              <div className="flex items-center justify-between">
+            <div className="mt-6 min-w-0 rounded-2xl glass p-6 shadow-glass flex flex-col justify-between flex-1">
+              <div className="flex items-center justify-between shrink-0 mb-3">
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary">
                   {t("about.company_story")}
                 </div>
-                {timelineItems.length > 4 && (
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    Scroll for more ({timelineItems.length})
-                  </span>
-                )}
               </div>
-              <ul className="mt-4 space-y-3 max-h-[248px] overflow-y-auto pr-1.5 scrollbar-thin">
+              <ul className="space-y-2.5 flex-1 flex flex-col justify-between">
                 {timelineItems.map((item, idx) => {
                   const isSelected = selectedIndex === idx;
                   return (
@@ -635,13 +736,13 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
                         setSelectedIndex(idx);
                         scrollToDiscover();
                       }}
-                      className={`flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer ${
+                      className={`flex items-center gap-3 p-2 rounded-xl transition-all cursor-pointer ${
                         isSelected
                           ? "bg-white/95 shadow-sm border border-secondary/30 scale-[1.02]"
                           : "hover:bg-white/60"
                       }`}
                     >
-                      <span className="grid text-white h-8 px-3 shrink-0 place-items-center rounded-lg gradient-accent text-xs font-bold text-accent-foreground shadow-soft">
+                      <span className="grid text-white h-7 px-2.5 shrink-0 place-items-center rounded-lg gradient-accent text-[11px] font-bold text-accent-foreground shadow-soft">
                         {item.year || "2026"}
                       </span>
                       <span className="min-w-0 break-words text-sm font-semibold text-foreground/90 line-clamp-1">
@@ -657,7 +758,7 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
             </div>
           </motion.div>
 
-          <div className="min-w-0 lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7 flex flex-col justify-between">
             <div className="-mx-4 overflow-hidden sm:mx-0 sm:overflow-visible">
               <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-pl-4 px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:p-1 sm:scroll-pl-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {values.map((v, i) => (
@@ -667,16 +768,16 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-40px" }}
                     transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-                    className={`group relative w-[78%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-white/70 p-7 shadow-glass backdrop-blur-md transition-all duration-300 hover:-translate-y-1 sm:w-auto sm:shrink ${
+                    className={`group relative w-[78%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-white/70 p-6 shadow-glass backdrop-blur-md transition-all duration-300 hover:-translate-y-1 sm:w-auto sm:shrink ${
                       i % 3 === 0 ? "rounded-tl-[8px]" : ""
                     } ${i % 3 === 1 ? "rounded-br-[8px]" : ""}`}
                   >
                     <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent/15 blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <span className="relative grid h-12 w-12 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-soft transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+                    <span className="relative grid h-11 w-11 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-soft transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <v.icon className="h-5 w-5 text-white" />
                     </span>
-                    <h3 className="mt-5 font-display text-xl font-bold text-primary">{t(v.titleKey)}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(v.descKey)}</p>
+                    <h3 className="mt-4 font-display text-lg font-bold text-primary">{t(v.titleKey)}</h3>
+                    <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-muted-foreground">{t(v.descKey)}</p>
                   </motion.div>
                 ))}
               </div>
@@ -688,12 +789,12 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
                 setSelectedTimelineImage(activeItem);
                 setTimelineImgIndex(0);
               }}
-              className="group relative mt-6 overflow-hidden rounded-[32px] border border-white/60 shadow-glass cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
+              className="group relative mt-6 flex-1 min-h-[260px] overflow-hidden rounded-[32px] border border-white/60 shadow-glass cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
             >
               <img
                 src={getDiscoverImages(activeItem.image)[0] || p3}
                 alt={activeItem.name}
-                className="h-64 w-full object-cover sm:h-80 transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
@@ -2387,7 +2488,7 @@ export function LandingPage() {
       <Toaster position="top-right" />
       <Navbar />
       <main>
-        <Hero />
+        <Hero clientsList={landingData?.clients} />
         <About discoversList={landingData?.discovers} />
         <Services />
         <Portfolio />
