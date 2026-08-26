@@ -34,7 +34,7 @@ interface DiscoverItem {
   name: string;
   short_description?: string;
   logo?: string;
-  image?: string;
+  image?: string | string[];
   created_at?: string;
   show_name?: number;
   is_pinned?: boolean;
@@ -64,7 +64,13 @@ const defaultNewsItems: DiscoverItem[] = [
 
 const stripHtml = (html?: string) => {
   if (!html) return "";
-  return html.replace(/<[^>]*>?/gm, "").trim();
+  // Add a space after closing block-level tags so paragraphs don't run together
+  return html
+    .replace(/<\/(p|h[1-6]|li|blockquote|div|br)>/gi, " ")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>?/gm, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 };
 
 export function Navbar() {
@@ -394,7 +400,7 @@ export function Navbar() {
                               className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
                             >
                               <img
-                                src={item.image}
+                                src={Array.isArray(item.image) ? item.image[0] : item.image}
                                 alt={item.name}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
                               />

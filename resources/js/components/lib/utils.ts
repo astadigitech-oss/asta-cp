@@ -7,6 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 
 export function stripHtml(html?: string): string {
   if (!html) return "";
-  return html.replace(/<[^>]*>?/gm, "").trim();
+  // Add a space after closing block-level tags so paragraphs don't run together
+  return html
+    .replace(/<\/(p|h[1-6]|li|blockquote|div|br)>/gi, " ")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>?/gm, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 

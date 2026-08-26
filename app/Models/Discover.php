@@ -24,6 +24,7 @@ class Discover extends Model
     {
         return [
             'is_pinned' => 'boolean',
+            'image' => 'array',
         ];
     }
 

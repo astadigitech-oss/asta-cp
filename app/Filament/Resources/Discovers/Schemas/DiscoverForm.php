@@ -30,9 +30,15 @@ class DiscoverForm
                                     ->disk('public')
                                     ->directory('images/logos'),
                                 FileUpload::make('image')
-                                    ->label('Background / Timeline Image')
+                                    ->label('Background / Timeline Images')
+                                    ->image()
+                                    ->multiple()
+                                    ->maxFiles(4)
+                                    ->reorderable()
                                     ->disk('public')
-                                    ->directory('images/discovers'),
+                                    ->directory('images/discovers')
+                                    ->visibility('public')
+                                    ->helperText('Upload up to 4 images (optional)'),
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('name')
