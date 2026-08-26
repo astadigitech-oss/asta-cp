@@ -447,3 +447,24 @@ a {
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   border: 1px solid oklch(1 0 0 / 0.12);
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
