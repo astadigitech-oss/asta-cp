@@ -15,6 +15,7 @@ export interface DiscoverData {
   short_description?: string;
   show_name?: number;
   is_pinned?: boolean;
+  is_highlight?: boolean;
   logo?: string;
   image?: string | string[];
   DiscoverLists?: DiscoverListItem[];
