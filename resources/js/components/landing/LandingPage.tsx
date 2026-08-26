@@ -45,6 +45,7 @@ import {
   LinkedinIcon,
   ExternalLink,
   Image as ImageIcon,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -2273,34 +2274,42 @@ function Contact() {
                 <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80">
                   {t("contact.description")}
                 </p>
-                <ul className="mt-10 space-y-5">
-                  <li className="flex items-start gap-4">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl glass-dark">
+                <ul className="mt-10 space-y-6">
+                  <li className="flex items-center gap-4">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl glass-dark">
                       <Mail className="h-5 w-5" />
                     </span>
-                    <div>
-                      <div className="text-[11px] uppercase tracking-wider text-white/60">{t("contact.info_email")}</div>
-                      <div className="text-sm font-semibold">astadigitech@gmail.com</div>
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                        {t("contact.info_email")}
+                      </div>
+                      <div className="mt-0.5 text-sm font-semibold text-white">
+                        astadigitech@gmail.com
+                      </div>
                     </div>
                   </li>
-                  <li className="flex items-start gap-4">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl glass-dark">
+                  <li className="flex items-center gap-4">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl glass-dark">
                       <PhoneCall className="h-5 w-5" />
                     </span>
-                    <div>
-                      <div className="text-[11px] uppercase tracking-wider text-white/60">
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
                         {t("contact.info_phone")}
                       </div>
-                      <div className="text-sm font-semibold">+62 815 7822 3564</div>
+                      <div className="mt-0.5 text-sm font-semibold text-white">
+                        +62 815 7822 3564
+                      </div>
                     </div>
                   </li>
-                  <li className="flex items-start gap-4">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl glass-dark">
+                  <li className="flex items-center gap-4">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl glass-dark">
                       <MapPin className="h-5 w-5" />
                     </span>
-                    <div>
-                      <div className="text-[11px] uppercase tracking-wider text-white/60">{t("contact.info_office")}</div>
-                      <div className="text-sm font-semibold">
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                        {t("contact.info_office")}
+                      </div>
+                      <div className="mt-0.5 text-sm font-semibold leading-snug text-white">
                         {t("contact.info_office_address")}
                       </div>
                     </div>
@@ -2310,9 +2319,9 @@ function Contact() {
             </div>
 
             <form onSubmit={onSubmit} className="p-10 lg:col-span-7 lg:p-12">
-              <h3 className="font-display text-2xl font-bold text-primary">{t("contact.title")}</h3>
+              <h3 className="font-display text-2xl font-bold text-primary">{t("contact.form_title")}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                {t("contact.description")}
+                {t("contact.form_description")}
               </p>
               <div className="mt-8 grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -2435,10 +2444,11 @@ function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:col-span-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:col-span-8">
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
-                {t("contact.info_office")}
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                <MapPin className="h-3.5 w-3.5" />
+                {t("footer.office_title")}
               </div>
               <p className="mt-4 text-xs leading-relaxed text-white/80">
                 {t("contact.info_office_address")}
@@ -2447,12 +2457,25 @@ function Footer() {
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
-                {t("footer.services_title")}
+                {t("footer.solutions_title")}
               </div>
               <ul className="mt-4 space-y-2 text-xs text-white/80">
-                <li>Web Apps Development</li>
-                <li>Mobile Apps Development</li>
-                <li>IT Consulting</li>
+                <li>{t("footer.sol_consultant")}</li>
+                <li>{t("footer.sol_services")}</li>
+                <li>{t("footer.sol_web")}</li>
+                <li>{t("footer.sol_mobile")}</li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                <Clock className="h-3.5 w-3.5" />
+                {t("footer.hours_title")}
+              </div>
+              <ul className="mt-4 space-y-2 text-xs text-white/80">
+                <li>{t("footer.hours_weekdays")}</li>
+                <li>{t("footer.hours_saturday")}</li>
+                <li>{t("footer.hours_sunday")}</li>
               </ul>
             </div>
 
@@ -2469,7 +2492,7 @@ function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/55 sm:flex-row">
-          <div>© {new Date().getFullYear()} ASTA Digital Agency. {t("footer.copyright")}</div>
+          <div>{t("footer.copyright")}</div>
         </div>
       </div>
     </footer>

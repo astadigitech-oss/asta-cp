@@ -388,7 +388,7 @@ export function Navbar() {
                           {/* Slide 0: Default Text */}
                           <div className="w-full shrink-0 h-full p-4 text-xs text-gray-700 leading-relaxed flex items-center select-none">
                             <p>
-                              {t("about.mission_desc")}
+                              {t("nav.asta_story_desc")}
                             </p>
                           </div>
 
