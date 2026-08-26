@@ -20,6 +20,7 @@
     "mobile_apps": "Mobile Apps",
     "desktop_web": "Desktop & Web",
     "asta_story": "Asta Story",
+    "asta_story_desc": "Behind every smooth-running system, our IT team is always ready to solve every technological challenge.",
     "latest_news": "Latest News",
     "pinned": "Pinned",
     "menu_aria": "Toggle Navigation"
@@ -164,7 +165,9 @@
     "info_email": "Email Address",
     "info_phone": "Phone & WhatsApp",
     "info_office": "Headquarters",
-    "info_office_address": "Surakarta, Central Java, Indonesia",
+    "info_office_address": "Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Pleret, Bantul, D.I. Yogyakarta, Indonesia",
+    "form_title": "Start a Conversation",
+    "form_description": "Share some details about your needs and our team will get back to you shortly.",
     "form": {
       "first_name": "First Name",
       "last_name": "Last Name",
@@ -188,11 +191,19 @@
     }
   },
   "footer": {
-    "description": "PT Asta Digital Agency is a premium technology studio building modern websites, applications, and enterprise systems.",
-    "quick_links": "Quick Links",
-    "services_title": "Services",
-    "contact_title": "Contact",
-    "copyright": "All Rights Reserved."
+    "description": "We believe that technology is not just a tool, but a bridge to sustainable business growth.",
+    "office_title": "Office Address",
+    "solutions_title": "Solutions",
+    "hours_title": "Office Working Hours",
+    "contact_title": "Contact Us",
+    "hours_weekdays": "Monday - Friday: 08:00 - 17:00",
+    "hours_saturday": "Saturday: On Call",
+    "hours_sunday": "Sunday: On Call",
+    "sol_consultant": "IT Consulting",
+    "sol_services": "IT Services",
+    "sol_web": "Web Apps Development",
+    "sol_mobile": "Mobile Apps Development",
+    "copyright": "© Copyright 2025 PT Asta Digital Agency"
   },
   "common": {
     "previous": "Previous",

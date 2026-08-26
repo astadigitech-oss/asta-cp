@@ -20,6 +20,7 @@
     "mobile_apps": "Mobile Apps",
     "desktop_web": "Desktop & Web",
     "asta_story": "Cerita Asta",
+    "asta_story_desc": "Di balik layar setiap sistem yang berjalan lancar, ada tim IT kami yang selalu siap memecahkan setiap tantangan teknologi.",
     "latest_news": "Berita Terbaru",
     "pinned": "Pinned",
     "menu_aria": "Buka/Tutup Navigasi"
@@ -164,7 +165,9 @@
     "info_email": "Alamat Email",
     "info_phone": "Telepon & WhatsApp",
     "info_office": "Kantor Pusat",
-    "info_office_address": "Surakarta, Jawa Tengah, Indonesia",
+    "info_office_address": "Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Kec. Pleret, Kab. Bantul, D.I. Yogyakarta",
+    "form_title": "Mulai Percakapan",
+    "form_description": "Bagikan beberapa detail kebutuhan Anda dan tim kami akan segera menghubungi Anda.",
     "form": {
       "first_name": "Nama Depan",
       "last_name": "Nama Belakang",
@@ -188,11 +191,19 @@
     }
   },
   "footer": {
-    "description": "PT Asta Digital Agency adalah studio teknologi premium yang membangun website, aplikasi, dan sistem informasi enterprise modern.",
-    "quick_links": "Tautan Cepat",
-    "services_title": "Layanan",
-    "contact_title": "Kontak",
-    "copyright": "Hak Cipta Dilindungi Undang-Undang."
+    "description": "Kami percaya bahwa teknologi bukan sekadar alat, tapi jembatan menuju pertumbuhan bisnis yang berkelanjutan.",
+    "office_title": "Alamat Kantor",
+    "solutions_title": "Solusi",
+    "hours_title": "Jam Kerja Kantor",
+    "contact_title": "Hubungi Kami",
+    "hours_weekdays": "Senin - Jumat: 08:00 - 17:00",
+    "hours_saturday": "Sabtu: On Call",
+    "hours_sunday": "Minggu: On Call",
+    "sol_consultant": "Konsultan IT",
+    "sol_services": "Layanan IT",
+    "sol_web": "Web Apps Development",
+    "sol_mobile": "Mobile Apps Development",
+    "copyright": "© Copyright 2025 PT Asta Digital Agency"
   },
   "common": {
     "previous": "Sebelumnya",
