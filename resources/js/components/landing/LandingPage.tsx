@@ -1640,7 +1640,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
               return (
                 <div className="flex max-h-[85vh] flex-col overflow-hidden sm:max-h-[90vh]">
                   <div className="min-h-0 flex-1 overflow-y-auto">
-                    <DialogHeader className="relative h-52 sm:h-72 w-full shrink-0 overflow-hidden bg-gray-900 p-0 text-left">
+                    <div className="relative h-56 sm:h-72 w-full shrink-0 overflow-hidden bg-gray-900">
                       {currentImg ? (
                         <img
                           src={currentImg}
@@ -1654,7 +1654,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                           )}
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent pointer-events-none" />
 
                       {/* Multiple image navigation buttons */}
                       {hasMultiple && (
@@ -1684,7 +1684,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                         </>
                       )}
 
-                      <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex flex-wrap items-end justify-between gap-3">
+                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 flex flex-wrap items-end justify-between gap-3 z-10">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             {selectedDiscover.year && (
@@ -1698,22 +1698,22 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                               </span>
                             )}
                           </div>
-                          <DialogTitle className="font-display text-2xl font-bold leading-tight text-white sm:text-4xl">
+                          <DialogTitle className="font-display text-2xl font-bold leading-tight text-white sm:text-4xl drop-shadow-md">
                             {selectedDiscover.name}
                           </DialogTitle>
                         </div>
 
                         {/* Thumbnail switcher */}
                         {hasMultiple && (
-                          <div className="flex items-center gap-1.5 shrink-0 bg-black/40 backdrop-blur-sm p-1 rounded-xl border border-white/20">
+                          <div className="flex items-center gap-1.5 shrink-0 bg-black/50 backdrop-blur-md p-1.5 rounded-xl border border-white/20 shadow-lg">
                             {discoverImages.map((thumb, idx) => (
                               <button
                                 key={idx}
                                 type="button"
                                 onClick={() => setDiscoverImgIndex(idx)}
-                                className={`h-7 w-7 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                                className={`h-8 w-8 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
                                   discoverImgIndex === idx
-                                    ? "border-cyan-400 scale-110 shadow-md"
+                                    ? "border-cyan-400 scale-105 shadow-md shadow-cyan-500/30"
                                     : "border-white/30 opacity-60 hover:opacity-100"
                                 }`}
                               >
@@ -1723,7 +1723,7 @@ function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?:
                           </div>
                         )}
                       </div>
-                    </DialogHeader>
+                    </div>
 
                     <div className="space-y-5 px-6 py-7 sm:space-y-6 sm:px-10 sm:py-9">
                       {selectedDiscover.short_description && (
