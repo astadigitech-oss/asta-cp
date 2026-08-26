@@ -18,12 +18,14 @@ class Discover extends Model
         'show_name',
         'sort',
         'is_pinned',
+        'is_highlight',
     ];
 
     protected function casts(): array
     {
         return [
             'is_pinned' => 'boolean',
+            'is_highlight' => 'boolean',
             'image' => 'array',
         ];
     }

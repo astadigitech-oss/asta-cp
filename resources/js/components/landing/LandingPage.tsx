@@ -446,6 +446,7 @@ interface DiscoverData {
   year?: string;
   short_description?: string;
   is_pinned?: boolean;
+  is_highlight?: boolean;
   image?: string | string[];
   logo?: string;
   DiscoverLists?: any[];
@@ -555,7 +556,10 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
     applyTransform(1, 0, 0);
   };
 
-  const timelineItems = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
+  const allDiscovers = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
+  // Hanya ambil item yang di-highlight dari admin (maksimal 4). Jika belum ada yang di-highlight, ambil 4 teratas
+  const highlighted = allDiscovers.filter((item) => item.is_highlight);
+  const timelineItems = (highlighted.length > 0 ? highlighted : allDiscovers).slice(0, 4);
   const activeItem = timelineItems[selectedIndex] || timelineItems[0];
 
   useEffect(() => {
@@ -611,10 +615,17 @@ function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverD
             </div>
 
             <div className="mt-6 min-w-0 rounded-2xl glass p-6 shadow-glass">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary">
-                {t("about.company_story")}
+              <div className="flex items-center justify-between">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary">
+                  {t("about.company_story")}
+                </div>
+                {timelineItems.length > 4 && (
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    Scroll for more ({timelineItems.length})
+                  </span>
+                )}
               </div>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-4 space-y-3 max-h-[248px] overflow-y-auto pr-1.5 scrollbar-thin">
                 {timelineItems.map((item, idx) => {
                   const isSelected = selectedIndex === idx;
                   return (

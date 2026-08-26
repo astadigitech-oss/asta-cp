@@ -52,8 +52,12 @@ class DiscoverForm
                                             ->required()
                                             ->default(true),
                                         Toggle::make('is_pinned')
-                                            ->label('Pin to Timeline')
-                                            ->helperText('Pinned discoveries will appear at the top of the timeline on the landing page and navbar.')
+                                            ->label('Pin to Top')
+                                            ->helperText('Pinned discoveries will appear at the top on the landing page and navbar.')
+                                            ->default(false),
+                                        Toggle::make('is_highlight')
+                                            ->label('Highlight to Timeline (About)')
+                                            ->helperText('Enable this to show this item on the Company Story & Timeline section in About (maximum 4 items).')
                                             ->default(false),
                                     ])->columnSpanFull(),
                             ])

@@ -27,11 +27,18 @@ class DiscoversTable
                 TextColumn::make('name')
                     ->label('Discover Name')
                     ->searchable(),
+                TextColumn::make('year')
+                    ->label('Timeline / Year')
+                    ->sortable()
+                    ->searchable(),
                 IconColumn::make('show_name')
                     ->label('Show Name')
                     ->boolean(),
                 IconColumn::make('is_pinned')
                     ->label('Pinned')
+                    ->boolean(),
+                IconColumn::make('is_highlight')
+                    ->label('Highlight (About)')
                     ->boolean(),
                 TextColumn::make('deleted_at')
                     ->label('Deleted At')

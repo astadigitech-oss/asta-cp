@@ -75,7 +75,7 @@ class LandingController extends Controller
 
         $discovers = Discover::with(['DiscoverLists' => function ($query) {
             $query->where('is_active', true)->orderBy('sort', 'asc');
-        }])->orderByDesc('is_pinned')->orderByDesc('created_at')->get()->map(function ($discover) {
+        }])->orderByDesc('is_pinned')->orderByDesc('year')->orderByDesc('created_at')->get()->map(function ($discover) {
             $discoverImages = is_array($discover->image)
                 ? $discover->image
                 : (is_string($discover->image) && !empty($discover->image)
@@ -95,6 +95,7 @@ class LandingController extends Controller
                 'short_description' => $discover->short_description,
                 'show_name' => $discover->show_name,
                 'is_pinned' => $discover->is_pinned,
+                'is_highlight' => (bool) $discover->is_highlight,
                 'logo' => $this->formatImageUrl($discover->logo),
                 'image' => $formattedImages,
                 'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
