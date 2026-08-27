@@ -389,7 +389,7 @@ function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-[2.8] sm:scale-[2.8] lg:scale-[2.9] translate-x-[87.3%] translate-y-[60.15%]"
+                      className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
                     />
                   </motion.div>
 
@@ -404,7 +404,7 @@ function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
-                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[2.6] sm:scale-[2.5] lg:scale-[2.7] translate-x-[75.9%] translate-y-[40.5%]"
+                      className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[1.2] sm:scale-[1.1] lg:scale-[1.2] translate-x-[-7.9%] translate-y-[-20.5%]"
                     />
                   </motion.div>
                 </div>
