@@ -440,9 +440,9 @@ function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
         </div>
 
         {/* Trusted by Clients Bar */}
-        <div className="mt-12 rounded-2xl glass px-6 py-5 shadow-soft sm:mt-14 overflow-hidden">
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground shrink-0 text-center lg:text-left whitespace-nowrap">
+        <div className="mt-12 rounded-2xl glass px-4 py-5 sm:px-6 shadow-soft sm:mt-14 overflow-hidden">
+          <div className="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 lg:gap-8">
+            <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.22em] leading-relaxed text-muted-foreground shrink-0 text-center lg:text-left lg:whitespace-nowrap max-w-full">
               {t("hero.trusted_by") || "Dipercaya oleh berbagai organisasi terkemuka"}
             </div>
 
