@@ -74,8 +74,8 @@ import p4 from "@/assets/portfolio-4.jpg";
 import p5 from "@/assets/portfolio-5.jpg";
 import p6 from "@/assets/portfolio-6.jpg";
 
-import laptopImg from "@/assets/Hero/Laptop Image.svg";
-import robotImg from "@/assets/Hero/Robot.svg";
+import laptopImg from "@/assets/Hero/Laptop.webp";
+import robotImg from "@/assets/Hero/Robot.webp";
 import logo from "../../assets/logo/LOGO PUTIH.png";
 
 /* ────────────────────────────────────────────────────────────────
