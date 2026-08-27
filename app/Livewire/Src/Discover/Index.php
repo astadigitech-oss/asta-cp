@@ -9,16 +9,22 @@ use Livewire\Component;
 
 class Index extends Component
 {
-    public $first_name, $last_name, $phone, $email, $message;
+    public $first_name, $last_name, $phone, $email, $message, $website_hp;
 
     public function save()
     {
+        if (!empty($this->website_hp)) {
+            $this->reset(['first_name', 'last_name', 'phone', 'email', 'message', 'website_hp']);
+            session()->flash('success', 'Pesan berhasil dikirim!');
+            return;
+        }
+
         $this->validate([
             'first_name' => 'required|string|max:255',
             'last_name'  => 'required|string|max:255',
             'phone'      => 'required|string|max:20',
             'email'      => 'required|email|max:255',
-            'message'    => 'nullable|string',
+            'message'    => 'nullable|string|max:5000',
         ]);
 
         Mail::create([
@@ -30,7 +36,7 @@ class Index extends Component
         ]);
 
         // reset input
-        $this->reset(['first_name', 'last_name', 'phone', 'email', 'message']);
+        $this->reset(['first_name', 'last_name', 'phone', 'email', 'message', 'website_hp']);
 
         session()->flash('success', 'Pesan berhasil dikirim!');
     }
