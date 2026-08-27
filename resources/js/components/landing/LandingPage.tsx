@@ -2217,6 +2217,7 @@ function CTA() {
 function Contact() {
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
+  const [mountedAt] = useState(() => Date.now());
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -2231,6 +2232,8 @@ function Contact() {
         email: formData.get("email"),
         phone: formData.get("phone"),
         message: formData.get("message"),
+        website_hp: formData.get("website_hp"),
+        _timer: formData.get("_timer"),
       });
 
       form.reset();
@@ -2319,6 +2322,9 @@ function Contact() {
             </div>
 
             <form onSubmit={onSubmit} className="p-10 lg:col-span-7 lg:p-12">
+              {/* Anti-Spam Honeypot & Timer Fields */}
+              <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden opacity-0 absolute -z-10 pointer-events-none h-0 w-0" />
+              <input type="hidden" name="_timer" value={mountedAt} />
               <h3 className="font-display text-2xl font-bold text-primary">{t("contact.form_title")}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {t("contact.form_description")}
@@ -2345,7 +2351,7 @@ function Contact() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">{t("contact.form.phone")}</Label>
-                  <Input id="phone" name="phone" placeholder={t("contact.form.placeholder_phone")} className="rounded-xl" />
+                  <Input id="phone" name="phone" type="tel" inputMode="numeric" placeholder={t("contact.form.placeholder_phone")} className="rounded-xl" />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="message">{t("contact.form.message")}</Label>

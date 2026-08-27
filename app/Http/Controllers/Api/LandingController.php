@@ -197,8 +197,42 @@ class LandingController extends Controller
             'organization' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
-            'message' => 'required|string',
+            'message' => 'required|string|max:5000',
+            'website_hp' => 'nullable|string', // Honeypot field
+            '_timer' => 'nullable|numeric',    // JS mount timestamp
         ]);
+
+        // 1. Honeypot check: If honeypot is filled, return silent fake success
+        if (!empty($validated['website_hp'])) {
+            \Illuminate\Support\Facades\Log::info('Spam bot detected via honeypot field', ['ip' => $request->ip()]);
+            return response()->json([
+                'status' => 'success',
+                'message' => __('messages.contact_success'),
+            ], 201);
+        }
+
+        // 2. Submission speed check: Submitting faster than 2 seconds indicates automated bot
+        if (!empty($validated['_timer'])) {
+            $renderTimeSeconds = floatval($validated['_timer']) / 1000.0;
+            $elapsed = microtime(true) - $renderTimeSeconds;
+            if ($elapsed > 0 && $elapsed < 2.0) {
+                \Illuminate\Support\Facades\Log::info('Spam bot detected via fast submission', ['ip' => $request->ip(), 'elapsed' => $elapsed]);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.contact_success'),
+                ], 201);
+            }
+        }
+
+        // 3. Spam link detection: Reject messages with more than 2 HTTP/HTTPS links
+        $urlCount = preg_match_all('/https?:\/\//i', $validated['message']);
+        if ($urlCount > 2) {
+            \Illuminate\Support\Facades\Log::info('Spam bot detected via excessive links', ['ip' => $request->ip(), 'url_count' => $urlCount]);
+            return response()->json([
+                'status' => 'success',
+                'message' => __('messages.contact_success'),
+            ], 201);
+        }
 
         $firstName = $validated['first_name'] ?? $validated['name'] ?? 'Guest';
         $lastName = !empty($validated['last_name']) ? $validated['last_name'] : null;

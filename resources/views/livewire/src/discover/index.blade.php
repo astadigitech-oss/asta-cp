@@ -141,7 +141,7 @@
                         </div>
 
                         <div class="relative">
-                            <input type="text" placeholder="Nomor Telepon/Whatsapp" wire:model="phone" required
+                            <input type="tel" inputmode="numeric" placeholder="Nomor Telepon/Whatsapp" wire:model="phone" required
                                 class="w-full box-border py-[13px] px-[21px] bg-white outline-none rounded-[8px] border border-gray-300" />
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[#004AAD]">*</span>
                             @error('phone')
