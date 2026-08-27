@@ -2351,7 +2351,42 @@ function Contact() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">{t("contact.form.phone")}</Label>
-                  <Input id="phone" name="phone" type="tel" inputMode="numeric" placeholder={t("contact.form.placeholder_phone")} className="rounded-xl" />
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    maxLength={20}
+                    placeholder={t("contact.form.placeholder_phone")}
+                    className="rounded-xl"
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Backspace" ||
+                        e.key === "Delete" ||
+                        e.key === "ArrowLeft" ||
+                        e.key === "ArrowRight" ||
+                        e.key === "ArrowUp" ||
+                        e.key === "ArrowDown" ||
+                        e.key === "Tab" ||
+                        e.key === "Enter" ||
+                        e.ctrlKey ||
+                        e.metaKey
+                      ) {
+                        return;
+                      }
+                      if (!/[\d+\s-]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInput={(e) => {
+                      const target = e.currentTarget;
+                      let val = target.value.replace(/[^\d+\s-]/g, "");
+                      if (val.indexOf("+") > 0) {
+                        val = (val.startsWith("+") ? "+" : "") + val.replace(/\+/g, "");
+                      }
+                      target.value = val;
+                    }}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="message">{t("contact.form.message")}</Label>
