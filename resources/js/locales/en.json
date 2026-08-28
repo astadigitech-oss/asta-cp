@@ -105,12 +105,31 @@
     "description": "Stay updated with the latest technological developments, company achievements, and industry insights from Asta Digital.",
     "search_placeholder": "Search articles, stories, or insights...",
     "category_all": "All Categories",
+    "tab_all": "All",
+    "tab_story": "Stories & News",
+    "tab_elearning": "E-Learning & Blog",
+    "badge_story": "Story",
+    "badge_elearning": "E-Learning & Blog",
     "pinned_badge": "Pinned",
     "read_more": "Read Full Story",
     "empty": "No items found matching your search.",
     "modal": {
       "published": "Published",
+      "latest_update": "Latest Update",
+      "page_indicator": "Page {current} of {total}",
+      "doc_caption": "ASTA Digital Documentation — {name}",
+      "enlarge_photo": "Enlarge Photo",
+      "click_fullscreen": "Click for Fullscreen",
+      "section_part": "Content Part {index}",
+      "key_points": "Key Highlights",
+      "pagination_page": "Page:",
+      "last_page": "Last Page",
       "close": "Close"
+    },
+    "lightbox": {
+      "preview_title": "Photo Preview",
+      "close": "Close (Esc)",
+      "hint": "Click anywhere or press Esc to close"
     }
   },
   "why_us": {

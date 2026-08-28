@@ -88,11 +88,26 @@ class LandingController extends Controller
                 ->values()
                 ->all();
 
+            $rawSections = is_array($discover->content_sections)
+                ? $discover->content_sections
+                : (is_string($discover->content_sections) && !empty($discover->content_sections)
+                    ? (json_decode($discover->content_sections, true) ?: [])
+                    : []);
+
+            $formattedSections = collect($rawSections)->map(function ($section) {
+                return [
+                    'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                    'description' => $section['description'] ?? '',
+                ];
+            })->values()->all();
+
             return [
                 'id' => $discover->id,
                 'name' => $discover->name,
+                'type' => $discover->type ?: 'story',
                 'year' => $discover->year,
                 'short_description' => $discover->short_description,
+                'content_sections' => $formattedSections,
                 'show_name' => $discover->show_name,
                 'is_pinned' => $discover->is_pinned,
                 'is_highlight' => (bool) $discover->is_highlight,

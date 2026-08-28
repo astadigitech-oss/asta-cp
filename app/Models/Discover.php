@@ -10,12 +10,14 @@ class Discover extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'short_description',
         'name',
+        'type',
         'year',
         'logo',
         'image',
         'show_name',
+        'short_description',
+        'content_sections',
         'sort',
         'is_pinned',
         'is_highlight',
@@ -27,6 +29,7 @@ class Discover extends Model
             'is_pinned' => 'boolean',
             'is_highlight' => 'boolean',
             'image' => 'array',
+            'content_sections' => 'array',
         ];
     }
 

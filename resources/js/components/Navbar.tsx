@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Menu, X, ArrowRight, Pin } from "lucide-react";
+import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import logo from "../assets/logo/Logo Hitam 2.png";
 import p1 from "../assets/portfolio-1.jpg";
 import p2 from "../assets/portfolio-2.jpg";
@@ -84,6 +84,13 @@ export function Navbar() {
   const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
   const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
   const discovers = (landingData?.discovers || []) as DiscoverItem[];
+  const DISCOVERS_PER_PAGE = 6;
+  const [discoverPage, setDiscoverPage] = useState(1);
+  const totalDiscoverPages = Math.ceil(discovers.length / DISCOVERS_PER_PAGE) || 1;
+  const paginatedDiscovers = discovers.slice(
+    (discoverPage - 1) * DISCOVERS_PER_PAGE,
+    discoverPage * DISCOVERS_PER_PAGE
+  );
 
   // Keep pinned discoveries first, then show the newest discoveries.
   const discoversWithImages = discovers.filter((d) => Boolean(d.image));
@@ -316,39 +323,112 @@ export function Navbar() {
                   before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
               >
                 <div className="grid grid-cols-12 gap-8">
-                  <div className="col-span-8 border-r border-gray-100 pr-6">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">{t("nav.discover")}</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      {discovers.length > 0 ? (
-                        discovers.map((disc) => (
-                          <a key={disc.id} href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
-                            {disc.logo && (
-                              <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
-                            )}
-                            <div>
-                              <h5 className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
-                                {disc.is_pinned && <Pin className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />}
-                                <span>{disc.name}</span>
-                              </h5>
-                              {disc.short_description && (
-                                <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{stripHtml(disc.short_description)}</p>
+                  <div className="col-span-8 border-r border-gray-100 pr-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{t("nav.discover")}</p>
+                        {totalDiscoverPages > 1 && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                              {discoverPage} / {totalDiscoverPages}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDiscoverPage((p) => Math.max(1, p - 1));
+                              }}
+                              disabled={discoverPage === 1}
+                              className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              aria-label="Previous page"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDiscoverPage((p) => Math.min(totalDiscoverPages, p + 1));
+                              }}
+                              disabled={discoverPage === totalDiscoverPages}
+                              className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              aria-label="Next page"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3.5">
+                        {paginatedDiscovers.length > 0 ? (
+                          paginatedDiscovers.map((disc) => (
+                            <a key={disc.id} href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
+                              {disc.logo ? (
+                                <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-[#004AAD] font-bold text-xs">
+                                  {disc.name?.charAt(0) || "D"}
+                                </div>
                               )}
-                            </div>
-                          </a>
-                        ))
-                      ) : (
-                        <>
-                          <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
-                          </a>
-                          <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
-                          </a>
-                        </>
-                      )}
+                              <div className="min-w-0 flex-1">
+                                <h5 className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
+                                  {disc.is_pinned && <Pin className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />}
+                                  <span className="line-clamp-1">{disc.name}</span>
+                                </h5>
+                                {disc.short_description && (
+                                  <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{stripHtml(disc.short_description)}</p>
+                                )}
+                              </div>
+                            </a>
+                          ))
+                        ) : (
+                          <>
+                            <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
+                              <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
+                              <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
+                            </a>
+                            <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
+                              <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
+                              <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
+                            </a>
+                          </>
+                        )}
+                      </div>
                     </div>
+
+                    {totalDiscoverPages > 1 && (
+                      <div className="pt-3 border-t border-gray-100 flex items-center justify-between mt-3">
+                        <span className="text-[11px] text-gray-400">
+                          {((discoverPage - 1) * DISCOVERS_PER_PAGE) + 1} - {Math.min(discoverPage * DISCOVERS_PER_PAGE, discovers.length)} dari {discovers.length}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalDiscoverPages }).map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setDiscoverPage(pageNum);
+                                }}
+                                className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                  discoverPage === pageNum
+                                    ? "bg-[#004AAD] text-white shadow-xs"
+                                    : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Story card box */}

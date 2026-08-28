@@ -105,12 +105,31 @@
     "description": "Dapatkan informasi terbaru mengenai perkembangan teknologi, pencapaian perusahaan, dan wawasan industri dari Asta Digital.",
     "search_placeholder": "Cari artikel, cerita, atau wawasan...",
     "category_all": "Semua Kategori",
+    "tab_all": "Semua",
+    "tab_story": "Cerita & Berita",
+    "tab_elearning": "E-Learning & Blog",
+    "badge_story": "Story",
+    "badge_elearning": "E-Learning & Blog",
     "pinned_badge": "Pinned",
     "read_more": "Baca Selengkapnya",
     "empty": "Tidak ada berita atau artikel yang sesuai dengan pencarian.",
     "modal": {
       "published": "Diterbitkan",
+      "latest_update": "Update Terkini",
+      "page_indicator": "Halaman {current} dari {total}",
+      "doc_caption": "Dokumentasi ASTA Digital — {name}",
+      "enlarge_photo": "Perbesar Foto",
+      "click_fullscreen": "Klik untuk Fullscreen",
+      "section_part": "Materi Bagian {index}",
+      "key_points": "Poin-Poin Utama",
+      "pagination_page": "Halaman:",
+      "last_page": "Halaman Terakhir",
       "close": "Tutup"
+    },
+    "lightbox": {
+      "preview_title": "Preview Foto",
+      "close": "Tutup (Esc)",
+      "hint": "Klik di mana saja atau tekan Esc untuk menutup"
     }
   },
   "why_us": {

@@ -25,8 +25,14 @@ class DiscoversTable
                     ->imageWidth(100)
                     ->imageHeight(100),
                 TextColumn::make('name')
-                    ->label('Discover Name')
+                    ->label('Title / Name')
                     ->searchable(),
+                TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state === 'elearning' ? 'E-Learning & Blog' : 'Discover Story')
+                    ->color(fn ($state) => $state === 'elearning' ? 'info' : 'gray')
+                    ->sortable(),
                 TextColumn::make('year')
                     ->label('Timeline / Year')
                     ->sortable()
