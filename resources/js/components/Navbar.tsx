@@ -323,6 +323,7 @@ export function Navbar() {
                   before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
               >
                 <div className="grid grid-cols-12 gap-8">
+                  {/* Left Column: Discover items with pagination */}
                   <div className="col-span-8 border-r border-gray-100 pr-6 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-4">
