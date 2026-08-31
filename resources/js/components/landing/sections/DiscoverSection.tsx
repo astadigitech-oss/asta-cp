@@ -26,13 +26,20 @@ const defaultDiscovers: DiscoverData[] = [
 const DISCOVERS_PER_PAGE = 3;
 
 export function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?: DiscoverData[] }) {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [activeDiscoverTab, setActiveDiscoverTab] = useState<"all" | "story" | "elearning">("all");
   const sectionRef = useRef<HTMLElement>(null);
 
-  const filteredDiscovers = (discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers).filter((item) => {
+  const rawList = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
+  const localizedList = rawList.map((item) => ({
+    ...item,
+    name: localize(item.name),
+    short_description: item.short_description ? localize(item.short_description) : undefined,
+  }));
+
+  const filteredDiscovers = localizedList.filter((item) => {
     if (activeDiscoverTab === "all") return true;
     if (activeDiscoverTab === "story") return !item.type || item.type === "story";
     if (activeDiscoverTab === "elearning") return item.type === "elearning";

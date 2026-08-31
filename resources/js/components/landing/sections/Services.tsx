@@ -18,7 +18,7 @@ const defaultServicesData: ServiceData[] = [
 const SERVICES_PER_PAGE = 6;
 
 export function Services() {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
   const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
   const [serviceImageIndex, setServiceImageIndex] = useState(0);
@@ -40,9 +40,21 @@ export function Services() {
   const servicesList: ServiceData[] = (landingData?.services && landingData.services.length > 0)
     ? landingData.services.map((s: any, i: number) => ({
       ...s,
+      name: localize(s.name),
+      header: localize(s.header),
+      short_description: localize(s.short_description),
+      description: localize(s.description),
+      serviceListMains: s.serviceListMains?.map((item: any) => ({
+        ...item,
+        description: localize(item.description),
+      })),
       span: spans[i % spans.length],
     }))
-    : defaultServicesData;
+    : defaultServicesData.map((s) => ({
+      ...s,
+      name: localize(s.name),
+      short_description: localize(s.short_description),
+    }));
 
   const totalPages = Math.ceil(servicesList.length / SERVICES_PER_PAGE);
   const paginatedServices = servicesList.slice(
@@ -140,7 +152,7 @@ export function Services() {
         <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
           <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
             {selectedService && (
-              <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
+              <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <div className="relative h-44 sm:h-72 w-full overflow-hidden bg-[#004AAD] flex items-center justify-center shrink-0">
                   {getServiceImages(selectedService.image).length > 0 ? (
                     <img

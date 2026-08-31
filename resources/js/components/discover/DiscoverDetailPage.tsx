@@ -37,7 +37,7 @@ const SECTIONS_PER_PAGE = 2;
 
 export function DiscoverDetailPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
   const [copied, setCopied] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
@@ -64,7 +64,20 @@ export function DiscoverDetailPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const discover = cachedItem || fetchedItem;
+  const rawDiscover = cachedItem || fetchedItem;
+  const discover = rawDiscover ? {
+    ...rawDiscover,
+    name: localize(rawDiscover.name),
+    short_description: rawDiscover.short_description ? localize(rawDiscover.short_description) : undefined,
+    content_sections: rawDiscover.content_sections?.map((sec) => ({
+      ...sec,
+      description: localize(sec.description),
+    })),
+    DiscoverLists: rawDiscover.DiscoverLists?.map((list: any) => ({
+      ...list,
+      description: localize(list.description),
+    })),
+  } : null;
 
   // Handle Share Link
   const handleShare = async () => {
@@ -141,7 +154,12 @@ export function DiscoverDetailPage() {
   // Other recommendations
   const otherDiscovers = allDiscovers
     .filter((item) => String(item.id) !== String(discover.id))
-    .slice(0, 3);
+    .slice(0, 3)
+    .map((item) => ({
+      ...item,
+      name: localize(item.name),
+      short_description: localize(item.short_description),
+    }));
 
   // Prev & Next item
   const currentIndex = allDiscovers.findIndex((item) => String(item.id) === String(discover.id));

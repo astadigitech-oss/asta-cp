@@ -83,8 +83,17 @@ export function Navbar() {
   const allPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
   const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
   const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
+  const activePortfolios = portfolioTab === "Mobile" ? mobiles : desktops;
+  const PORTFOLIO_PER_PAGE = 4;
+  const [portfolioPage, setPortfolioPage] = useState(1);
+  const totalPortfolioPages = Math.ceil(activePortfolios.length / PORTFOLIO_PER_PAGE) || 1;
+  const paginatedPortfolios = activePortfolios.slice(
+    (portfolioPage - 1) * PORTFOLIO_PER_PAGE,
+    portfolioPage * PORTFOLIO_PER_PAGE
+  );
+
   const discovers = (landingData?.discovers || []) as DiscoverItem[];
-  const DISCOVERS_PER_PAGE = 6;
+  const DISCOVERS_PER_PAGE = 4;
   const [discoverPage, setDiscoverPage] = useState(1);
   const totalDiscoverPages = Math.ceil(discovers.length / DISCOVERS_PER_PAGE) || 1;
   const paginatedDiscovers = discovers.slice(
@@ -237,7 +246,10 @@ export function Navbar() {
                 <div className="w-[220px] bg-[#004AAD] p-6 text-white flex flex-col gap-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">{t("nav.platform")}</p>
                   <button
-                    onClick={() => setPortfolioTab("Mobile")}
+                    onClick={() => {
+                      setPortfolioTab("Mobile");
+                      setPortfolioPage(1);
+                    }}
                     className={`w-full py-3 px-4 rounded-xl text-left font-semibold text-base transition-all cursor-pointer ${
                       portfolioTab === "Mobile"
                         ? "bg-white text-[#004AAD] shadow-md"
@@ -247,7 +259,10 @@ export function Navbar() {
                     {t("nav.mobile_apps")}
                   </button>
                   <button
-                    onClick={() => setPortfolioTab("Desktop")}
+                    onClick={() => {
+                      setPortfolioTab("Desktop");
+                      setPortfolioPage(1);
+                    }}
                     className={`w-full py-3 px-4 rounded-xl text-left font-semibold text-base transition-all cursor-pointer ${
                       portfolioTab === "Desktop"
                         ? "bg-white text-[#004AAD] shadow-md"
@@ -261,12 +276,48 @@ export function Navbar() {
                 {/* Right Content */}
                 <div className="flex-1 p-6 flex flex-col justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pb-3">
-                      {t("nav.portfolio")} {portfolioTab === "Mobile" ? t("nav.mobile_apps") : t("nav.desktop_web")}
-                    </p>
+                    <div className="flex items-center justify-between pb-3">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                        {t("nav.portfolio")} {portfolioTab === "Mobile" ? t("nav.mobile_apps") : t("nav.desktop_web")}
+                      </p>
+                      {totalPortfolioPages > 1 && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                            {portfolioPage} / {totalPortfolioPages}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setPortfolioPage((p) => Math.max(1, p - 1));
+                            }}
+                            disabled={portfolioPage === 1}
+                            className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            aria-label="Previous page"
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setPortfolioPage((p) => Math.min(totalPortfolioPages, p + 1));
+                            }}
+                            disabled={portfolioPage === totalPortfolioPages}
+                            className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            aria-label="Next page"
+                          >
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
-                      {(portfolioTab === "Mobile" ? mobiles : desktops).length > 0 ? (
-                        (portfolioTab === "Mobile" ? mobiles : desktops).slice(0, 4).map((p) => (
+                      {paginatedPortfolios.length > 0 ? (
+                        paginatedPortfolios.map((p) => (
                           <a
                             key={p.id}
                             href={`/#portofolio`}
@@ -293,13 +344,43 @@ export function Navbar() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 mt-6">
+                  <div className="pt-4 border-t border-gray-100 mt-6 flex items-center justify-between">
                     <a
                       href="/#portofolio"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors"
                     >
                       {t("nav.all_portfolios")} <ArrowRight className="w-4 h-4" />
                     </a>
+                    {totalPortfolioPages > 1 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-gray-400">
+                          {((portfolioPage - 1) * PORTFOLIO_PER_PAGE) + 1} - {Math.min(portfolioPage * PORTFOLIO_PER_PAGE, activePortfolios.length)} dari {activePortfolios.length}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalPortfolioPages }).map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setPortfolioPage(pageNum);
+                                }}
+                                className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                  portfolioPage === pageNum
+                                    ? "bg-[#004AAD] text-white shadow-xs"
+                                    : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

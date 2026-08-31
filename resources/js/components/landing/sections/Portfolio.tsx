@@ -33,7 +33,7 @@ const defaultProjects: PortfolioProject[] = [
 const PORTFOLIOS_PER_PAGE = 6;
 
 export function Portfolio() {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
@@ -57,15 +57,19 @@ export function Portfolio() {
       return {
         id: item.id,
         img: item.image || p1,
-        title: item.name || "Portfolio Item",
+        title: localize(item.name) || "Portfolio Item",
         category: catLabel,
         type: item.type || "desktop",
-        description: item.description || "",
+        description: localize(item.description) || "",
         demo_url: item.demo_url,
         span: spans[index % spans.length],
       };
     })
-    : defaultProjects;
+    : defaultProjects.map((p) => ({
+      ...p,
+      title: localize(p.title),
+      description: localize(p.description),
+    }));
 
   const categories = [
     { key: "all", label: t("portfolio.tab_all") },
@@ -226,7 +230,7 @@ export function Portfolio() {
                 </div>
 
                 {/* Main Scrollable Content */}
-                <div ref={modalScrollRef} className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-8 lg:p-10 scroll-smooth">
+                <div ref={modalScrollRef} className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-8 lg:p-10 scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                   <div className="max-w-3xl mx-auto space-y-6">
                     {/* Title Header */}
                     <div>
