@@ -201,6 +201,64 @@ class LandingController extends Controller
     }
 
     /**
+     * Retrieve single discover detail for React frontend
+     */
+    public function getDiscoverDetail($id)
+    {
+        $discover = Discover::with(['DiscoverLists' => function ($query) {
+            $query->where('is_active', true)->orderBy('sort', 'asc');
+        }])->find($id);
+
+        if (!$discover) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Discover not found',
+            ], 404);
+        }
+
+        $discoverImages = is_array($discover->image)
+            ? $discover->image
+            : (is_string($discover->image) && !empty($discover->image)
+                ? (json_decode($discover->image, true) ?: [$discover->image])
+                : []);
+
+        $formattedImages = collect($discoverImages)
+            ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img) : null)
+            ->filter()
+            ->values()
+            ->all();
+
+        $rawSections = is_array($discover->content_sections)
+            ? $discover->content_sections
+            : (is_string($discover->content_sections) && !empty($discover->content_sections)
+                ? (json_decode($discover->content_sections, true) ?: [])
+                : []);
+
+        $formattedSections = collect($rawSections)->map(function ($section) {
+            return [
+                'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                'description' => $section['description'] ?? '',
+            ];
+        })->values()->all();
+
+        return response()->json([
+            'id' => $discover->id,
+            'name' => $discover->name,
+            'type' => $discover->type ?: 'story',
+            'year' => $discover->year,
+            'short_description' => $discover->short_description,
+            'content_sections' => $formattedSections,
+            'show_name' => $discover->show_name,
+            'is_pinned' => $discover->is_pinned,
+            'is_highlight' => (bool) $discover->is_highlight,
+            'logo' => $this->formatImageUrl($discover->logo),
+            'image' => $formattedImages,
+            'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
+            'DiscoverLists' => $discover->DiscoverLists,
+        ]);
+    }
+
+    /**
      * Store contact message from React frontend into Mail model (Filament)
      */
     public function submitContact(Request $request)

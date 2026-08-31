@@ -12,4 +12,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/landing', [LandingController::class, 'getLandingData']);
 Route::get('/portfolios/{id}', [LandingController::class, 'getPortfolioDetail']);
 Route::get('/services/{id}', [LandingController::class, 'getServiceDetail']);
+Route::get('/discovers/{id}', [LandingController::class, 'getDiscoverDetail']);
 Route::post('/contact', [LandingController::class, 'submitContact'])->middleware('throttle:5,1');

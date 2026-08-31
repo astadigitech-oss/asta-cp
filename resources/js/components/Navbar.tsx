@@ -366,7 +366,7 @@ export function Navbar() {
                       <div className="grid grid-cols-2 gap-3.5">
                         {paginatedDiscovers.length > 0 ? (
                           paginatedDiscovers.map((disc) => (
-                            <a key={disc.id} href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
+                            <a key={disc.id} href={`/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
                               {disc.logo ? (
                                 <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
                               ) : (
@@ -477,7 +477,7 @@ export function Navbar() {
                           {newsItems.map((item, idx) => (
                             <a
                               key={item.id || idx}
-                              href="/#discover"
+                              href={`/discover/${item.id}`}
                               className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
                             >
                               <img

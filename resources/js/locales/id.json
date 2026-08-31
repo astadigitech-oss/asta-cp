@@ -96,6 +96,10 @@
       "created_at": "Tanggal Rilis",
       "description": "Deskripsi Proyek",
       "visit_demo": "Buka Live Demo",
+      "showcase": "ASTA Digital Showcase",
+      "mobile_app": "Mobile App",
+      "desktop_web": "Desktop & Web",
+      "doc_caption": "Proyek ASTA Digital — {name}",
       "close": "Tutup"
     }
   },
@@ -238,6 +242,25 @@
     "not_found_desc": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
     "language": "Bahasa",
     "english": "English",
-    "indonesian": "Bahasa Indonesia"
+    "indonesian": "Bahasa Indonesia",
+    "share": "Bagikan",
+    "share_copied": "Tautan berhasil disalin!",
+    "copy_failed": "Gagal menyalin tautan",
+    "copied": "Tersalin",
+    "loading_article": "Memuat artikel...",
+    "not_found_article": "Artikel Tidak Ditemukan",
+    "not_found_article_desc": "Konten yang Anda cari mungkin telah dipindahkan atau belum tersedia.",
+    "read_time": "3-5 menit baca",
+    "editorial_name": "ASTA Digital Editorial",
+    "official_article": "Artikel Resmi Agensi",
+    "part_indicator": "Bagian {index}",
+    "prev_article": "Artikel Sebelumnya",
+    "next_article": "Artikel Selanjutnya",
+    "related_title": "Cerita & Wawasan Lainnya",
+    "related_desc": "Temukan inspirasi dan inovasi digital terkini dari ASTA",
+    "view_all": "Lihat Semua",
+    "cta_similar_title": "Tertarik Mengembangkan Solusi Serupa?",
+    "cta_similar_desc": "Diskusikan kebutuhan teknologi Anda bersama tim ahli ASTA Digital untuk solusi yang tepat guna dan skalabel.",
+    "consult_now": "Konsultasi Sekarang"
   }
 }
