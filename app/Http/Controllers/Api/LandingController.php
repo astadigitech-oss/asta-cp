@@ -44,6 +44,7 @@ class LandingController extends Controller
                 'description' => $service->description,
                 'short_description' => $service->short_description,
                 'logo' => $this->formatImageUrl($service->logo),
+                'cover_image' => $this->formatImageUrl($service->cover_image),
                 'image' => collect($service->image ?? [])
                     ->map(fn (string $image) => $this->formatImageUrl($image))
                     ->filter()

@@ -80,6 +80,13 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const services = (landingData?.services || []) as ServiceItem[];
+  const SERVICES_PER_PAGE = 6;
+  const [servicePage, setServicePage] = useState(1);
+  const totalServicePages = Math.ceil(services.length / SERVICES_PER_PAGE) || 1;
+  const paginatedServices = services.slice(
+    (servicePage - 1) * SERVICES_PER_PAGE,
+    servicePage * SERVICES_PER_PAGE
+  );
   const allPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
   const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
   const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
@@ -171,12 +178,48 @@ export function Navbar() {
                   before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
               >
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-                    {t("nav.services")}
-                  </p>
+                  <div className="flex items-center justify-between pb-1">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+                      {t("nav.services")}
+                    </p>
+                    {totalServicePages > 1 && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                          {servicePage} / {totalServicePages}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setServicePage((p) => Math.max(1, p - 1));
+                          }}
+                          disabled={servicePage === 1}
+                          className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          aria-label="Previous page"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setServicePage((p) => Math.min(totalServicePages, p + 1));
+                          }}
+                          disabled={servicePage === totalServicePages}
+                          className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          aria-label="Next page"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-3 gap-6">
-                    {services.length > 0 ? (
-                      services.map((service) => (
+                    {paginatedServices.length > 0 ? (
+                      paginatedServices.map((service) => (
                         <a
                           key={service.id}
                           href="/#layanan"
@@ -220,11 +263,36 @@ export function Navbar() {
                     >
                       {t("nav.all_services")} <ArrowRight className="w-4 h-4" />
                     </a>
+
+                    {totalServicePages > 1 && (
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalServicePages }).map((_, idx) => {
+                          const pageNum = idx + 1;
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setServicePage(pageNum);
+                              }}
+                              className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                servicePage === pageNum
+                                  ? "bg-[#004AAD] text-white shadow-xs"
+                                  : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Portfolios Dropdown */}
             <div className="relative group h-full flex items-center">
               <button

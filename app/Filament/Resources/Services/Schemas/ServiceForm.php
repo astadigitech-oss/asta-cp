@@ -22,7 +22,7 @@ class ServiceForm
                     ->description('Logo and supporting image settings')
                     ->icon(Heroicon::Photo)
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(3)
                             ->schema([
                                 FileUpload::make('logo')
                                     ->label('Service Logo')
@@ -32,6 +32,13 @@ class ServiceForm
                                     ->disk('public')
                                     ->visibility('public')
                                     ->helperText('Service logo image'),
+                                FileUpload::make('cover_image')
+                                    ->label('Cover / Thumbnail Background')
+                                    ->image()
+                                    ->directory('images/service')
+                                    ->disk('public')
+                                    ->visibility('public')
+                                    ->helperText('Background image shown on hover in desktop slider'),
                                 FileUpload::make('image')
                                     ->label('Detail Images')
                                     ->required()

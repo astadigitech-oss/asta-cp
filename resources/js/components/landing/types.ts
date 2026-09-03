@@ -25,6 +25,7 @@ export interface ServiceData {
   description?: string;
   short_description?: string;
   logo?: string;
+  cover_image?: string;
   image?: string | string[];
   serviceListMains?: { id: number; description: string }[];
   span?: string;
@@ -49,7 +50,16 @@ export function getDiscoverImages(image?: string | string[]): string[] {
 
 export function getServiceImages(image?: string | string[]): string[] {
   if (!image) return [];
-  if (Array.isArray(image)) return image;
-  return [image];
+  if (Array.isArray(image)) return image.filter(Boolean);
+  if (typeof image === "string") {
+    try {
+      const parsed = JSON.parse(image);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    } catch {
+      // not JSON
+    }
+    return [image].filter(Boolean);
+  }
+  return [];
 }
 

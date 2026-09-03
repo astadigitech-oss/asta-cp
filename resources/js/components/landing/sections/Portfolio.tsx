@@ -1,21 +1,11 @@
 import { useState, useRef } from "react";
 import { motion } from "motion/react";
-import {
-  ArrowRight,
-  ExternalLink,
-  X,
-  ZoomIn,
-  Maximize2,
-  Briefcase,
-  Globe,
-  Smartphone,
-} from "lucide-react";
+import { ArrowRight, ExternalLink, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
@@ -37,10 +27,8 @@ export function Portfolio() {
   const { data: landingData } = useLandingData();
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
-  const [previewImage, setPreviewImage] = useState<{ src: string; title?: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
-  const modalScrollRef = useRef<HTMLDivElement>(null);
 
   const spans = [
     "lg:col-span-2 lg:row-span-2",
@@ -190,121 +178,42 @@ export function Portfolio() {
           onPageChange={handlePageChange}
         />
 
-        {/* Portfolio Detail Dialog - Comprehensive Modal Layout */}
+        {/* Portfolio Detail Dialog */}
         <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
-          <DialogContent
-            showClose={false}
-            className="w-[95vw] sm:w-[92vw] max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-100 bg-[#fafcff] p-0 shadow-2xl"
-          >
+          <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
             {selectedProject && (
-              <div className="flex max-h-[90vh] flex-col overflow-hidden">
-                {/* Top Bar Navigation & Close */}
-                <div className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-white/95 px-5 py-3.5 sm:px-8 backdrop-blur-md">
-                  <div className="flex items-center gap-2.5">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200/60 px-3 py-1 text-xs font-bold text-[#004AAD] uppercase tracking-wider">
-                      {selectedProject.type === "mobile" ? (
-                        <>
-                          <Smartphone className="h-3.5 w-3.5 text-[#004AAD]" />
-                          {t("portfolio.modal.mobile_app")}
-                        </>
-                      ) : (
-                        <>
-                          <Globe className="h-3.5 w-3.5 text-[#004AAD]" />
-                          {t("portfolio.modal.desktop_web")}
-                        </>
-                      )}
-                    </span>
-                    <span className="hidden sm:inline-block text-xs font-medium text-gray-500">
-                      • {selectedProject.category}
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => setSelectedProject(null)}
-                    className="grid h-8 w-8 place-items-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer"
-                    title={t("portfolio.modal.close")}
-                    aria-label={t("portfolio.modal.close")}
-                  >
-                    <X className="h-4 w-4 stroke-[2.5]" />
-                  </button>
-                </div>
-
-                {/* Main Scrollable Content */}
-                <div ref={modalScrollRef} className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-8 lg:p-10 scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                  <div className="max-w-3xl mx-auto space-y-6">
-                    {/* Title Header */}
+              <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <div className="relative h-44 sm:h-72 w-full overflow-hidden bg-gray-900 shrink-0">
+                  <img
+                    src={selectedProject.img}
+                    alt={selectedProject.title}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 flex flex-wrap items-end justify-between gap-3">
                     <div>
-                      <DialogTitle className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold leading-snug sm:leading-tight text-gray-900">
+                      <span className="inline-block rounded-full bg-[#004AAD] text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-2">
+                        {selectedProject.category}
+                      </span>
+                      <DialogTitle className="font-display text-2xl sm:text-4xl font-bold text-white leading-tight">
                         {selectedProject.title}
                       </DialogTitle>
-                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500 pb-4 border-b border-gray-100">
-                        <span className="font-semibold text-gray-700 flex items-center gap-1.5">
-                          <Briefcase className="h-3.5 w-3.5 text-[#004AAD]" /> {t("portfolio.modal.showcase")}
-                        </span>
-                        <span>•</span>
-                        <span>{selectedProject.category}</span>
-                      </div>
-                    </div>
-
-                    {/* Main Cover Image with Lightbox Zoom */}
-                    <div className="w-full">
-                      <div
-                        onClick={() => selectedProject.img && setPreviewImage({ src: selectedProject.img, title: selectedProject.title })}
-                        className={`group/cimg relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden rounded-2xl bg-gray-900 border border-gray-100 shadow-md ${selectedProject.img ? "cursor-zoom-in" : ""}`}
-                      >
-                        {selectedProject.img ? (
-                          <>
-                            <img
-                              src={selectedProject.img}
-                              alt={selectedProject.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover/cimg:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/cimg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg">
-                                <ZoomIn className="h-4 w-4" /> {t("discover.modal.click_fullscreen")}
-                              </span>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">{selectedProject.title}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Image Caption */}
-                      <p className="mt-2 text-xs text-gray-500 italic text-center sm:text-left flex items-center justify-center sm:justify-start gap-1.5">
-                        <span>{t("portfolio.modal.doc_caption", { name: selectedProject.title })}</span>
-                        {selectedProject.img && (
-                          <>
-                            <span>•</span>
-                            <span
-                              className="text-[#004AAD] font-medium flex items-center gap-1 cursor-pointer hover:underline"
-                              onClick={() => setPreviewImage({ src: selectedProject.img, title: selectedProject.title })}
-                            >
-                              <Maximize2 className="h-3 w-3" /> {t("discover.modal.enlarge_photo")}
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    </div>
-
-                    {/* Project Overview / Description */}
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD] mb-3">
-                        {t("portfolio.modal.description")}
-                      </h4>
-                      <div
-                        className="prose prose-blue max-w-none text-gray-700 text-sm sm:text-base leading-relaxed space-y-3 bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm"
-                        dangerouslySetInnerHTML={{ __html: selectedProject.description }}
-                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Footer */}
-                <DialogFooter className="flex items-center justify-between border-t border-gray-100 bg-white px-5 py-4 sm:px-8">
-                  <div className="flex w-full flex-wrap items-center justify-between gap-3">
+                <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD]">
+                      {t("portfolio.modal.description")}
+                    </h4>
+                    <div
+                      className="mt-3 text-gray-700 text-base leading-relaxed space-y-3 prose prose-blue max-w-none"
+                      dangerouslySetInnerHTML={{ __html: selectedProject.description }}
+                    />
+                  </div>
+
+                  <div className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
                     <Button
                       variant="outline"
                       onClick={() => setSelectedProject(null)}
@@ -316,17 +225,17 @@ export function Portfolio() {
                       {selectedProject.demo_url && (
                         <Button
                           asChild
-                          className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 text-xs sm:text-sm font-semibold shadow-md transition-all"
+                          className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 font-semibold shadow-md transition-all"
                         >
                           <a href={selectedProject.demo_url} target="_blank" rel="noopener noreferrer">
-                            {t("portfolio.live_demo")} <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                            {t("portfolio.live_demo")} <ExternalLink className="ml-2 h-4 w-4" />
                           </a>
                         </Button>
                       )}
                       <Button
                         asChild
                         onClick={() => setSelectedProject(null)}
-                        className="rounded-full bg-[#004AAD] px-6 py-2 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-blue-800"
+                        className="rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 py-3 font-semibold shadow-md"
                       >
                         <a href="#kontak">
                           {t("nav.contact")} <ArrowRight className="ml-2 h-4 w-4" />
@@ -334,55 +243,6 @@ export function Portfolio() {
                       </Button>
                     </div>
                   </div>
-                </DialogFooter>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Full Screen Lightbox / Image Preview Modal */}
-        <Dialog
-          open={!!previewImage}
-          onOpenChange={(open) => {
-            if (!open) setPreviewImage(null);
-          }}
-        >
-          <DialogContent
-            showClose={false}
-            className="w-[98vw] sm:w-[95vw] max-w-7xl max-h-[96vh] p-0 border-0 bg-black/90 sm:bg-black/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col items-center justify-center"
-          >
-            {previewImage && (
-              <div className="relative w-full h-full flex flex-col items-center justify-center p-3 sm:p-6">
-                {/* Floating Top Header with Title & Close */}
-                <div className="absolute top-4 inset-x-4 sm:top-6 sm:inset-x-8 z-50 flex items-center justify-between pointer-events-auto">
-                  <div className="rounded-full bg-black/60 backdrop-blur-md px-4 py-1.5 border border-white/20 text-white text-xs sm:text-sm font-semibold max-w-[70vw] truncate shadow-lg">
-                    {previewImage.title || t("discover.lightbox.preview_title")}
-                  </div>
-                  <button
-                    onClick={() => setPreviewImage(null)}
-                    className="grid h-9 w-9 place-items-center rounded-full bg-black/70 hover:bg-white/20 text-white border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
-                    title={t("discover.lightbox.close")}
-                    aria-label={t("discover.lightbox.close")}
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-
-                {/* Centered Image */}
-                <div
-                  onClick={() => setPreviewImage(null)}
-                  className="flex-1 w-full flex items-center justify-center p-4 sm:p-8 cursor-zoom-out"
-                >
-                  <img
-                    src={previewImage.src}
-                    alt={previewImage.title || "Full Screen Image"}
-                    className="max-h-[82vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl shadow-2xl transition-transform duration-300"
-                  />
-                </div>
-
-                {/* Bottom hint */}
-                <div className="absolute bottom-3 sm:bottom-4 z-40 text-center text-white/60 text-[11px]">
-                  {t("discover.lightbox.hint")}
                 </div>
               </div>
             )}
