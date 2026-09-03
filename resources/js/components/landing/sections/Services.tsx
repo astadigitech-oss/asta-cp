@@ -35,6 +35,7 @@ export function Services() {
   const isDownRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const scrollPosRef = useRef(0); // Subpixel accumulator for smooth slow speeds (< 0.5)
   const isDraggingRef = useRef(false);
 
   useEffect(() => {
@@ -75,6 +76,9 @@ export function Services() {
       const oneThird = slider.scrollWidth / 3;
       if (oneThird > 0 && slider.scrollLeft === 0) {
         slider.scrollLeft = oneThird;
+        scrollPosRef.current = oneThird;
+      } else {
+        scrollPosRef.current = slider.scrollLeft;
       }
     }, 120);
 
@@ -89,14 +93,18 @@ export function Services() {
     if (oneThird > 0) {
       if (slider.scrollLeft >= oneThird * 2) {
         slider.scrollLeft -= oneThird;
+        scrollPosRef.current = slider.scrollLeft;
         if (isDownRef.current) {
           scrollLeftRef.current -= oneThird;
         }
       } else if (slider.scrollLeft <= 5) {
         slider.scrollLeft += oneThird;
+        scrollPosRef.current = slider.scrollLeft;
         if (isDownRef.current) {
           scrollLeftRef.current += oneThird;
         }
+      } else if (isDownRef.current) {
+        scrollPosRef.current = slider.scrollLeft;
       }
     }
   };
@@ -107,20 +115,22 @@ export function Services() {
     if (!slider) return;
 
     let animationFrameId: number;
-    const speed = 0.65; // gentle, smooth movement for both mobile and desktop
+    // Speed can now be set to any decimal (e.g. 0.35, 0.2, 0.5) without freezing
+    const speed = 0.15;
 
     const step = () => {
       if (!isHovered && !isDownRef.current && !selectedService && slider) {
-        slider.scrollLeft += speed;
+        scrollPosRef.current += speed;
 
         const oneThird = slider.scrollWidth / 3;
         if (oneThird > 0) {
-          if (slider.scrollLeft >= oneThird * 2) {
-            slider.scrollLeft -= oneThird;
-          } else if (slider.scrollLeft <= 5) {
-            slider.scrollLeft += oneThird;
+          if (scrollPosRef.current >= oneThird * 2) {
+            scrollPosRef.current -= oneThird;
+          } else if (scrollPosRef.current <= 5) {
+            scrollPosRef.current += oneThird;
           }
         }
+        slider.scrollLeft = scrollPosRef.current;
       }
       animationFrameId = requestAnimationFrame(step);
     };
@@ -137,6 +147,7 @@ export function Services() {
     isDraggingRef.current = false;
     startXRef.current = e.pageX - slider.offsetLeft;
     scrollLeftRef.current = slider.scrollLeft;
+    scrollPosRef.current = slider.scrollLeft;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -153,11 +164,16 @@ export function Services() {
     }
 
     slider.scrollLeft = scrollLeftRef.current - walk;
+    scrollPosRef.current = slider.scrollLeft;
     handleScroll();
   };
 
   const handleMouseUp = useCallback(() => {
     isDownRef.current = false;
+    const slider = sliderRef.current;
+    if (slider) {
+      scrollPosRef.current = slider.scrollLeft;
+    }
     setTimeout(() => {
       isDraggingRef.current = false;
     }, 100);
@@ -178,6 +194,10 @@ export function Services() {
     isDownRef.current = true;
     isDraggingRef.current = false;
     startXRef.current = e.touches[0].clientX;
+    const slider = sliderRef.current;
+    if (slider) {
+      scrollPosRef.current = slider.scrollLeft;
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -190,6 +210,10 @@ export function Services() {
 
   const handleTouchEnd = () => {
     isDownRef.current = false;
+    const slider = sliderRef.current;
+    if (slider) {
+      scrollPosRef.current = slider.scrollLeft;
+    }
     setTimeout(() => {
       isDraggingRef.current = false;
     }, 120);
@@ -203,6 +227,11 @@ export function Services() {
       left: direction === "next" ? scrollAmount : -scrollAmount,
       behavior: "smooth",
     });
+    setTimeout(() => {
+      if (slider) {
+        scrollPosRef.current = slider.scrollLeft;
+      }
+    }, 450);
   };
 
   const handleCardClick = (s: ServiceData) => {
