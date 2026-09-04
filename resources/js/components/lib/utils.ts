@@ -28,3 +28,20 @@ export function stripHtml(html?: string): string {
     .trim();
   return decodeHtmlEntities(cleaned);
 }
+
+export function getYoutubeEmbedUrl(url: string): string | null {
+  if (!url) return null;
+
+  // RegEx untuk mengekstrak ID video dari URL YouTube
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+  const match = url.match(regExp);
+
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}?rel=0`;
+  }
+
+  if (url.includes("youtube.com/embed/")) {
+    return url;
+  }
+  return null;
+}

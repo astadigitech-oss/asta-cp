@@ -29,7 +29,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing/sections/Footer";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
-import { stripHtml } from "@/components/lib/utils";
+import { getYoutubeEmbedUrl, stripHtml } from "@/components/lib/utils";
 import { DiscoverData, getDiscoverImages } from "@/components/landing/types";
 import p1 from "@/assets/portfolio-1.jpg";
 
@@ -146,9 +146,9 @@ export function DiscoverDetailPage() {
 
   const paginatedSections = hasMultipleSections
     ? allSections.slice(
-        (articlePage - 1) * SECTIONS_PER_PAGE,
-        articlePage * SECTIONS_PER_PAGE
-      )
+      (articlePage - 1) * SECTIONS_PER_PAGE,
+      articlePage * SECTIONS_PER_PAGE
+    )
     : allSections;
 
   // Other recommendations
@@ -378,6 +378,9 @@ export function DiscoverDetailPage() {
                   {paginatedSections.map((section, sIdx) => {
                     const sectionRealIndex = (articlePage - 1) * SECTIONS_PER_PAGE + sIdx + 1;
                     const sectionTitle = t("discover.modal.section_part", { index: sectionRealIndex });
+                    const embedUrl = section.video_url ? getYoutubeEmbedUrl(section.video_url) : null;
+                    const isVideo = section.media_type === "video" || Boolean(embedUrl);
+
                     return (
                       <section key={sIdx} className="space-y-4 pt-2">
                         <div className="flex items-center gap-2">
@@ -386,7 +389,19 @@ export function DiscoverDetailPage() {
                           </span>
                         </div>
 
-                        {section.image && (
+                        {isVideo && embedUrl && (
+                          <div className="relative w-full aspect-video overflow-hidden rounded-2xl sm:rounded-3xl bg-black border border-gray-200 shadow-md">
+                            <iframe
+                              src={embedUrl}
+                              title={sectionTitle || `Youtube Video ${sectionRealIndex}`}
+                              className="w-full h-full border-0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          </div>
+                        )}
+
+                        {!isVideo && section.image && (
                           <div
                             onClick={() => section.image && setPreviewImage({ src: section.image, title: String(discover.name) + " — " + String(sectionTitle) })}
                             className="group/simg relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200/70 shadow-sm cursor-zoom-in"
@@ -455,11 +470,10 @@ export function DiscoverDetailPage() {
                               setArticlePage(pageNum);
                               contentTopRef.current?.scrollIntoView({ behavior: "smooth" });
                             }}
-                            className={`h-10 w-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                              articlePage === pageNum
+                            className={`h-10 w-10 rounded-xl text-sm font-bold transition-all cursor-pointer ${articlePage === pageNum
                                 ? "bg-[#004AAD] text-white shadow-md shadow-blue-500/20 scale-105"
                                 : "bg-white text-gray-700 hover:bg-blue-100/80 border border-blue-200/60"
-                            }`}
+                              }`}
                           >
                             {pageNum}
                           </button>

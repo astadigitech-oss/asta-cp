@@ -1,5 +1,7 @@
 export interface DiscoverSectionItem {
+  media_type?: "image" | "video";
   image?: string | null;
+  video_url?: string | null;
   description: string;
 }
 
@@ -63,3 +65,9 @@ export function getServiceImages(image?: string | string[]): string[] {
   return [];
 }
 
+export interface DiscoverSectionItem {
+  media_type?: "image" | "video";
+  image?: string | null;
+  video_url?: string | null;
+  description: string;
+}

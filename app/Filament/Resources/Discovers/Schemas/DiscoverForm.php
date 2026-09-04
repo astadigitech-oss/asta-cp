@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Discovers\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -98,12 +99,30 @@ class DiscoverForm
                         Repeater::make('content_sections')
                             ->label('Bagian Konten (Image & Description)')
                             ->schema([
+                                Radio::make('media_type')
+                                    ->label('Tipe Media')
+                                    ->options([
+                                        'image' => 'Upload Gambar',
+                                        'video' => 'Link Video',
+                                    ])
+                                    ->default('image')
+                                    ->inline()
+                                    ->live()
+                                    ->required(),
                                 FileUpload::make('image')
                                     ->label('Upload Gambar Section')
                                     ->image()
                                     ->disk('public')
                                     ->directory('images/elearning')
                                     ->visibility('public')
+                                    ->visible(fn ($get) => $get('media_type') === 'image')
+                                    ->nullable(),
+                                TextInput::make('video_url')
+                                    ->label('Link Video Section')
+                                    ->placeholder('e.g. https://www.youtube.com/watch?v=example')
+                                    ->url()
+                                    ->helperText('Contoh: https://www.youtube.com/watch?v=example')
+                                    ->visible(fn ($get) => $get('media_type') === 'video')
                                     ->nullable(),
                                 RichEditor::make('description')
                                     ->label('Deskripsi / Penjelasan Section')
@@ -118,6 +137,9 @@ class DiscoverForm
                                 $desc = $state['description'] ?? null;
                                 if (is_string($desc) && filled(strip_tags($desc))) {
                                     return Str::limit(strip_tags($desc), 50);
+                                }
+                                if (is_string($desc) && empty(strip_tags($desc)) && !empty($state['video_url'])) {
+                                    return 'Video YouTube: ' . Str::limit($state['video_url'] ?? 'Belum ada link', 30);
                                 }
                                 if (!empty($state['image'])) {
                                     return 'Gambar Section';

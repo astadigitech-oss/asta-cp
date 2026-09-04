@@ -97,7 +97,9 @@ class LandingController extends Controller
 
             $formattedSections = collect($rawSections)->map(function ($section) {
                 return [
+                    'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
                     'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                    'video_url' => $section['video_url'] ?? null,
                     'description' => $section['description'] ?? '',
                 ];
             })->values()->all();
@@ -237,7 +239,9 @@ class LandingController extends Controller
 
         $formattedSections = collect($rawSections)->map(function ($section) {
             return [
+                'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
                 'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                'video_url' => $section['video_url'] ?? null,
                 'description' => $section['description'] ?? '',
             ];
         })->values()->all();
