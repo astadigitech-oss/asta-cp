@@ -68,10 +68,11 @@ class ServiceForm
                                     ->default(true)
                                     ->required(),
                             ]),
-                        Textarea::make('header')
-                            ->label('Service Header')
+                        TextInput::make('header')
+                            ->label('Service Tag / Label')
+                            ->placeholder('Contoh: Produk, Layanan, Solusi')
+                            ->helperText('Tag/kategori layanan yang tampil sebagai badge di dialog (misal: Produk atau Layanan)')
                             ->required()
-                            ->helperText('Main service header text')
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
 
