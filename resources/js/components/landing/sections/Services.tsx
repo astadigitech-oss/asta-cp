@@ -330,9 +330,16 @@ export function Services() {
                   <Globe className="h-6 w-6 text-white" />
                 </span>
               )}
-              <span className="rounded-full border border-primary/10 bg-white/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary/60 backdrop-blur-sm sm:group-hover:border-white/30 sm:group-hover:bg-white/20 sm:group-hover:text-white transition-colors">
-                {numberLabel}
-              </span>
+              <div className="flex items-center gap-1.5">
+                {s.header && (
+                  <span className="rounded-full border border-cyan-500/20 bg-cyan-50/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-secondary backdrop-blur-sm sm:group-hover:border-white/30 sm:group-hover:bg-white/20 sm:group-hover:text-white transition-colors">
+                    {s.header}
+                  </span>
+                )}
+                <span className="rounded-full border border-primary/10 bg-white/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary/60 backdrop-blur-sm sm:group-hover:border-white/30 sm:group-hover:bg-white/20 sm:group-hover:text-white transition-colors">
+                  {numberLabel}
+                </span>
+              </div>
             </div>
 
             {s.show_name !== 0 && (
@@ -525,7 +532,7 @@ export function Services() {
                   {/* Title and Category at Bottom */}
                   <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 pointer-events-none">
                     <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-2.5 py-0.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2 backdrop-blur-sm">
-                      {t("services.eyebrow")}
+                      {selectedService.header || t("services.eyebrow")}
                     </span>
                     <DialogTitle className="font-display text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
                       {selectedService.name}
@@ -534,11 +541,12 @@ export function Services() {
                 </div>
 
                 <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
-                  {selectedService.header && (
-                    <div className="bg-blue-50/70 border-l-4 border-[#004AAD] p-3 sm:p-4 rounded-r-xl">
-                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug">
-                        {selectedService.header}
-                      </h3>
+                  {selectedService.short_description && (
+                    <div className="bg-blue-50/70 border-l-4 border-[#004AAD] p-3.5 sm:p-4 rounded-r-xl">
+                      <div
+                        className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed prose prose-sm sm:prose-base prose-blue max-w-none [&>p]:m-0"
+                        dangerouslySetInnerHTML={{ __html: selectedService.short_description }}
+                      />
                     </div>
                   )}
 

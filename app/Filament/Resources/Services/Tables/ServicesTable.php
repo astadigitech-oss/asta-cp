@@ -31,6 +31,11 @@ class ServicesTable
                 TextColumn::make('name')
                     ->label('Service Name')
                     ->searchable(),
+                TextColumn::make('header')
+                    ->label('Tag')
+                    ->badge()
+                    ->color('info')
+                    ->searchable(),
                 IconColumn::make('show_name')
                     ->label('Show Name')
                     ->boolean(),
