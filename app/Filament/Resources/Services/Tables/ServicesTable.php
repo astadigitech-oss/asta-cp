@@ -23,6 +23,11 @@ class ServicesTable
                     ->label('Logo')
                     ->disk('public')
                     ->imageWidth(50),
+                ImageColumn::make('cover_image')
+                    ->label('Cover')
+                    ->disk('public')
+                    ->imageWidth(50)
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Service Name')
                     ->searchable(),

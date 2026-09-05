@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import en from "../locales/en.json";
 import id from "../locales/id.json";
 
+import { localizeText } from "./localize";
+
+export { localizeText };
 export type Language = "en" | "id";
 
 type TranslationDictionary = typeof en;
@@ -74,6 +77,7 @@ export interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
+  localize: (text?: string | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -146,13 +150,24 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     [language]
   );
 
+  /**
+   * Localize raw dynamic database strings containing [:id]...[:en]... or [id]...[/id][en]...[/en]
+   */
+  const localize = useCallback(
+    (text?: string | null): string => {
+      return localizeText(text, language);
+    },
+    [language]
+  );
+
   const contextValue = useMemo(
     () => ({
       language,
       setLanguage,
       t,
+      localize,
     }),
-    [language, setLanguage, t]
+    [language, setLanguage, t, localize]
   );
 
   return <LanguageContext.Provider value={contextValue}>{children}</LanguageContext.Provider>;

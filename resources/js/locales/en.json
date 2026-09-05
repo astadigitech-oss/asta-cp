@@ -62,7 +62,7 @@
     "val_4_desc": "Designed around real human needs in every practical context."
   },
   "services": {
-    "eyebrow": "Our Services",
+    "eyebrow": "Products & Our Services",
     "title": "Integrated Technology Solutions tailored to your needs.",
     "description": "From custom software to enterprise mobile apps, we deliver end-to-end digital solutions designed for performance, security, and scalability.",
     "view_detail": "View Details",
@@ -96,6 +96,10 @@
       "created_at": "Published Date",
       "description": "Project Overview",
       "visit_demo": "Open Live Demo",
+      "showcase": "ASTA Digital Showcase",
+      "mobile_app": "Mobile App",
+      "desktop_web": "Desktop & Web",
+      "doc_caption": "ASTA Digital Project — {name}",
       "close": "Close"
     }
   },
@@ -105,12 +109,31 @@
     "description": "Stay updated with the latest technological developments, company achievements, and industry insights from Asta Digital.",
     "search_placeholder": "Search articles, stories, or insights...",
     "category_all": "All Categories",
+    "tab_all": "All",
+    "tab_story": "Stories & News",
+    "tab_elearning": "E-Learning & Blog",
+    "badge_story": "Story",
+    "badge_elearning": "E-Learning & Blog",
     "pinned_badge": "Pinned",
     "read_more": "Read Full Story",
     "empty": "No items found matching your search.",
     "modal": {
       "published": "Published",
+      "latest_update": "Latest Update",
+      "page_indicator": "Page {current} of {total}",
+      "doc_caption": "ASTA Digital Documentation — {name}",
+      "enlarge_photo": "Enlarge Photo",
+      "click_fullscreen": "Click for Fullscreen",
+      "section_part": "Content Part {index}",
+      "key_points": "Key Highlights",
+      "pagination_page": "Page:",
+      "last_page": "Last Page",
       "close": "Close"
+    },
+    "lightbox": {
+      "preview_title": "Photo Preview",
+      "close": "Close (Esc)",
+      "hint": "Click anywhere or press Esc to close"
     }
   },
   "why_us": {
@@ -219,6 +242,25 @@
     "not_found_desc": "The page you are looking for does not exist or has been moved.",
     "language": "Language",
     "english": "English",
-    "indonesian": "Indonesian"
+    "indonesian": "Indonesian",
+    "share": "Share",
+    "share_copied": "Link copied to clipboard!",
+    "copy_failed": "Failed to copy link",
+    "copied": "Copied",
+    "loading_article": "Loading article...",
+    "not_found_article": "Article Not Found",
+    "not_found_article_desc": "The content you are looking for might have been moved or is not yet available.",
+    "read_time": "3-5 min read",
+    "editorial_name": "ASTA Digital Editorial",
+    "official_article": "Official Agency Article",
+    "part_indicator": "Part {index}",
+    "prev_article": "Previous Article",
+    "next_article": "Next Article",
+    "related_title": "More Stories & Insights",
+    "related_desc": "Discover the latest inspiration and digital innovation from ASTA",
+    "view_all": "View All",
+    "cta_similar_title": "Interested in Developing a Similar Solution?",
+    "cta_similar_desc": "Discuss your technology needs with the ASTA Digital expert team for targeted and scalable solutions.",
+    "consult_now": "Consult Now"
   }
 }

@@ -468,3 +468,15 @@ a {
   animation-play-state: paused;
 }
 
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  animation: marquee 50s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-slow:hover,
+.animate-marquee-slow:focus-within {
+  animation-play-state: paused;
+}
+

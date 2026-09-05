@@ -20,6 +20,7 @@ class Service extends Model
         'description',
         'short_description',
         'logo',
+        'cover_image',
         'image',
     ];
 

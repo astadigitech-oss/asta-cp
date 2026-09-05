@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Menu, X, ArrowRight, Pin } from "lucide-react";
+import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import logo from "../assets/logo/Logo Hitam 2.png";
 import p1 from "../assets/portfolio-1.jpg";
 import p2 from "../assets/portfolio-2.jpg";
@@ -80,10 +80,33 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const services = (landingData?.services || []) as ServiceItem[];
+  const SERVICES_PER_PAGE = 6;
+  const [servicePage, setServicePage] = useState(1);
+  const totalServicePages = Math.ceil(services.length / SERVICES_PER_PAGE) || 1;
+  const paginatedServices = services.slice(
+    (servicePage - 1) * SERVICES_PER_PAGE,
+    servicePage * SERVICES_PER_PAGE
+  );
   const allPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
   const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
   const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
+  const activePortfolios = portfolioTab === "Mobile" ? mobiles : desktops;
+  const PORTFOLIO_PER_PAGE = 4;
+  const [portfolioPage, setPortfolioPage] = useState(1);
+  const totalPortfolioPages = Math.ceil(activePortfolios.length / PORTFOLIO_PER_PAGE) || 1;
+  const paginatedPortfolios = activePortfolios.slice(
+    (portfolioPage - 1) * PORTFOLIO_PER_PAGE,
+    portfolioPage * PORTFOLIO_PER_PAGE
+  );
+
   const discovers = (landingData?.discovers || []) as DiscoverItem[];
+  const DISCOVERS_PER_PAGE = 4;
+  const [discoverPage, setDiscoverPage] = useState(1);
+  const totalDiscoverPages = Math.ceil(discovers.length / DISCOVERS_PER_PAGE) || 1;
+  const paginatedDiscovers = discovers.slice(
+    (discoverPage - 1) * DISCOVERS_PER_PAGE,
+    discoverPage * DISCOVERS_PER_PAGE
+  );
 
   // Keep pinned discoveries first, then show the newest discoveries.
   const discoversWithImages = discovers.filter((d) => Boolean(d.image));
@@ -155,12 +178,48 @@ export function Navbar() {
                   before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
               >
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-                    {t("nav.services")}
-                  </p>
+                  <div className="flex items-center justify-between pb-1">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+                      {t("nav.services")}
+                    </p>
+                    {totalServicePages > 1 && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                          {servicePage} / {totalServicePages}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setServicePage((p) => Math.max(1, p - 1));
+                          }}
+                          disabled={servicePage === 1}
+                          className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          aria-label="Previous page"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setServicePage((p) => Math.min(totalServicePages, p + 1));
+                          }}
+                          disabled={servicePage === totalServicePages}
+                          className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          aria-label="Next page"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-3 gap-6">
-                    {services.length > 0 ? (
-                      services.map((service) => (
+                    {paginatedServices.length > 0 ? (
+                      paginatedServices.map((service) => (
                         <a
                           key={service.id}
                           href="/#layanan"
@@ -204,11 +263,36 @@ export function Navbar() {
                     >
                       {t("nav.all_services")} <ArrowRight className="w-4 h-4" />
                     </a>
+
+                    {totalServicePages > 1 && (
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalServicePages }).map((_, idx) => {
+                          const pageNum = idx + 1;
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setServicePage(pageNum);
+                              }}
+                              className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                servicePage === pageNum
+                                  ? "bg-[#004AAD] text-white shadow-xs"
+                                  : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Portfolios Dropdown */}
             <div className="relative group h-full flex items-center">
               <button
@@ -230,7 +314,10 @@ export function Navbar() {
                 <div className="w-[220px] bg-[#004AAD] p-6 text-white flex flex-col gap-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">{t("nav.platform")}</p>
                   <button
-                    onClick={() => setPortfolioTab("Mobile")}
+                    onClick={() => {
+                      setPortfolioTab("Mobile");
+                      setPortfolioPage(1);
+                    }}
                     className={`w-full py-3 px-4 rounded-xl text-left font-semibold text-base transition-all cursor-pointer ${
                       portfolioTab === "Mobile"
                         ? "bg-white text-[#004AAD] shadow-md"
@@ -240,7 +327,10 @@ export function Navbar() {
                     {t("nav.mobile_apps")}
                   </button>
                   <button
-                    onClick={() => setPortfolioTab("Desktop")}
+                    onClick={() => {
+                      setPortfolioTab("Desktop");
+                      setPortfolioPage(1);
+                    }}
                     className={`w-full py-3 px-4 rounded-xl text-left font-semibold text-base transition-all cursor-pointer ${
                       portfolioTab === "Desktop"
                         ? "bg-white text-[#004AAD] shadow-md"
@@ -254,12 +344,48 @@ export function Navbar() {
                 {/* Right Content */}
                 <div className="flex-1 p-6 flex flex-col justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 pb-3">
-                      {t("nav.portfolio")} {portfolioTab === "Mobile" ? t("nav.mobile_apps") : t("nav.desktop_web")}
-                    </p>
+                    <div className="flex items-center justify-between pb-3">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                        {t("nav.portfolio")} {portfolioTab === "Mobile" ? t("nav.mobile_apps") : t("nav.desktop_web")}
+                      </p>
+                      {totalPortfolioPages > 1 && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                            {portfolioPage} / {totalPortfolioPages}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setPortfolioPage((p) => Math.max(1, p - 1));
+                            }}
+                            disabled={portfolioPage === 1}
+                            className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            aria-label="Previous page"
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setPortfolioPage((p) => Math.min(totalPortfolioPages, p + 1));
+                            }}
+                            disabled={portfolioPage === totalPortfolioPages}
+                            className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            aria-label="Next page"
+                          >
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
-                      {(portfolioTab === "Mobile" ? mobiles : desktops).length > 0 ? (
-                        (portfolioTab === "Mobile" ? mobiles : desktops).slice(0, 4).map((p) => (
+                      {paginatedPortfolios.length > 0 ? (
+                        paginatedPortfolios.map((p) => (
                           <a
                             key={p.id}
                             href={`/#portofolio`}
@@ -286,13 +412,43 @@ export function Navbar() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 mt-6">
+                  <div className="pt-4 border-t border-gray-100 mt-6 flex items-center justify-between">
                     <a
                       href="/#portofolio"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors"
                     >
                       {t("nav.all_portfolios")} <ArrowRight className="w-4 h-4" />
                     </a>
+                    {totalPortfolioPages > 1 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-gray-400">
+                          {((portfolioPage - 1) * PORTFOLIO_PER_PAGE) + 1} - {Math.min(portfolioPage * PORTFOLIO_PER_PAGE, activePortfolios.length)} dari {activePortfolios.length}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalPortfolioPages }).map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setPortfolioPage(pageNum);
+                                }}
+                                className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                  portfolioPage === pageNum
+                                    ? "bg-[#004AAD] text-white shadow-xs"
+                                    : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -316,39 +472,113 @@ export function Navbar() {
                   before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
               >
                 <div className="grid grid-cols-12 gap-8">
-                  <div className="col-span-8 border-r border-gray-100 pr-6">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">{t("nav.discover")}</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      {discovers.length > 0 ? (
-                        discovers.map((disc) => (
-                          <a key={disc.id} href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
-                            {disc.logo && (
-                              <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
-                            )}
-                            <div>
-                              <h5 className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
-                                {disc.is_pinned && <Pin className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />}
-                                <span>{disc.name}</span>
-                              </h5>
-                              {disc.short_description && (
-                                <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{stripHtml(disc.short_description)}</p>
+                  {/* Left Column: Discover items with pagination */}
+                  <div className="col-span-8 border-r border-gray-100 pr-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{t("nav.discover")}</p>
+                        {totalDiscoverPages > 1 && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] font-medium text-gray-400 mr-0.5">
+                              {discoverPage} / {totalDiscoverPages}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDiscoverPage((p) => Math.max(1, p - 1));
+                              }}
+                              disabled={discoverPage === 1}
+                              className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              aria-label="Previous page"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDiscoverPage((p) => Math.min(totalDiscoverPages, p + 1));
+                              }}
+                              disabled={discoverPage === totalDiscoverPages}
+                              className="h-6 w-6 rounded-md flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD] hover:border-blue-200 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                              aria-label="Next page"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3.5">
+                        {paginatedDiscovers.length > 0 ? (
+                          paginatedDiscovers.map((disc) => (
+                            <a key={disc.id} href={`/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
+                              {disc.logo ? (
+                                <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-[#004AAD] font-bold text-xs">
+                                  {disc.name?.charAt(0) || "D"}
+                                </div>
                               )}
-                            </div>
-                          </a>
-                        ))
-                      ) : (
-                        <>
-                          <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
-                          </a>
-                          <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                            <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
-                            <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
-                          </a>
-                        </>
-                      )}
+                              <div className="min-w-0 flex-1">
+                                <h5 className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
+                                  {disc.is_pinned && <Pin className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />}
+                                  <span className="line-clamp-1">{disc.name}</span>
+                                </h5>
+                                {disc.short_description && (
+                                  <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{stripHtml(disc.short_description)}</p>
+                                )}
+                              </div>
+                            </a>
+                          ))
+                        ) : (
+                          <>
+                            <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
+                              <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
+                              <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
+                            </a>
+                            <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
+                              <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
+                              <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
+                            </a>
+                          </>
+                        )}
+                      </div>
                     </div>
+
+                    {totalDiscoverPages > 1 && (
+                      <div className="pt-3 border-t border-gray-100 flex items-center justify-between mt-3">
+                        <span className="text-[11px] text-gray-400">
+                          {((discoverPage - 1) * DISCOVERS_PER_PAGE) + 1} - {Math.min(discoverPage * DISCOVERS_PER_PAGE, discovers.length)} dari {discovers.length}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalDiscoverPages }).map((_, idx) => {
+                            const pageNum = idx + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setDiscoverPage(pageNum);
+                                }}
+                                className={`h-6 w-6 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                                  discoverPage === pageNum
+                                    ? "bg-[#004AAD] text-white shadow-xs"
+                                    : "border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#004AAD]"
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Story card box */}
@@ -396,7 +626,7 @@ export function Navbar() {
                           {newsItems.map((item, idx) => (
                             <a
                               key={item.id || idx}
-                              href="/#discover"
+                              href={`/discover/${item.id}`}
                               className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
                             >
                               <img
