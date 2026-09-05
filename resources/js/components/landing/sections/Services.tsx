@@ -255,6 +255,25 @@ export function Services() {
     setServiceImageIndex((prev) => (prev + 1) % serviceImages.length);
   };
 
+  const modalTouchStartX = useRef<number | null>(null);
+
+  const handleModalTouchStart = (e: React.TouchEvent) => {
+    modalTouchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleModalTouchEnd = (e: React.TouchEvent) => {
+    if (modalTouchStartX.current === null || serviceImages.length <= 1) return;
+    const diffX = e.changedTouches[0].clientX - modalTouchStartX.current;
+    if (Math.abs(diffX) > 40) {
+      if (diffX < 0) {
+        setServiceImageIndex((prev) => (prev + 1) % serviceImages.length);
+      } else {
+        setServiceImageIndex((prev) => (prev - 1 + serviceImages.length) % serviceImages.length);
+      }
+    }
+    modalTouchStartX.current = null;
+  };
+
   useEffect(() => {
     if (!selectedService || serviceImages.length <= 1) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -412,11 +431,15 @@ export function Services() {
 
         {/* Service Detail Dialog */}
         <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
-          <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
+          <DialogContent showClose={false} className="w-[94vw] sm:w-full max-w-3xl overflow-hidden rounded-[24px] sm:rounded-3xl bg-white p-0 border border-gray-100/80 shadow-2xl focus:outline-none">
             {selectedService && (
-              <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex flex-col max-h-[88dvh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {/* Banner Header Image with Slider Controls */}
-                <div className="relative h-52 sm:h-80 w-full overflow-hidden bg-gray-900 flex items-center justify-center shrink-0 select-none">
+                <div
+                  onTouchStart={handleModalTouchStart}
+                  onTouchEnd={handleModalTouchEnd}
+                  className="relative h-52 sm:h-80 w-full overflow-hidden bg-gray-900 flex items-center justify-center shrink-0 select-none"
+                >
                   {serviceImages.length > 0 ? (
                     <img
                       key={serviceImageIndex}
@@ -433,23 +456,45 @@ export function Services() {
                   )}
 
                   {/* Gradient Overlay */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
 
                   {/* Close Button Top Right */}
                   <button
                     type="button"
                     onClick={() => setSelectedService(null)}
-                    className="absolute top-4 right-4 z-20 grid h-8 w-8 place-items-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors cursor-pointer"
+                    className="absolute top-3.5 right-3.5 z-30 grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
                     title={t("portfolio.modal.close")}
                     aria-label={t("portfolio.modal.close")}
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
 
-                  {/* Image Counter Badge */}
+                  {/* Image Counter Badge Top Left */}
                   {hasMultipleImages && (
-                    <div className="absolute top-4 left-4 z-20 rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs font-semibold text-white border border-white/20 shadow-md">
+                    <div className="absolute top-3.5 left-3.5 z-30 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/20 shadow-md">
                       {serviceImageIndex + 1} / {serviceImages.length}
+                    </div>
+                  )}
+
+                  {/* Pagination Dots at Top Center - never clashes with bottom text */}
+                  {hasMultipleImages && (
+                    <div className="absolute top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 shadow-sm">
+                      {serviceImages.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setServiceImageIndex(idx);
+                          }}
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                            serviceImageIndex === idx
+                              ? "w-5 bg-white shadow-sm"
+                              : "w-1.5 bg-white/40 hover:bg-white/70"
+                          }`}
+                          aria-label={`Go to image ${idx + 1}`}
+                        />
+                      ))}
                     </div>
                   )}
 
@@ -459,63 +504,39 @@ export function Services() {
                       <button
                         type="button"
                         onClick={handlePrevImage}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 grid h-10 w-10 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
+                        className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 z-20 grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/50 hover:bg-black/80 text-white border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
                         title="Previous Image"
                         aria-label="Previous Image"
                       >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                       <button
                         type="button"
                         onClick={handleNextImage}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 grid h-10 w-10 place-items-center rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
+                        className="absolute right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 z-20 grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/50 hover:bg-black/80 text-white border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
                         title="Next Image"
                         aria-label="Next Image"
                       >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     </>
                   )}
 
-                  {/* Pagination Dots */}
-                  {hasMultipleImages && (
-                    <div className="absolute bottom-16 sm:bottom-20 inset-x-0 z-20 flex items-center justify-center gap-2 pointer-events-auto">
-                      {serviceImages.map((_, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setServiceImageIndex(idx);
-                          }}
-                          className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                            serviceImageIndex === idx
-                              ? "w-7 bg-white shadow-md"
-                              : "w-2 bg-white/50 hover:bg-white/80"
-                          }`}
-                          aria-label={`Go to image ${idx + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Title and Category */}
-                  <div className="absolute bottom-5 left-6 right-6 flex flex-wrap items-end justify-between gap-3 pointer-events-none">
-                    <div>
-                      <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-2 backdrop-blur-sm">
-                        {t("services.eyebrow")}
-                      </span>
-                      <DialogTitle className="font-display text-2xl sm:text-4xl font-bold text-white leading-tight">
-                        {selectedService.name}
-                      </DialogTitle>
-                    </div>
+                  {/* Title and Category at Bottom */}
+                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 pointer-events-none">
+                    <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-2.5 py-0.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2 backdrop-blur-sm">
+                      {t("services.eyebrow")}
+                    </span>
+                    <DialogTitle className="font-display text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
+                      {selectedService.name}
+                    </DialogTitle>
                   </div>
                 </div>
 
                 <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
                   {selectedService.header && (
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900 border-l-4 border-[#004AAD] pl-3">
+                    <div className="bg-blue-50/70 border-l-4 border-[#004AAD] p-3 sm:p-4 rounded-r-xl">
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug">
                         {selectedService.header}
                       </h3>
                     </div>
@@ -524,41 +545,54 @@ export function Services() {
                   {selectedService.description && (
                     <div>
                       <div
-                        className="text-gray-700 text-base leading-relaxed space-y-3 prose prose-blue max-w-none"
+                        className="portfolio-content text-sm sm:text-base text-gray-700 leading-relaxed space-y-2 prose prose-sm sm:prose-base prose-blue max-w-none"
                         dangerouslySetInnerHTML={{ __html: selectedService.description }}
                       />
                     </div>
                   )}
 
                   {selectedService.serviceListMains && selectedService.serviceListMains.length > 0 && (
-                    <div className="pt-4 border-t border-gray-100">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD] mb-3">
-                        {t("services.modal.features")}
-                      </h4>
-                      <ul className="grid sm:grid-cols-2 gap-3">
+                    <div className="pt-2 sm:pt-4 border-t border-gray-100">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#004AAD]" />
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD]">
+                          {t("services.modal.features")}
+                        </h4>
+                      </div>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                         {selectedService.serviceListMains.map((item) => (
-                          <li key={item.id} className="flex items-start gap-2.5 bg-blue-50/50 p-3 rounded-xl border border-blue-100/60 text-xs font-medium text-gray-800">
+                          <li key={item.id} className="flex items-start gap-2.5 bg-blue-50/60 p-3 rounded-xl border border-blue-100/60 text-xs sm:text-sm font-medium text-gray-800">
                             <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
-                            <span>{stripHtml(item.description)}</span>
+                            <span className="leading-snug">{stripHtml(item.description)}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  <div className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                  <div className="pt-4 sm:pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                     <div>
-                      <p className="text-sm font-bold text-gray-900">{t("services.modal.cta")}</p>
+                      <p className="text-xs sm:text-sm font-bold text-gray-900">{t("services.modal.cta")}</p>
+                      <p className="text-[11px] sm:text-xs text-gray-500 hidden sm:block">Konsultasikan kebutuhan proyek Anda dengan tim kami</p>
                     </div>
-                    <Button
-                      asChild
-                      onClick={() => setSelectedService(null)}
-                      className="rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 py-3 font-semibold shadow-md"
-                    >
-                      <a href="#kontak">
-                        {t("contact.form.submit")} <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
+                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedService(null)}
+                        className="flex-1 sm:flex-initial rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm px-4 h-11"
+                      >
+                        {t("portfolio.modal.close")}
+                      </Button>
+                      <Button
+                        asChild
+                        onClick={() => setSelectedService(null)}
+                        className="flex-1 sm:flex-initial rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 h-11 font-semibold shadow-md text-xs sm:text-sm"
+                      >
+                        <a href="#kontak">
+                          {t("contact.form.submit")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
