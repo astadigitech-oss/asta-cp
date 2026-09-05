@@ -180,65 +180,85 @@ export function Portfolio() {
 
         {/* Portfolio Detail Dialog */}
         <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
-          <DialogContent showClose={false} className="w-[92vw] sm:w-full max-w-3xl overflow-hidden rounded-2xl sm:rounded-3xl bg-white p-0 border border-gray-100 shadow-2xl">
+          <DialogContent showClose={false} className="w-[94vw] sm:w-full max-w-3xl overflow-hidden rounded-[24px] sm:rounded-3xl bg-white p-0 border border-gray-100/80 shadow-2xl focus:outline-none">
             {selectedProject && (
-              <div className="flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                <div className="relative h-44 sm:h-72 w-full overflow-hidden bg-gray-900 shrink-0">
+              <div className="flex flex-col max-h-[88dvh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <div className="relative h-48 sm:h-72 w-full overflow-hidden bg-gray-900 shrink-0 select-none">
                   <img
                     src={selectedProject.img}
                     alt={selectedProject.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                      <span className="inline-block rounded-full bg-[#004AAD] text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20" />
+
+                  {/* Close button top right */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProject(null)}
+                    className="absolute top-3.5 right-3.5 z-30 grid h-9 w-9 place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
+                    title={t("portfolio.modal.close")}
+                    aria-label={t("portfolio.modal.close")}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+
+                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 pointer-events-none">
+                    <div className="flex items-center gap-2 mb-1.5 sm:mb-2 flex-wrap">
+                      <span className="inline-block rounded-full bg-[#004AAD] text-white px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-sm">
                         {selectedProject.category}
                       </span>
-                      <DialogTitle className="font-display text-2xl sm:text-4xl font-bold text-white leading-tight">
-                        {selectedProject.title}
-                      </DialogTitle>
+                      {selectedProject.type && (
+                        <span className="inline-block rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-medium capitalize">
+                          {selectedProject.type}
+                        </span>
+                      )}
                     </div>
+                    <DialogTitle className="font-display text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
+                      {selectedProject.title}
+                    </DialogTitle>
                   </div>
                 </div>
 
                 <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD]">
-                      {t("portfolio.modal.description")}
-                    </h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#004AAD]" />
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD]">
+                        {t("portfolio.modal.description")}
+                      </h4>
+                    </div>
                     <div
-                      className="mt-3 text-gray-700 text-base leading-relaxed space-y-3 prose prose-blue max-w-none"
+                      className="portfolio-content text-sm sm:text-base text-gray-700 leading-relaxed space-y-3 prose prose-blue max-w-none"
                       dangerouslySetInnerHTML={{ __html: selectedProject.description }}
                     />
                   </div>
 
-                  <div className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                  <div className="pt-4 sm:pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                     <Button
                       variant="outline"
                       onClick={() => setSelectedProject(null)}
-                      className="rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm px-4"
+                      className="order-last sm:order-first w-full sm:w-auto rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm px-5 h-11 transition-all"
                     >
                       {t("portfolio.modal.close")}
                     </Button>
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
                       {selectedProject.demo_url && (
                         <Button
                           asChild
-                          className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 font-semibold shadow-md transition-all"
+                          className="flex-1 sm:flex-initial rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-5 h-11 font-semibold shadow-md text-xs sm:text-sm transition-all"
                         >
                           <a href={selectedProject.demo_url} target="_blank" rel="noopener noreferrer">
-                            {t("portfolio.live_demo")} <ExternalLink className="ml-2 h-4 w-4" />
+                            {t("portfolio.live_demo")} <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
                           </a>
                         </Button>
                       )}
                       <Button
                         asChild
                         onClick={() => setSelectedProject(null)}
-                        className="rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 py-3 font-semibold shadow-md"
+                        className="flex-1 sm:flex-initial rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 h-11 font-semibold shadow-md text-xs sm:text-sm transition-all"
                       >
                         <a href="#kontak">
-                          {t("nav.contact")} <ArrowRight className="ml-2 h-4 w-4" />
+                          {t("nav.contact")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                         </a>
                       </Button>
                     </div>
