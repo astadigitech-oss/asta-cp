@@ -64,11 +64,20 @@ function TestimonialAvatar({ avatar, name, colorClass }: { avatar?: string; name
 }
 
 export function Testimonials() {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
-  const testimonials = (landingData?.testimonials && landingData.testimonials.length > 0)
+  const rawTestimonials = (landingData?.testimonials && landingData.testimonials.length > 0)
     ? landingData.testimonials
     : defaultTestimonials;
+
+  const testimonials = rawTestimonials.map((tItem) => ({
+    ...tItem,
+    name: localize(tItem.name),
+    role: localize(tItem.role),
+    org: localize(tItem.org),
+    quote: localize(tItem.quote),
+    tag: localize(tItem.tag),
+  }));
 
   const [idx, setIdx] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
