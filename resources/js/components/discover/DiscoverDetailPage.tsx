@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense, lazy } from "react";
 import { useParams, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -26,12 +26,13 @@ import { toast, Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/landing/sections/Footer";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { getYoutubeEmbedUrl, stripHtml } from "@/components/lib/utils";
 import { DiscoverData, getDiscoverImages } from "@/components/landing/types";
 import p1 from "@/assets/portfolio-1.jpg";
+
+const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer })));
 
 const SECTIONS_PER_PAGE = 2;
 
@@ -101,7 +102,9 @@ export function DiscoverDetailPage() {
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#004AAD] border-t-transparent" />
           <p className="mt-4 text-sm font-semibold text-gray-600">{t("common.loading_article")}</p>
         </div>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
     );
   }
@@ -126,7 +129,9 @@ export function DiscoverDetailPage() {
             </Button>
           </div>
         </div>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
     );
   }
@@ -309,6 +314,8 @@ export function DiscoverDetailPage() {
                   <img
                     src={currentCover}
                     alt={discover.name}
+                    fetchPriority="high"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/cimg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
@@ -409,6 +416,8 @@ export function DiscoverDetailPage() {
                             <img
                               src={section.image}
                               alt={sectionTitle}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-auto max-h-[520px] object-cover mx-auto transition-transform duration-500 group-hover/simg:scale-[1.02]"
                             />
                             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/simg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
@@ -587,6 +596,8 @@ export function DiscoverDetailPage() {
                           <img
                             src={itemImgs[0] || p1}
                             alt={item.name}
+                            loading="lazy"
+                            decoding="async"
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-[#004AAD] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs">
@@ -669,6 +680,8 @@ export function DiscoverDetailPage() {
                 <img
                   src={previewImage.src}
                   alt={previewImage.title || "Full Screen Image"}
+                  loading="lazy"
+                  decoding="async"
                   className="max-h-[82vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl shadow-2xl transition-transform duration-300"
                 />
               </div>
@@ -681,7 +694,9 @@ export function DiscoverDetailPage() {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

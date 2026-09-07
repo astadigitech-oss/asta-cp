@@ -158,7 +158,7 @@ export function Navbar() {
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <img src={logo} alt="Asta Digital Agency" className="w-[115px] mt-2 h-auto" onError={(e) => {
+            <img src={logo} alt="Asta Digital Agency" decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
           </a>
@@ -241,7 +241,7 @@ export function Navbar() {
                           className="p-4 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 group/item"
                         >
                           {service.logo && (
-                            <img src={service.logo} alt={service.name} className="w-10 h-10 mb-2 object-contain" />
+                            <img src={service.logo} alt={service.name} loading="lazy" decoding="async" className="w-10 h-10 mb-2 object-contain" />
                           )}
                           <h4 className="font-bold text-gray-900 group-hover/item:text-[#004AAD] text-base">
                             {service.name}
@@ -407,7 +407,7 @@ export function Navbar() {
                             className="flex gap-3 items-center p-2 rounded-lg hover:bg-blue-50 transition-colors group/item border border-transparent hover:border-blue-100"
                           >
                             {p.image ? (
-                              <img src={p.image} alt={p.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                              <img src={p.image} alt={p.name} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover shrink-0" />
                             ) : (
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#004AAD] to-[#38B6FF] flex items-center justify-center shrink-0">
                                 <span className="text-white text-xs font-bold">{p.name.charAt(0)}</span>
@@ -532,7 +532,7 @@ export function Navbar() {
                           paginatedDiscovers.map((disc) => (
                             <a key={disc.id} href={`/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
                               {disc.logo ? (
-                                <img src={disc.logo} alt={disc.name} className="w-8 h-8 object-contain shrink-0 mt-0.5" />
+                                <img src={disc.logo} alt={disc.name} loading="lazy" decoding="async" className="w-8 h-8 object-contain shrink-0 mt-0.5" />
                               ) : (
                                 <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-[#004AAD] font-bold text-xs">
                                   {disc.name?.charAt(0) || "D"}
@@ -647,6 +647,8 @@ export function Navbar() {
                               <img
                                 src={Array.isArray(item.image) ? item.image[0] : item.image}
                                 alt={item.name}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-900/40 to-transparent p-3.5 flex flex-col justify-end text-white">

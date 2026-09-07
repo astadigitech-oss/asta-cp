@@ -35,13 +35,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
 
       <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid items-center gap-14 lg:grid-cols-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-7"
-          >
+          <div className="lg:col-span-7">
             <Eyebrow>{t("hero.eyebrow")}</Eyebrow>
             <h1 className="mt-5 font-display text-[2.5rem] font-bold leading-[1.02] tracking-tight text-primary sm:text-6xl lg:text-[4.25rem] 2xl:text-[4.75rem] 3xl:text-[5.25rem]">
               {t("hero.title_1")}{" "}
@@ -100,7 +94,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                 <Zap className="h-3.5 w-3.5 text-accent" /> {t("hero.trust_fast")}
               </span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right visual */}
           <motion.div
@@ -113,13 +107,9 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
             <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px]">
               <div className="absolute inset-0 rounded-[42%_58%_45%_55%/55%_40%_60%_45%] gradient-mesh opacity-90 blur-[2px]" />
               <div className="absolute inset-6 rounded-[52%_48%_40%_60%/45%_55%_45%_55%] gradient-hero shadow-glass" />
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0"
-              >
+              <div className="absolute inset-0 animate-spin [animation-duration:40s]">
                 <div className="absolute inset-2 rounded-full border border-dashed border-accent/40" />
-              </motion.div>
+              </div>
 
               <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-2">
                 <div className="relative w-full h-full flex items-center justify-center overflow-visible">
@@ -131,6 +121,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
                     />
                   </motion.div>
@@ -146,6 +138,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[1.2] sm:scale-[1.1] lg:scale-[1.2] translate-x-[-7.9%] translate-y-[-20.5%]"
                     />
                   </motion.div>
@@ -215,6 +209,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                             <img
                               src={client.image}
                               alt={client.name}
+                              loading="lazy"
+                              decoding="async"
                               className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
                               onError={(e) => {
                                 const target = e.target as HTMLElement;
@@ -251,6 +247,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                         <img
                           src={client.image}
                           alt={client.name}
+                          loading="lazy"
+                          decoding="async"
                           className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
                           onError={(e) => {
                             const target = e.target as HTMLElement;
