@@ -79,9 +79,9 @@ export function useLandingData() {
     queryKey: ["landing"],
     queryFn: () =>
       axios.get<LandingData>("/api/landing").then((res) => res.data),
-    staleTime: 5 * 60 * 1000, // cache 5 menit
-    gcTime: 10 * 60 * 1000,   // garbage collect setelah 10 menit
-    refetchOnWindowFocus: false,
+    staleTime: 30 * 1000,     // 30 detik agar perubahan admin cepat terbaca
+    gcTime: 5 * 60 * 1000,    // 5 menit
+    refetchOnWindowFocus: true, // Otomatis refresh saat kembali ke tab web
     retry: 1,
   });
 }

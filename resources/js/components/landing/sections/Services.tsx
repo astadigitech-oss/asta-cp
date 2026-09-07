@@ -307,6 +307,8 @@ export function Services() {
               src={hoverBg}
               alt={s.name}
               draggable={false}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-80"
             />
             {/* Dark overlay for contrast on hover */}
@@ -323,7 +325,7 @@ export function Services() {
             <div className="flex items-start justify-between gap-4">
               {s.logo ? (
                 <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-2xl bg-white/90 p-2 sm:p-2.5 shadow-sm backdrop-blur-sm transition-all duration-300 sm:group-hover:scale-105 sm:group-hover:bg-white">
-                  <img src={s.logo} alt={s.name} draggable={false} className="h-full w-full object-contain" />
+                  <img src={s.logo} alt={s.name} draggable={false} loading="lazy" decoding="async" className="h-full w-full object-contain" />
                 </div>
               ) : (
                 <span className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-glass transition-all duration-300 sm:group-hover:scale-105">
@@ -428,7 +430,7 @@ export function Services() {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="overflow-x-auto py-4 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden -mx-4 sm:-mx-6 lg:-mx-10 xl:-mx-12 2xl:-mx-16 px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16"
+            className="overflow-x-auto overflow-touch py-4 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden -mx-4 sm:-mx-6 lg:-mx-10 xl:-mx-12 2xl:-mx-16 px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16"
           >
             <div className="flex w-max items-stretch gap-4 sm:gap-6">
               {marqueeServices.map((s, idx) => renderServiceCard(s, idx))}
@@ -452,12 +454,14 @@ export function Services() {
                       key={serviceImageIndex}
                       src={serviceImages[serviceImageIndex]}
                       alt={selectedService.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover transition-opacity duration-300"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex flex-col justify-end">
                       {selectedService.logo && (
-                        <img src={selectedService.logo} alt={selectedService.name} className="w-16 h-16 object-contain mb-4" />
+                        <img src={selectedService.logo} alt={selectedService.name} loading="lazy" decoding="async" className="w-16 h-16 object-contain mb-4" />
                       )}
                     </div>
                   )}

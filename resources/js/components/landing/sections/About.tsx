@@ -225,7 +225,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
 
           <div className="min-w-0 lg:col-span-7 flex flex-col justify-between">
             <div className="-mx-4 overflow-hidden sm:mx-0 sm:overflow-visible">
-              <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-pl-4 px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:p-1 sm:scroll-pl-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto overflow-touch scroll-pl-4 px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:p-1 sm:scroll-pl-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {values.map((v, i) => (
                   <motion.div
                     key={v.titleKey}
@@ -261,6 +261,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                 alt={activeItem.name}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
               {getDiscoverImages(activeItem.image).length > 1 && (
@@ -353,6 +354,8 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                     src={currentImg}
                     alt={selectedTimelineImage.name}
                     draggable={false}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-contain"
                     style={{ transformOrigin: "center center" }}
                   />
@@ -428,7 +431,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                               : "border-white/30 opacity-60 hover:opacity-100"
                           }`}
                         >
-                          <img src={img} alt={`Thumb ${i + 1}`} className="h-full w-full object-cover" />
+                          <img src={img} alt={`Thumb ${i + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                         </button>
                       ))}
                     </div>

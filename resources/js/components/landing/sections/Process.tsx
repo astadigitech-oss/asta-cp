@@ -65,7 +65,7 @@ export function Process() {
           </ol>
 
           <div className="lg:hidden -mx-4 overflow-hidden sm:-mx-6">
-            <div className="overflow-x-auto pb-4 scroll-pl-4 sm:scroll-pl-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="overflow-x-auto overflow-touch pb-4 scroll-pl-4 sm:scroll-pl-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <ol className="flex snap-x snap-mandatory gap-4 px-4 sm:px-6">
                 {steps.map((s, i) => (
                   <motion.li
