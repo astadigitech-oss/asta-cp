@@ -36,7 +36,7 @@ const values = [
 ];
 
 export function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverData[] }) {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedTimelineImage, setSelectedTimelineImage] = useState<DiscoverData | null>(null);
   const [timelineImgIndex, setTimelineImgIndex] = useState(0);
@@ -120,7 +120,12 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
     applyTransform(1, 0, 0);
   };
 
-  const allDiscovers = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
+  const rawDiscovers = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
+  const allDiscovers = rawDiscovers.map((item) => ({
+    ...item,
+    name: localize(item.name),
+    short_description: item.short_description ? localize(item.short_description) : undefined,
+  }));
   // Hanya ambil item yang di-highlight dari admin (maksimal 4). Jika belum ada yang di-highlight, ambil 4 teratas
   const highlighted = allDiscovers.filter((item) => item.is_highlight);
   const timelineItems = (highlighted.length > 0 ? highlighted : allDiscovers).slice(0, 4);

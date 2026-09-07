@@ -74,12 +74,17 @@ const stripHtml = (html?: string) => {
 };
 
 export function Navbar() {
-  const { t } = useTranslation();
+  const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
   const [portfolioTab, setPortfolioTab] = useState<"Mobile" | "Desktop">("Mobile");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const services = (landingData?.services || []) as ServiceItem[];
+  const rawServices = (landingData?.services || []) as ServiceItem[];
+  const services: ServiceItem[] = rawServices.map((s) => ({
+    ...s,
+    name: localize(s.name),
+    short_description: s.short_description ? localize(s.short_description) : undefined,
+  }));
   const SERVICES_PER_PAGE = 6;
   const [servicePage, setServicePage] = useState(1);
   const totalServicePages = Math.ceil(services.length / SERVICES_PER_PAGE) || 1;
@@ -87,7 +92,12 @@ export function Navbar() {
     (servicePage - 1) * SERVICES_PER_PAGE,
     servicePage * SERVICES_PER_PAGE
   );
-  const allPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
+  const rawPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
+  const allPortfolios: PortfolioItem[] = rawPortfolios.map((p) => ({
+    ...p,
+    name: localize(p.name),
+    description: p.description ? localize(p.description) : undefined,
+  }));
   const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
   const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
   const activePortfolios = portfolioTab === "Mobile" ? mobiles : desktops;
@@ -99,7 +109,12 @@ export function Navbar() {
     portfolioPage * PORTFOLIO_PER_PAGE
   );
 
-  const discovers = (landingData?.discovers || []) as DiscoverItem[];
+  const rawDiscovers = (landingData?.discovers || []) as DiscoverItem[];
+  const discovers: DiscoverItem[] = rawDiscovers.map((d) => ({
+    ...d,
+    name: localize(d.name),
+    short_description: d.short_description ? localize(d.short_description) : undefined,
+  }));
   const DISCOVERS_PER_PAGE = 4;
   const [discoverPage, setDiscoverPage] = useState(1);
   const totalDiscoverPages = Math.ceil(discovers.length / DISCOVERS_PER_PAGE) || 1;
