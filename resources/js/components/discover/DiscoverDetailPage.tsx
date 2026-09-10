@@ -168,8 +168,8 @@ export function DiscoverDetailPage() {
 
   // Prev & Next item
   const currentIndex = allDiscovers.findIndex((item) => String(item.id) === String(discover.id));
-  const prevItem = currentIndex > 0 ? allDiscovers[currentIndex - 1] : null;
-  const nextItem = currentIndex >= 0 && currentIndex < allDiscovers.length - 1 ? allDiscovers[currentIndex + 1] : null;
+  const prevItem = currentIndex > 0 ? { ...allDiscovers[currentIndex - 1], name: localize(allDiscovers[currentIndex - 1].name) } : null;
+  const nextItem = currentIndex >= 0 && currentIndex < allDiscovers.length - 1 ? { ...allDiscovers[currentIndex + 1], name: localize(allDiscovers[currentIndex + 1].name) } : null;
 
   return (
     <div className="min-h-screen bg-[#f8fbfe] text-gray-900 font-sans selection:bg-accent/30 selection:text-accent">
