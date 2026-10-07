@@ -123,7 +123,7 @@ export function DiscoverDetailPage() {
           </p>
           <div className="mt-6">
             <Button asChild className="rounded-full bg-[#004AAD] text-white px-6">
-              <Link to="/">
+              <Link to="/$lang" params={{ lang: lang || "id" }}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back_home")}
               </Link>
             </Button>
@@ -188,19 +188,21 @@ export function DiscoverDetailPage() {
           >
             <div className="flex items-center gap-2 flex-wrap">
               <Link
-                to="/"
+                to="/$lang"
+                params={{ lang: lang || "id" }}
                 className="flex items-center gap-1 font-medium hover:text-[#004AAD] transition-colors"
               >
                 <Home className="h-3.5 w-3.5" />
                 <span>{t("nav.home")}</span>
               </Link>
               <span>/</span>
-              <a
-                href="/#discover"
+              <Link
+                to="/$lang/discover"
+                params={{ lang: lang || "id" }}
                 className="font-medium hover:text-[#004AAD] transition-colors"
               >
                 {t("nav.discover")}
-              </a>
+              </Link>
               <span>/</span>
               <span className="font-bold text-gray-800 line-clamp-1 max-w-[200px] sm:max-w-[350px]">
                 {discover.name}
@@ -230,7 +232,7 @@ export function DiscoverDetailPage() {
                 size="sm"
                 className="h-8 rounded-full border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-[#004AAD] shadow-xs"
               >
-                <Link to="/">
+                <Link to="/$lang/discover" params={{ lang: lang || "id" }}>
                   <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> {t("common.back")}
                 </Link>
               </Button>
@@ -575,9 +577,9 @@ export function DiscoverDetailPage() {
                   </p>
                 </div>
                 <Button asChild variant="outline" className="rounded-full border-gray-200 text-xs font-semibold">
-                  <a href="/#discover">
+                  <Link to="/$lang/discover" params={{ lang: lang || "id" }}>
                     {t("common.view_all")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                  </a>
+                  </Link>
                 </Button>
               </div>
 
