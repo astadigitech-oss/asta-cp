@@ -679,7 +679,7 @@ export function Navbar() {
                     </div>
 
                     <a
-                      href="/#discover"
+                      href={`/${language}/discover`}
                       className="inline-flex items-center justify-between text-xs font-semibold text-white bg-[#004AAD] px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors mt-4 shadow-sm"
                     >
                       {t("nav.learn_more")} <ArrowRight className="w-3.5 h-3.5" />
@@ -740,7 +740,7 @@ export function Navbar() {
                 {t("nav.portfolio")}
               </a>
               <a
-                href="/#discover"
+                href={`/${language}/discover`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >

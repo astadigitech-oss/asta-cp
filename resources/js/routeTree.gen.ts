@@ -12,10 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LangRouteImport } from './routes/$lang/route'
 import { Route as LangIndexRouteImport } from './routes/$lang/index'
+import { Route as LangDiscoverIndexRouteImport } from './routes/$lang/discover.index'
 import { Route as LangDiscoverIdRouteImport } from './routes/$lang/discover.$id'
-
-// Legacy discover.$id route (kept for backward compatibility if needed)
-// import { Route as DiscoverIdRouteImport } from './routes/discover.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,6 +33,12 @@ const LangIndexRoute = LangIndexRouteImport.update({
   getParentRoute: () => LangRoute,
 } as any)
 
+const LangDiscoverIndexRoute = LangDiscoverIndexRouteImport.update({
+  id: '/$lang/discover/',
+  path: '/discover/',
+  getParentRoute: () => LangRoute,
+} as any)
+
 const LangDiscoverIdRoute = LangDiscoverIdRouteImport.update({
   id: '/$lang/discover/$id',
   path: '/discover/$id',
@@ -45,11 +49,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$lang': typeof LangRoute
   '/$lang/': typeof LangIndexRoute
+  '/$lang/discover': typeof LangDiscoverIndexRoute
+  '/$lang/discover/': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$lang': typeof LangIndexRoute
+  '/$lang/discover': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRoutesById {
@@ -57,14 +64,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$lang': typeof LangRoute
   '/$lang/': typeof LangIndexRoute
+  '/$lang/discover/': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$lang' | '/$lang/' | '/$lang/discover/$id'
+  fullPaths: '/' | '/$lang' | '/$lang/' | '/$lang/discover' | '/$lang/discover/' | '/$lang/discover/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$lang' | '/$lang/discover/$id'
-  id: '__root__' | '/' | '/$lang' | '/$lang/' | '/$lang/discover/$id'
+  to: '/' | '/$lang' | '/$lang/discover' | '/$lang/discover/$id'
+  id: '__root__' | '/' | '/$lang' | '/$lang/' | '/$lang/discover/' | '/$lang/discover/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -74,6 +82,7 @@ export interface RootRouteChildren {
 
 export interface LangRouteChildren {
   LangIndexRoute: typeof LangIndexRoute
+  LangDiscoverIndexRoute: typeof LangDiscoverIndexRoute
   LangDiscoverIdRoute: typeof LangDiscoverIdRoute
 }
 
@@ -100,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangIndexRouteImport
       parentRoute: typeof LangRouteImport
     }
+    '/$lang/discover/': {
+      id: '/$lang/discover/'
+      path: '/discover'
+      fullPath: '/$lang/discover'
+      preLoaderRoute: typeof LangDiscoverIndexRouteImport
+      parentRoute: typeof LangRouteImport
+    }
     '/$lang/discover/$id': {
       id: '/$lang/discover/$id'
       path: '/discover/$id'
@@ -112,6 +128,7 @@ declare module '@tanstack/react-router' {
 
 const LangRouteWithChildren = LangRoute._addFileChildren({
   LangIndexRoute,
+  LangDiscoverIndexRoute,
   LangDiscoverIdRoute,
 } as LangRouteChildren)
 
@@ -123,3 +140,4 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
