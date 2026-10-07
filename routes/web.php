@@ -67,13 +67,19 @@ Route::get('/sitemap.xml', function () {
 })->middleware('throttle:60,1');
 
 // Primary SPA Catch-all Route dengan Subfolder Locale Support
-Route::get('/{locale?}/{any?}', function ($locale = 'id', $any = null) {
-    if (!in_array($locale, ['id', 'en'])) {
-        $fullPath = request()->path();
-        return redirect('/id/' . ltrim($fullPath, '/'), 301);
+// NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).
+// Locale dideteksi dari URL path, lalu diserahkan ke frontend untuk handle routing.
+Route::get('/{any?}', function () {
+    $path = request()->path();
+    $locale = 'id'; // default
+
+    if (str_starts_with($path, 'en/') || $path === 'en') {
+        $locale = 'en';
+    } elseif (str_starts_with($path, 'id/') || $path === 'id') {
+        $locale = 'id';
     }
 
     app()->setLocale($locale);
     return view('layouts.app', ['locale' => $locale]);
-})->where('any', '.*')->where('locale', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml).*');
+})->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml).*');
 
