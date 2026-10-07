@@ -1,18 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LandingPage } from "@/components/landing/LandingPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+// Root "/" redirect ke "/$lang" menggunakan bahasa default (id)
+// Deteksi bahasa dari localStorage/cookie/browser jika tersedia
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "ASTA Digital Agency — Solusi Teknologi & Digital Agency" },
-      { name: "description", content: "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan." },
-      { property: "og:title", content: "ASTA Digital Agency — Solusi Teknologi & Digital Agency" },
-      { property: "og:description", content: "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis." },
-    ],
-  }),
-  component: Index,
+  beforeLoad: () => {
+    // Cek bahasa yang tersimpan
+    let lang = "id";
+    try {
+      const stored = localStorage.getItem("asta_lang");
+      if (stored === "en" || stored === "id") lang = stored;
+    } catch {
+      // ignore
+    }
+    throw redirect({ to: "/$lang", params: { lang }, replace: true });
+  },
+  component: () => null,
 });
 
-function Index() {
-  return <LandingPage />;
-}

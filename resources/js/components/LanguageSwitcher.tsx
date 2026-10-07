@@ -1,6 +1,7 @@
 import React from "react";
 import { Globe, Check } from "lucide-react";
 import { useTranslation, Language } from "../i18n/useTranslation";
+import { useRouter, useParams } from "@tanstack/react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +11,30 @@ import {
 
 export function LanguageSwitcher({ className = "" }: { className?: string }) {
   const { language, setLanguage } = useTranslation();
+  const router = useRouter();
+  const params = useParams({ strict: false }) as Record<string, string>;
 
   const languages: { code: Language; label: string; flag: string }[] = [
     { code: "en", label: "English", flag: "🇬🇧" },
     { code: "id", label: "Indonesia", flag: "🇮🇩" },
   ];
+
+  const handleSwitch = (lang: Language) => {
+    setLanguage(lang);
+
+    // Jika sudah berada di route /$lang/..., update param lang-nya via router navigate
+    const currentLang = params?.lang;
+    if (currentLang) {
+      const currentPath = router.state.location.pathname;
+      const newPath = currentPath.replace(
+        new RegExp(`^/(id|en)(/|$)`),
+        `/${lang}$2`
+      );
+      if (newPath !== currentPath) {
+        router.navigate({ to: newPath, replace: false });
+      }
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -30,7 +50,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => setLanguage(lang.code)}
+            onClick={() => handleSwitch(lang.code)}
             className={`flex items-center justify-between text-xs cursor-pointer font-medium px-3 py-2 ${
               language === lang.code ? "bg-blue-50 text-[#004AAD] font-semibold" : "text-gray-700 hover:bg-gray-50"
             }`}

@@ -10,7 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DiscoverIdRouteImport } from './routes/discover.$id'
+import { Route as LangRouteImport } from './routes/$lang/route'
+import { Route as LangIndexRouteImport } from './routes/$lang/index'
+import { Route as LangDiscoverIdRouteImport } from './routes/$lang/discover.$id'
+
+// Legacy discover.$id route (kept for backward compatibility if needed)
+// import { Route as DiscoverIdRouteImport } from './routes/discover.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -18,36 +23,58 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
-const DiscoverIdRoute = DiscoverIdRouteImport.update({
-  id: '/discover/$id',
-  path: '/discover/$id',
+const LangRoute = LangRouteImport.update({
+  id: '/$lang',
+  path: '/$lang',
   getParentRoute: () => rootRouteImport,
+} as any)
+
+const LangIndexRoute = LangIndexRouteImport.update({
+  id: '/$lang/',
+  path: '/',
+  getParentRoute: () => LangRoute,
+} as any)
+
+const LangDiscoverIdRoute = LangDiscoverIdRouteImport.update({
+  id: '/$lang/discover/$id',
+  path: '/discover/$id',
+  getParentRoute: () => LangRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/discover/$id': typeof DiscoverIdRoute
+  '/$lang': typeof LangRoute
+  '/$lang/': typeof LangIndexRoute
+  '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/discover/$id': typeof DiscoverIdRoute
+  '/$lang': typeof LangIndexRoute
+  '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/discover/$id': typeof DiscoverIdRoute
+  '/$lang': typeof LangRoute
+  '/$lang/': typeof LangIndexRoute
+  '/$lang/discover/$id': typeof LangDiscoverIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/discover/$id'
+  fullPaths: '/' | '/$lang' | '/$lang/' | '/$lang/discover/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover/$id'
-  id: '__root__' | '/' | '/discover/$id'
+  to: '/' | '/$lang' | '/$lang/discover/$id'
+  id: '__root__' | '/' | '/$lang' | '/$lang/' | '/$lang/discover/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DiscoverIdRoute: typeof DiscoverIdRoute
+  LangRoute: typeof LangRoute
+}
+
+export interface LangRouteChildren {
+  LangIndexRoute: typeof LangIndexRoute
+  LangDiscoverIdRoute: typeof LangDiscoverIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -59,20 +86,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/discover/$id': {
-      id: '/discover/$id'
-      path: '/discover/$id'
-      fullPath: '/discover/$id'
-      preLoaderRoute: typeof DiscoverIdRouteImport
+    '/$lang': {
+      id: '/$lang'
+      path: '/$lang'
+      fullPath: '/$lang'
+      preLoaderRoute: typeof LangRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$lang/': {
+      id: '/$lang/'
+      path: '/'
+      fullPath: '/$lang/'
+      preLoaderRoute: typeof LangIndexRouteImport
+      parentRoute: typeof LangRouteImport
+    }
+    '/$lang/discover/$id': {
+      id: '/$lang/discover/$id'
+      path: '/discover/$id'
+      fullPath: '/$lang/discover/$id'
+      preLoaderRoute: typeof LangDiscoverIdRouteImport
+      parentRoute: typeof LangRouteImport
     }
   }
 }
 
+const LangRouteWithChildren = LangRoute._addFileChildren({
+  LangIndexRoute,
+  LangDiscoverIdRoute,
+} as LangRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DiscoverIdRoute: DiscoverIdRoute,
+  LangRoute: LangRouteWithChildren,
 }
+
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()

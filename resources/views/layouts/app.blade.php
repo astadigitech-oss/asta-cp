@@ -1,5 +1,18 @@
+@php
+    $currentUrl = url()->current();
+    $currentLocale = app()->getLocale() ?: 'id';
+    $baseUrl = config('app.url', url('/'));
+    
+    // Extraksi path tanpa prefix locale untuk generator Hreflang
+    $path = request()->path();
+    $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
+    $cleanPathSegment = $cleanPath ? '/' . ltrim($cleanPath, '/') : '';
+    
+    $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
+    $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', $currentLocale) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,20 +25,26 @@
     <meta name="author" content="PT Asta Digital Agency">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#004AAD">
-    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- SEO Subfolder Canonical & Hreflang Tags -->
+    <link rel="canonical" href="{{ $currentUrl }}">
+    <link rel="alternate" hreflang="id" href="{{ $idUrl }}" />
+    <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ $idUrl }}" />
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="{{ $currentUrl }}">
     <meta property="og:site_name" content="Asta Digital Agency">
     <meta property="og:title" content="ASTA Digital Agency — Solusi Teknologi & Digital Agency">
     <meta property="og:description" content="Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis modern.">
     <meta property="og:image" content="{{ asset('images/logo-dark.png') }}">
-    <meta property="og:locale" content="{{ app()->getLocale() == 'id' ? 'id_ID' : 'en_US' }}">
+    <meta property="og:locale" content="{{ $currentLocale == 'id' ? 'id_ID' : 'en_US' }}">
+    <meta property="og:locale:alternate" content="{{ $currentLocale == 'id' ? 'en_US' : 'id_ID' }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:url" content="{{ $currentUrl }}">
     <meta name="twitter:title" content="ASTA Digital Agency — Solusi Teknologi & Digital Agency">
     <meta name="twitter:description" content="Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis modern.">
     <meta name="twitter:image" content="{{ asset('images/logo-dark.png') }}">

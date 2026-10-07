@@ -38,14 +38,20 @@ function setCookie(name: string, value: string) {
 
 /**
  * Detect language based on priority:
- * 1. Manual user preference (localStorage / cookie)
- * 2. Browser language (navigator.languages / navigator.language)
- * 3. Default fallback: 'en'
+ * 1. URL path subfolder (/id/ or /en/)
+ * 2. Manual user preference (localStorage / cookie)
+ * 3. Browser language (navigator.languages / navigator.language)
+ * 4. Default fallback: 'id'
  */
 function detectLanguage(): Language {
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return "id";
 
-  // 1. Saved manual preference
+  // 1. URL Path Subfolder Detection
+  const pathname = window.location.pathname;
+  if (pathname.startsWith("/en") || pathname === "/en") return "en";
+  if (pathname.startsWith("/id") || pathname === "/id") return "id";
+
+  // 2. Saved manual preference
   try {
     const local = localStorage.getItem(STORAGE_KEY);
     if (local === "en" || local === "id") return local;
@@ -56,7 +62,7 @@ function detectLanguage(): Language {
   const cookie = getCookie(COOKIE_KEY);
   if (cookie === "en" || cookie === "id") return cookie;
 
-  // 2. Browser Language Detection
+  // 3. Browser Language Detection
   const browserLangs = navigator.languages || [navigator.language];
   for (const lang of browserLangs) {
     if (!lang) continue;
@@ -69,8 +75,8 @@ function detectLanguage(): Language {
     }
   }
 
-  // 3. Fallback
-  return "en";
+  // 4. Default Fallback
+  return "id";
 }
 
 export interface LanguageContextType {
@@ -95,7 +101,26 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setCookie(COOKIE_KEY, lang);
     if (typeof document !== "undefined") {
       document.documentElement.lang = lang;
+
+      // Update URL subfolder path prefix gracefully
+      const currentPath = window.location.pathname;
+      const cleanPath = currentPath.replace(/^\/(id|en)(\/|$)/, "/");
+      const targetPath = `/${lang}${cleanPath === "/" ? "" : cleanPath}`;
+      if (currentPath !== targetPath) {
+        window.history.pushState(null, "", targetPath);
+      }
     }
+  }, []);
+
+  // Listen for browser URL navigation (popstate / back-forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      const detected = detectLanguage();
+      setLanguageState(detected);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   // Update HTML lang attribute on mount or language change

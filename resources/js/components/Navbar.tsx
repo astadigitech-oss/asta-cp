@@ -74,7 +74,7 @@ const stripHtml = (html?: string) => {
 };
 
 export function Navbar() {
-  const { t, localize } = useTranslation();
+  const { t, localize, language } = useTranslation();
   const { data: landingData } = useLandingData();
   const [portfolioTab, setPortfolioTab] = useState<"Mobile" | "Desktop">("Mobile");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -530,7 +530,7 @@ export function Navbar() {
                       <div className="grid grid-cols-2 gap-3.5">
                         {paginatedDiscovers.length > 0 ? (
                           paginatedDiscovers.map((disc) => (
-                            <a key={disc.id} href={`/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
+                            <a key={disc.id} href={`/${language}/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
                               {disc.logo ? (
                                 <img src={disc.logo} alt={disc.name} loading="lazy" decoding="async" className="w-8 h-8 object-contain shrink-0 mt-0.5" />
                               ) : (
@@ -641,7 +641,7 @@ export function Navbar() {
                           {newsItems.map((item, idx) => (
                             <a
                               key={item.id || idx}
-                              href={`/discover/${item.id}`}
+                              href={`/${language}/discover/${item.id}`}
                               className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
                             >
                               <img

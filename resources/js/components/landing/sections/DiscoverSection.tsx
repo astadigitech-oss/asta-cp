@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useParams } from "@tanstack/react-router";
 import { stripHtml } from "@/components/lib/utils";
 import { SectionPagination } from "../common";
 import { DiscoverData, getDiscoverImages } from "../types";
@@ -26,7 +27,9 @@ const defaultDiscovers: DiscoverData[] = [
 const DISCOVERS_PER_PAGE = 3;
 
 export function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?: DiscoverData[] }) {
-  const { t, localize } = useTranslation();
+  const { t, localize, language } = useTranslation();
+  const params = useParams({ strict: false }) as Record<string, string>;
+  const lang = params?.lang || language || "id";
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [activeDiscoverTab, setActiveDiscoverTab] = useState<"all" | "story" | "elearning">("all");
@@ -159,8 +162,8 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
                   className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <Link
-                    to="/discover/$id"
-                    params={{ id: String(item.id) }}
+                    to="/$lang/discover/$id"
+                    params={{ id: String(item.id), lang }}
                     className="block cursor-pointer"
                   >
                     <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
@@ -219,7 +222,7 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
                       asChild
                       className="w-full rounded-xl gradient-accent hover:bg-gradient-accent text-white font-semibold text-xs sm:text-sm py-2.5 sm:py-3 transition-all shadow-sm cursor-pointer"
                     >
-                      <Link to="/discover/$id" params={{ id: String(item.id) }}>
+                      <Link to="/$lang/discover/$id" params={{ id: String(item.id), lang }}>
                         {t("discover.read_more")} <ArrowRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </Button>
