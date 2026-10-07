@@ -78,6 +78,28 @@ export function Navbar() {
   const { data: landingData } = useLandingData();
   const [portfolioTab, setPortfolioTab] = useState<"Mobile" | "Desktop">("Mobile");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<"services" | "discover" | null>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(".mega-dropdown-wrapper")) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  const scrollToContact = (e: React.MouseEvent) => {
+    const contactElem = document.getElementById("kontak");
+    if (contactElem) {
+      e.preventDefault();
+      contactElem.scrollIntoView({ behavior: "smooth" });
+      setMobileMenuOpen(false);
+    }
+  };
 
   const rawServices = (landingData?.services || []) as ServiceItem[];
   const services: ServiceItem[] = rawServices.map((s) => ({
@@ -176,21 +198,30 @@ export function Navbar() {
             </a>
 
             {/* Product & Services Dropdown */}
-            <div className="relative group h-full flex items-center">
+            <div className="relative group mega-dropdown-wrapper h-full flex items-center">
               <button
+                type="button"
+                onClick={() => setActiveDropdown((prev) => (prev === "services" ? null : "services"))}
                 className="flex items-center gap-1.5 text-[18px] font-medium text-gray-700 group-hover:text-[#004AAD] transition-colors py-8 cursor-pointer"
               >
                 {t("nav.services")}
-                <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform group-hover:rotate-180" />
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform ${
+                    activeDropdown === "services" ? "rotate-180" : "group-hover:rotate-180"
+                  }`}
+                />
               </button>
 
               {/* Mega Dropdown Panel */}
               <div
-                className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
-                  opacity-0 invisible pointer-events-none
-                  group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
+                className={`absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
+                  ${
+                    activeDropdown === "services"
+                      ? "opacity-100 visible pointer-events-auto translate-y-0"
+                      : "opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto"
+                  }
                   transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0
-                  before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
+                  before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']`}
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-1">
@@ -470,21 +501,30 @@ export function Navbar() {
             </div>
 
             {/* Discover Dropdown */}
-            <div className="relative group h-full flex items-center">
+            <div className="relative group mega-dropdown-wrapper h-full flex items-center">
               <button
+                type="button"
+                onClick={() => setActiveDropdown((prev) => (prev === "discover" ? null : "discover"))}
                 className="flex items-center gap-1.5 text-[18px] font-medium text-gray-700 group-hover:text-[#004AAD] transition-colors py-8 cursor-pointer"
               >
                 {t("nav.discover")}
-                <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform group-hover:rotate-180" />
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-500 group-hover:text-[#004AAD] transition-transform ${
+                    activeDropdown === "discover" ? "rotate-180" : "group-hover:rotate-180"
+                  }`}
+                />
               </button>
 
               {/* Mega Dropdown Panel */}
               <div
-                className="absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
-                  opacity-0 invisible pointer-events-none
-                  group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
+                className={`absolute top-[80px] left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 z-50
+                  ${
+                    activeDropdown === "discover"
+                      ? "opacity-100 visible pointer-events-auto translate-y-0"
+                      : "opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto"
+                  }
                   transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0
-                  before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']"
+                  before:absolute before:-top-6 before:inset-x-0 before:w-full before:h-8 before:content-['']`}
               >
                 <div className="grid grid-cols-12 gap-8">
                   {/* Left Column: Discover items with pagination */}
@@ -694,8 +734,9 @@ export function Navbar() {
           <div className="hidden xl:flex items-center gap-4">
             <LanguageSwitcher />
             <a
-              href="/#kontak"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#004AAD] text-white font-semibold text-base hover:bg-blue-700 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+              href={`/${language}/#kontak`}
+              onClick={scrollToContact}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#004AAD] text-white font-semibold text-base hover:bg-blue-700 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
             >
               {t("nav.contact")}
             </a>
@@ -719,21 +760,21 @@ export function Navbar() {
           <div className="xl:hidden fixed inset-0 top-[90px] bg-white z-40 p-6 flex flex-col justify-between shadow-2xl border-t border-gray-100 overflow-y-auto animate-in slide-in-from-top duration-200">
             <div className="space-y-4">
               <a
-                href="/"
+                href={`/${language}/`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
                 {t("nav.home")}
               </a>
               <a
-                href="/#layanan"
+                href={`/${language}/#layanan`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
                 {t("nav.services")}
               </a>
               <a
-                href="/#portofolio"
+                href={`/${language}/#portofolio`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
@@ -750,9 +791,9 @@ export function Navbar() {
 
             <div className="pt-6 space-y-3">
               <a
-                href="/#kontak"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md"
+                href={`/${language}/#kontak`}
+                onClick={scrollToContact}
+                className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md cursor-pointer"
               >
                 {t("nav.contact")}
               </a>
