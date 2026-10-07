@@ -28,4 +28,15 @@ class Service extends Model
     {
         return $this->hasMany(ServiceListMain::class);
     }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+        });
+    }
 }
