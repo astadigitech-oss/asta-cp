@@ -37,7 +37,7 @@ const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m
 const SECTIONS_PER_PAGE = 2;
 
 export function DiscoverDetailPage() {
-  const { id } = useParams({ strict: false }) as { id?: string };
+  const { id, lang } = useParams({ strict: false }) as { id?: string; lang?: string };
   const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
   const [copied, setCopied] = useState(false);
@@ -530,8 +530,8 @@ export function DiscoverDetailPage() {
             <div className="mt-12 pt-8 border-t border-gray-200 grid sm:grid-cols-2 gap-4">
               {prevItem ? (
                 <Link
-                  to="/discover/$id"
-                  params={{ id: String(prevItem.id) }}
+                  to="/$lang/discover/$id"
+                  params={{ id: String(prevItem.id), lang: lang || "id" }}
                   className="group flex flex-col p-4 rounded-2xl border border-gray-200/80 bg-white hover:bg-blue-50/50 hover:border-blue-200 transition-all"
                 >
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1 group-hover:text-[#004AAD]">
@@ -547,8 +547,8 @@ export function DiscoverDetailPage() {
 
               {nextItem && (
                 <Link
-                  to="/discover/$id"
-                  params={{ id: String(nextItem.id) }}
+                  to="/$lang/discover/$id"
+                  params={{ id: String(nextItem.id), lang: lang || "id" }}
                   className="group flex flex-col p-4 rounded-2xl border border-gray-200/80 bg-white hover:bg-blue-50/50 hover:border-blue-200 transition-all text-right sm:text-right"
                 >
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-end gap-1 group-hover:text-[#004AAD]">
@@ -587,8 +587,8 @@ export function DiscoverDetailPage() {
                   return (
                     <Link
                       key={item.id}
-                      to="/discover/$id"
-                      params={{ id: String(item.id) }}
+                      to="/$lang/discover/$id"
+                      params={{ id: String(item.id), lang: lang || "id" }}
                       className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
                     >
                       <div>
