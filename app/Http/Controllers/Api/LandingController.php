@@ -260,6 +260,38 @@ class LandingController extends Controller
             'image' => $formattedImages,
             'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
             'DiscoverLists' => $discover->DiscoverLists,
+            'seo' => (function () use ($discover, $formattedImages) {
+                try {
+                    $seo = $discover->seoData();
+                    $keywords = '';
+                    if ($seo && !empty($seo->focusKeywords)) {
+                        $keywords = collect($seo->focusKeywords)
+                            ->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))
+                            ->filter()
+                            ->implode(', ');
+                    }
+                    return [
+                        'meta_title' => $seo?->title ?? $discover->name,
+                        'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                        'canonical_url' => $seo?->canonical ?? url("/discover/{$discover->id}"),
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'keywords' => $keywords,
+                        'schema_jsonld' => $seo?->schemaJsonld,
+                    ];
+                } catch (\Throwable $e) {
+                    return [
+                        'meta_title' => $discover->name,
+                        'meta_description' => strip_tags($discover->short_description ?? ''),
+                    ];
+                }
+            })(),
         ]);
     }
 

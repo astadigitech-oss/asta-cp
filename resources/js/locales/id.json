@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
-    "description": "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan.",
+    "description": "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
     "og_title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
     "og_description": "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis."
   },
@@ -250,7 +250,6 @@
     "loading_article": "Memuat artikel...",
     "not_found_article": "Artikel Tidak Ditemukan",
     "not_found_article_desc": "Konten yang Anda cari mungkin telah dipindahkan atau belum tersedia.",
-    "read_time": "3-5 menit baca",
     "editorial_name": "ASTA Digital Editorial",
     "official_article": "Artikel Resmi Agensi",
     "part_indicator": "Bagian {index}",

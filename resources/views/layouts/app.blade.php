@@ -10,44 +10,108 @@
     
     $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
     $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
+
+    if (!function_exists('localizeTextPhp')) {
+        function localizeTextPhp(?string $text, string $lang = 'id'): string {
+            if (!$text) return '';
+            $trimmed = trim($text);
+            if (!$trimmed) return '';
+
+            // Delimiter style: [:id]...[:en]...
+            if (preg_match('/\[:\s*(id|en)\s*\]/i', $trimmed)) {
+                $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $trimmed, -1, PREG_SPLIT_DELIM_CAPTURE);
+                $dict = [];
+                for ($i = 1; $i < count($parts); $i += 2) {
+                    $tag = strtolower(trim($parts[$i]));
+                    $val = trim($parts[$i + 1] ?? '');
+                    $val = preg_replace('/\[:\s*\]$/', '', $val);
+                    $dict[$tag] = trim($val);
+                }
+                if (!empty($dict[$lang])) return $dict[$lang];
+                $fallback = $lang === 'id' ? 'en' : 'id';
+                if (!empty($dict[$fallback])) return $dict[$fallback];
+            }
+
+            // Tag pairs: [id]...[/id]
+            if (preg_match('/\[\s*(id|en)\s*\](.*?)\[\/\s*\1\s*\]/is', $trimmed)) {
+                preg_match_all('/\[\s*(id|en)\s*\](.*?)\[\/\s*\1\s*\]/is', $trimmed, $matches, PREG_SET_ORDER);
+                $dict = [];
+                foreach ($matches as $m) {
+                    $dict[strtolower(trim($m[1]))] = trim($m[2]);
+                }
+                if (!empty($dict[$lang])) return $dict[$lang];
+                $fallback = $lang === 'id' ? 'en' : 'id';
+                if (!empty($dict[$fallback])) return $dict[$fallback];
+            }
+
+            return $trimmed;
+        }
+    }
+
+    // Dynamic SEO computation
+    $rawTitle = $seo?->title ?? ($article ? $article->title . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
+    $rawDesc = $seo?->description ?? ($article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
+    
+    $metaTitle = localizeTextPhp($rawTitle, $currentLocale);
+    $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
+    
+    $keywords = 'asta digital, digital agency, software house, jasa pembuatan website, pembuatan aplikasi mobile, sistem informasi, IT consultant, web developer indonesia';
+    if ($seo && !empty($seo->focusKeywords)) {
+        $kwList = collect($seo->focusKeywords)->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))->filter()->implode(', ');
+        if ($kwList) {
+            $keywords = localizeTextPhp($kwList, $currentLocale);
+        }
+    }
+
+    $robots = $seo?->robots ?? 'index, follow';
+    $canonicalUrl = $seo?->canonical ?: $currentUrl;
+
+    $ogTitle = localizeTextPhp($seo?->ogTitle ?? $rawTitle, $currentLocale);
+    $ogDesc = localizeTextPhp($seo?->ogDescription ?? $rawDesc, $currentLocale);
+    $ogImage = $seo?->ogImage ?? ($article && $article->thumbnail ? (str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/'))) : asset('images/logo-dark.png'));
+    $ogType = $article ? 'article' : ($seo?->ogType ?? 'website');
+
+    $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
+    $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);
+    $twitterImage = $seo?->twitterImage ?? $ogImage;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', $currentLocale) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASTA Digital Agency — Solusi Teknologi & Digital Agency</title>
+    <title>{{ $metaTitle }}</title>
     
     <!-- Primary Meta Tags -->
-    <meta name="title" content="ASTA Digital Agency — Solusi Teknologi & Digital Agency">
-    <meta name="description" content="PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan.">
-    <meta name="keywords" content="asta digital, digital agency, software house, jasa pembuatan website, pembuatan aplikasi mobile, sistem informasi, IT consultant, web developer indonesia">
-    <meta name="author" content="PT Asta Digital Agency">
-    <meta name="robots" content="index, follow">
+    <meta name="title" content="{{ $metaTitle }}">
+    <meta name="description" content="{{ $metaDesc }}">
+    <meta name="keywords" content="{{ $keywords }}">
+    <meta name="author" content="{{ $article->author ?? 'PT Asta Digital Agency' }}">
+    <meta name="robots" content="{{ $robots }}">
     <meta name="theme-color" content="#004AAD">
 
     <!-- SEO Subfolder Canonical & Hreflang Tags -->
-    <link rel="canonical" href="{{ $currentUrl }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
     <link rel="alternate" hreflang="id" href="{{ $idUrl }}" />
     <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
     <link rel="alternate" hreflang="x-default" href="{{ $idUrl }}" />
 
     <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:url" content="{{ $currentUrl }}">
     <meta property="og:site_name" content="Asta Digital Agency">
-    <meta property="og:title" content="ASTA Digital Agency — Solusi Teknologi & Digital Agency">
-    <meta property="og:description" content="Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis modern.">
-    <meta property="og:image" content="{{ asset('images/logo-dark.png') }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDesc }}">
+    <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:locale" content="{{ $currentLocale == 'id' ? 'id_ID' : 'en_US' }}">
     <meta property="og:locale:alternate" content="{{ $currentLocale == 'id' ? 'en_US' : 'id_ID' }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ $currentUrl }}">
-    <meta name="twitter:title" content="ASTA Digital Agency — Solusi Teknologi & Digital Agency">
-    <meta name="twitter:description" content="Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis modern.">
-    <meta name="twitter:image" content="{{ asset('images/logo-dark.png') }}">
+    <meta name="twitter:title" content="{{ $twitterTitle }}">
+    <meta name="twitter:description" content="{{ $twitterDesc }}">
+    <meta name="twitter:image" content="{{ $twitterImage }}">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -59,7 +123,7 @@
       "url": "https://astadigitalagency.com",
       "logo": "{{ asset('images/logo-dark.png') }}",
       "image": "{{ asset('images/logo-dark.png') }}",
-      "description": "PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan.",
+      "description": "PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
       "telephone": "+6281578223564",
       "email": "astadigitech@gmail.com",
       "address": {

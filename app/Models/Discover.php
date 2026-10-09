@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Rankbeam\Seo\Contracts\HasSEO as HasSEOContract;
+use Rankbeam\Seo\Traits\HasSEO;
 
-class Discover extends Model
+class Discover extends Model implements HasSEOContract
 {
+    use HasSEO;
     use SoftDeletes;
 
     protected $fillable = [

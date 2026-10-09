@@ -1,9 +1,13 @@
-import { Instagram, Mail, LinkedinIcon, MapPin, Clock } from "lucide-react";
+import { Instagram, Mail, LinkedinIcon, MapPin, Clock, FileText } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import logo from "@/assets/logo/LOGO PUTIH.png";
 
 export function Footer() {
   const { t } = useTranslation();
+  const params = useParams({ strict: false }) as Record<string, string>;
+  const lang = params?.lang || "id";
 
   return (
     <footer className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -84,6 +88,34 @@ export function Footer() {
               </ul>
             </div>
 
+            {/* Blog / Articles Navigation */}
+            <div>
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                <FileText className="h-3.5 w-3.5" />
+                {lang === "en" ? "Articles" : "Artikel"}
+              </div>
+              <ul className="mt-4 space-y-2 text-xs text-white/80">
+                <li>
+                  <Link
+                    to="/$lang/blog/"
+                    params={{ lang }}
+                    className="hover:text-white transition-colors"
+                  >
+                    {lang === "en" ? "All Articles" : "Semua Artikel"}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/$lang/discover/"
+                    params={{ lang }}
+                    className="hover:text-white transition-colors"
+                  >
+                    {lang === "en" ? "Our Stories" : "Cerita Kami"}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
             <div>
               <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
                 <Clock className="h-3.5 w-3.5" />
@@ -93,16 +125,6 @@ export function Footer() {
                 <li>{t("footer.hours_weekdays")}</li>
                 <li>{t("footer.hours_saturday")}</li>
                 <li>{t("footer.hours_sunday")}</li>
-              </ul>
-            </div>
-
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-accent">
-                {t("footer.contact_title")}
-              </div>
-              <ul className="mt-4 space-y-2 text-xs text-white/80">
-                <li><strong className="text-white">Email:</strong> astadigitech@gmail.com</li>
-                <li><strong className="text-white">Telp/WA:</strong> +62 815 7822 3564</li>
               </ul>
             </div>
           </div>
@@ -115,4 +137,5 @@ export function Footer() {
     </footer>
   );
 }
+
 
