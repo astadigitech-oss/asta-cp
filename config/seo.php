@@ -655,7 +655,16 @@ return [
          * \App\Models\Post::class => ['priority' => 0.8, 'changefreq' => 'weekly'],
          * \App\Models\Page::class => ['priority' => 0.6, 'changefreq' => 'monthly'],
          */
-        'models' => [],
+        'models' => [
+            \App\Models\Article::class => [
+                'priority'   => 0.8,
+                'changefreq' => 'weekly',
+            ],
+            \App\Models\Discover::class => [
+                'priority'   => 0.7,
+                'changefreq' => 'weekly',
+            ],
+        ],
 
         /*
          * Additional static URLs to include in the sitemap.

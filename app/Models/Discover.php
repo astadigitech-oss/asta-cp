@@ -36,6 +36,27 @@ class Discover extends Model implements HasSEOContract
         ];
     }
 
+    public function getUrlForSEO(): string
+    {
+        return url("/id/discover/{$this->id}");
+    }
+
+    public function getSEOTitle(): ?string
+    {
+        return is_array($this->name)
+            ? ($this->name['id'] ?? $this->name['en'] ?? null)
+            : $this->name;
+    }
+
+    public function getSEODescription(): ?string
+    {
+        $desc = is_array($this->short_description)
+            ? ($this->short_description['id'] ?? $this->short_description['en'] ?? null)
+            : $this->short_description;
+
+        return $desc ? strip_tags($desc) : null;
+    }
+
     public function DiscoverLists()
     {
         return $this->hasMany(DiscoverList::class);

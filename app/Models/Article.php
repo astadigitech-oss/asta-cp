@@ -31,8 +31,29 @@ class Article extends Model implements HasSEOContract
         return [
             'is_published' => 'boolean',
             'published_at' => 'datetime',
-            'images' => 'array',
+            'images'       => 'array',
             'content_sections' => 'array',
         ];
+    }
+
+    public function getUrlForSEO(): string
+    {
+        return url("/id/{$this->slug}");
+    }
+
+    public function getSEOTitle(): ?string
+    {
+        return is_array($this->title)
+            ? ($this->title['id'] ?? $this->title['en'] ?? null)
+            : $this->title;
+    }
+
+    public function getSEODescription(): ?string
+    {
+        $excerpt = is_array($this->excerpt)
+            ? ($this->excerpt['id'] ?? $this->excerpt['en'] ?? null)
+            : $this->excerpt;
+
+        return $excerpt ? strip_tags($excerpt) : null;
     }
 }
