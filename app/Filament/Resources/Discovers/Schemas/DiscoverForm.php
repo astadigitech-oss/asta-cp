@@ -7,6 +7,8 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -152,6 +154,76 @@ class DiscoverForm
                             ->cloneable()
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
+
+                Section::make('Search Engine Optimization (SEO) & Social Meta')
+                    ->description('Pengaturan metadata Rankbeam SEO untuk Google Search, OpenGraph, dan Twitter Card')
+                    ->icon(Heroicon::MagnifyingGlass)
+                    ->relationship('seoMeta')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label('SEO Meta Title')
+                                    ->placeholder('Biarkan kosong untuk otomatis memakai judul')
+                                    ->maxLength(255)
+                                    ->helperText('Judul khusus yang akan muncul di hasil pencarian Google'),
+
+                                TextInput::make('canonical')
+                                    ->label('Canonical URL')
+                                    ->url()
+                                    ->placeholder('https://domain.com/discover/...')
+                                    ->helperText('URL kanonikal jika konten ini memiliki sumber asli lain'),
+                            ]),
+
+                        Textarea::make('description')
+                            ->label('SEO Meta Description')
+                            ->placeholder('Deskripsi ringkas konten untuk cuplikan mesin pencari Google...')
+                            ->rows(3)
+                            ->maxLength(320)
+                            ->helperText('Panjang ideal 120-160 karakter')
+                            ->columnSpanFull(),
+
+                        Grid::make(2)
+                            ->schema([
+                                TagsInput::make('focus_keywords')
+                                    ->label('Focus Keywords')
+                                    ->placeholder('Ketik keyword lalu tekan Enter')
+                                    ->helperText('Kata kunci target untuk optimasi SEO'),
+
+                                Select::make('robots')
+                                    ->label('Robots Indexing Tag')
+                                    ->options([
+                                        'index, follow' => 'Index, Follow (Direkomendasikan)',
+                                        'noindex, follow' => 'No Index, Follow',
+                                        'index, nofollow' => 'Index, No Follow',
+                                        'noindex, nofollow' => 'No Index, No Follow',
+                                    ])
+                                    ->default('index, follow')
+                                    ->native(false),
+                            ]),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('og_title')
+                                    ->label('Custom OpenGraph Title')
+                                    ->placeholder('Judul khusus share ke WhatsApp/Medsos'),
+
+                                TextInput::make('twitter_title')
+                                    ->label('Custom Twitter/X Title')
+                                    ->placeholder('Judul khusus share ke X/Twitter'),
+                            ]),
+
+                        FileUpload::make('og_image')
+                            ->label('Custom Social Share Image (OG / Twitter)')
+                            ->image()
+                            ->directory('seo/og')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->helperText('Gambar khusus untuk preview share di WhatsApp, Facebook, LinkedIn, Twitter (1200x630 px)')
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->columnSpanFull(),
             ]);
     }
 }

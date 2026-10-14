@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Rankbeam\Seo\Contracts\HasSEO as HasSEOContract;
+use Rankbeam\Seo\Traits\HasSEO;
 
-class Discover extends Model
+class Discover extends Model implements HasSEOContract
 {
+    use HasSEO;
     use SoftDeletes;
 
     protected $fillable = [
@@ -31,6 +34,27 @@ class Discover extends Model
             'image' => 'array',
             'content_sections' => 'array',
         ];
+    }
+
+    public function getUrlForSEO(): string
+    {
+        return url("/id/discover/{$this->id}");
+    }
+
+    public function getSEOTitle(): ?string
+    {
+        return is_array($this->name)
+            ? ($this->name['id'] ?? $this->name['en'] ?? null)
+            : $this->name;
+    }
+
+    public function getSEODescription(): ?string
+    {
+        $desc = is_array($this->short_description)
+            ? ($this->short_description['id'] ?? $this->short_description['en'] ?? null)
+            : $this->short_description;
+
+        return $desc ? strip_tags($desc) : null;
     }
 
     public function DiscoverLists()

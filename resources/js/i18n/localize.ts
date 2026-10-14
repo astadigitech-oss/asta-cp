@@ -32,8 +32,15 @@ function cleanHtmlSnippet(str: string): string {
  * 4. Curly Tags:
  *    {{id}}Teks bahasa Indonesia{{/id}}{{en}}English text{{/en}}
  */
-export function localizeText(text?: string | null, lang: Language = "id"): string {
-  if (!text || typeof text !== "string") return "";
+export function localizeText(text?: string | Record<string, any> | null, lang: Language = "id"): string {
+  if (!text) return "";
+
+  // If text is already a localized dictionary object: { id: "...", en: "..." }
+  if (typeof text === "object") {
+    return text[lang] || text.id || text.en || "";
+  }
+
+  if (typeof text !== "string") return "";
 
   const trimmed = text.trim();
   if (!trimmed) return "";

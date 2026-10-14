@@ -9,7 +9,7 @@ export const Route = createFileRoute("/$lang/")({
       {
         name: "description",
         content:
-          "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi pemerintah, UMKM, sekolah, dan perusahaan.",
+          "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
       },
       {
         property: "og:title",

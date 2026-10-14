@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from './routeTree.gen';
 import { LanguageProvider } from './i18n/useTranslation';
 import '../css/app.css';
+// Import OG image agar Vite memasukkannya ke manifest — dipakai Blade via Vite::asset()
+import './assets/og-image.png';
 
 // QueryClient instance yang akan di-share ke router context
 const queryClient = new QueryClient();

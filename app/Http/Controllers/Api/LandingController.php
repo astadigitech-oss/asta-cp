@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\Portfolio;
 use App\Models\Client;
 use App\Models\Discover;
+use App\Models\Article;
 use App\Models\Mail;
 use App\Models\Testimonial;
 use App\Mail\ContactMessage;
@@ -137,12 +138,35 @@ class LandingController extends Controller
                 ];
             });
 
+        $articles = Article::query()
+            ->where('is_published', true)
+            ->where(function ($q) {
+                $q->whereNull('published_at')
+                  ->orWhere('published_at', '<=', now());
+            })
+            ->latest('published_at')
+            ->take(3)
+            ->get()
+            ->map(function ($article) {
+                return [
+                    'id' => $article->id,
+                    'title' => $article->title,
+                    'slug' => $article->slug,
+                    'thumbnail' => $this->formatImageUrl($article->thumbnail),
+                    'excerpt' => $article->excerpt,
+                    'author' => $article->author ?? 'ASTA Digital Team',
+                    'category' => $article->category ?? 'Technology',
+                    'published_at' => $article->published_at?->format('d M Y') ?? $article->created_at->format('d M Y'),
+                ];
+            });
+
         return response()->json([
             'services' => $services,
             'portfolios' => $portfolios,
             'clients' => $clients,
             'discovers' => $discovers,
             'testimonials' => $testimonials,
+            'articles' => $articles,
         ]);
     }
 
@@ -260,6 +284,38 @@ class LandingController extends Controller
             'image' => $formattedImages,
             'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
             'DiscoverLists' => $discover->DiscoverLists,
+            'seo' => (function () use ($discover, $formattedImages) {
+                try {
+                    $seo = $discover->seoData();
+                    $keywords = '';
+                    if ($seo && !empty($seo->focusKeywords)) {
+                        $keywords = collect($seo->focusKeywords)
+                            ->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))
+                            ->filter()
+                            ->implode(', ');
+                    }
+                    return [
+                        'meta_title' => $seo?->title ?? $discover->name,
+                        'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                        'canonical_url' => $seo?->canonical ?? url("/discover/{$discover->id}"),
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'keywords' => $keywords,
+                        'schema_jsonld' => $seo?->schemaJsonld,
+                    ];
+                } catch (\Throwable $e) {
+                    return [
+                        'meta_title' => $discover->name,
+                        'meta_description' => strip_tags($discover->short_description ?? ''),
+                    ];
+                }
+            })(),
         ]);
     }
 
