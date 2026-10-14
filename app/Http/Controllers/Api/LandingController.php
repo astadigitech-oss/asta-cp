@@ -108,6 +108,7 @@ class LandingController extends Controller
             return [
                 'id' => $discover->id,
                 'name' => $discover->name,
+                'slug' => $discover->slug,
                 'type' => $discover->type ?: 'story',
                 'year' => $discover->year,
                 'short_description' => $discover->short_description,
@@ -232,9 +233,20 @@ class LandingController extends Controller
      */
     public function getDiscoverDetail($id)
     {
+        $decoded = urldecode((string) $id);
+        $slugified = \Illuminate\Support\Str::slug($decoded);
+
         $discover = Discover::with(['DiscoverLists' => function ($query) {
             $query->where('is_active', true)->orderBy('sort', 'asc');
-        }])->find($id);
+        }])->where(function ($q) use ($id, $decoded, $slugified) {
+            $q->where('slug', $id)
+              ->orWhere('slug', $decoded)
+              ->orWhere('slug', $slugified);
+
+            if (is_numeric($id)) {
+                $q->orWhere('id', (int) $id);
+            }
+        })->first();
 
         if (!$discover) {
             return response()->json([
@@ -273,6 +285,7 @@ class LandingController extends Controller
         return response()->json([
             'id' => $discover->id,
             'name' => $discover->name,
+            'slug' => $discover->slug,
             'type' => $discover->type ?: 'story',
             'year' => $discover->year,
             'short_description' => $discover->short_description,
@@ -294,10 +307,11 @@ class LandingController extends Controller
                             ->filter()
                             ->implode(', ');
                     }
+                    $canonicalUrl = $seo?->canonical ?? url("/id/discover/" . ($discover->slug ?: $discover->id));
                     return [
                         'meta_title' => $seo?->title ?? $discover->name,
                         'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
-                        'canonical_url' => $seo?->canonical ?? url("/discover/{$discover->id}"),
+                        'canonical_url' => $canonicalUrl,
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
                         'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),

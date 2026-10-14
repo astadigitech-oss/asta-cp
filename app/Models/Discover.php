@@ -14,6 +14,7 @@ class Discover extends Model implements HasSEOContract
 
     protected $fillable = [
         'name',
+        'slug',
         'type',
         'year',
         'logo',
@@ -25,6 +26,20 @@ class Discover extends Model implements HasSEOContract
         'is_pinned',
         'is_highlight',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($discover) {
+            if (empty($discover->slug) && !empty($discover->name)) {
+                $baseName = is_array($discover->name)
+                    ? ($discover->name['id'] ?? $discover->name['en'] ?? reset($discover->name))
+                    : $discover->name;
+                $discover->slug = \Illuminate\Support\Str::slug((string) $baseName);
+            }
+        });
+    }
 
     protected function casts(): array
     {
@@ -38,7 +53,8 @@ class Discover extends Model implements HasSEOContract
 
     public function getUrlForSEO(): string
     {
-        return url("/id/discover/{$this->id}");
+        $identifier = $this->slug ?: $this->id;
+        return url("/id/discover/{$identifier}");
     }
 
     public function getSEOTitle(): ?string

@@ -49,12 +49,24 @@ class DiscoverForm
                                         TextInput::make('name')
                                             ->label('Title / Name')
                                             ->placeholder('e.g. Belajar UI/UX Dasar atau Perjalanan Astadigi')
-                                            ->required(),
+                                            ->required()
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function (string $operation, $state, callable $set) {
+                                                if ($operation === 'create') {
+                                                    $base = is_array($state) ? ($state['id'] ?? $state['en'] ?? '') : (string) $state;
+                                                    $set('slug', \Illuminate\Support\Str::slug($base));
+                                                }
+                                            }),
+                                        TextInput::make('slug')
+                                            ->label('URL Slug')
+                                            ->placeholder('e.g. belajar-ui-ux-dasar')
+                                            ->unique(ignoreRecord: true)
+                                            ->helperText('Digunakan untuk link URL SEO-friendly. Kosongkan untuk generate otomatis dari judul.'),
                                         Select::make('type')
                                             ->label('Tipe / Kategori')
                                             ->options([
                                                 'story' => 'Discover Story & Berita',
-                                                'elearning' => 'E-Learning & Blog',
+                                                'elearning' => 'E-Learning',
                                             ])
                                             ->default('story')
                                             ->required()
@@ -93,9 +105,9 @@ class DiscoverForm
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
 
-                Section::make('Konten E-Learning / Blog (Modular Sections)')
+                Section::make('Konten E-Learning')
                     ->icon(Heroicon::OutlinedAcademicCap)
-                    ->description('Susun alur materi/artikel: upload gambar lalu tulis deskripsi secara berurutan tanpa limit.')
+                    ->description('Susun alur materi pembelajaran: upload gambar/video lalu tulis deskripsi secara berurutan.')
                     ->visible(fn ($get) => $get('type') === 'elearning')
                     ->schema([
                         Repeater::make('content_sections')

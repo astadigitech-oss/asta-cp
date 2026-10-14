@@ -8,6 +8,7 @@ export interface DiscoverSectionItem {
 export interface DiscoverData {
   id: number | string;
   name: string;
+  slug?: string;
   type?: "story" | "elearning" | string;
   year?: string;
   short_description?: string;
