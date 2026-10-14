@@ -53,8 +53,23 @@ class DiscoverForm
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function (string $operation, $state, callable $set) {
                                                 if ($operation === 'create') {
-                                                    $base = is_array($state) ? ($state['id'] ?? $state['en'] ?? '') : (string) $state;
-                                                    $set('slug', \Illuminate\Support\Str::slug($base));
+                                                    $raw = is_array($state) ? ($state['id'] ?? $state['en'] ?? '') : (string) $state;
+                                                    $clean = trim($raw);
+
+                                                    // Format delimiter [:id]...[:en]...
+                                                    if (preg_match('/\[:\s*(id|en)\s*\]/i', $clean)) {
+                                                        $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $clean, -1, PREG_SPLIT_DELIM_CAPTURE);
+                                                        for ($i = 1; $i < count($parts); $i += 2) {
+                                                            if (strtolower(trim($parts[$i])) === 'id') {
+                                                                $clean = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
+                                                                break;
+                                                            }
+                                                        }
+                                                    } elseif (preg_match('/\[\s*id\s*\](.*?)\[\/\s*id\s*\]/is', $clean, $m)) {
+                                                        $clean = trim($m[1]);
+                                                    }
+
+                                                    $set('slug', \Illuminate\Support\Str::slug($clean));
                                                 }
                                             }),
                                         TextInput::make('slug')

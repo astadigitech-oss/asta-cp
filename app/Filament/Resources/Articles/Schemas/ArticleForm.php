@@ -39,7 +39,22 @@ class ArticleForm
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function ($set, ?string $state, ?string $operation) {
                                         if ($operation === 'create') {
-                                            $set('slug', Str::slug($state));
+                                            $clean = trim((string) $state);
+
+                                            // Bersihkan format lokalisasi [:id]...[:en]...
+                                            if (preg_match('/\[:\s*(id|en)\s*\]/i', $clean)) {
+                                                $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $clean, -1, PREG_SPLIT_DELIM_CAPTURE);
+                                                for ($i = 1; $i < count($parts); $i += 2) {
+                                                    if (strtolower(trim($parts[$i])) === 'id') {
+                                                        $clean = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
+                                                        break;
+                                                    }
+                                                }
+                                            } elseif (preg_match('/\[\s*id\s*\](.*?)\[\/\s*id\s*\]/is', $clean, $m)) {
+                                                $clean = trim($m[1]);
+                                            }
+
+                                            $set('slug', Str::slug($clean));
                                         }
                                     }),
 

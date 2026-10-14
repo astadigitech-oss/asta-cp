@@ -12,6 +12,34 @@ class Article extends Model implements HasSEOContract
     use HasSEO;
     use SoftDeletes;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($article) {
+            if (empty($article->slug) && !empty($article->title)) {
+                $raw = is_array($article->title)
+                    ? ($article->title['id'] ?? $article->title['en'] ?? reset($article->title))
+                    : (string) $article->title;
+                $clean = trim($raw);
+
+                if (preg_match('/\[:\s*(id|en)\s*\]/i', $clean)) {
+                    $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $clean, -1, PREG_SPLIT_DELIM_CAPTURE);
+                    for ($i = 1; $i < count($parts); $i += 2) {
+                        if (strtolower(trim($parts[$i])) === 'id') {
+                            $clean = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
+                            break;
+                        }
+                    }
+                } elseif (preg_match('/\[\s*id\s*\](.*?)\[\/\s*id\s*\]/is', $clean, $m)) {
+                    $clean = trim($m[1]);
+                }
+
+                $article->slug = \Illuminate\Support\Str::slug($clean);
+            }
+        });
+    }
+
     protected $fillable = [
         'title',
         'slug',
