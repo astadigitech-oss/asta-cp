@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, Suspense, lazy } from "react";
-import { useParams, Link } from "@tanstack/react-router";
+import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "motion/react";
@@ -38,24 +38,26 @@ const SECTIONS_PER_PAGE = 2;
 
 export function DiscoverDetailPage() {
   const { id, lang } = useParams({ strict: false }) as { id?: string; lang?: string };
-  const { t, localize } = useTranslation();
+  const { t, localize, language } = useTranslation();
+  const navigate = useNavigate();
   const { data: landingData } = useLandingData();
   const [copied, setCopied] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [articlePage, setArticlePage] = useState(1);
   const [previewImage, setPreviewImage] = useState<{ src: string; title?: string } | null>(null);
   const contentTopRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to top on mount or ID change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setArticlePage(1);
-    setActiveImgIndex(0);
-  }, [id]);
+  const prevDiscoverIdRef = useRef<number | string | null>(null);
 
   // Try finding from cached landingData first
   const allDiscovers = (landingData?.discovers || []) as DiscoverData[];
-  const cachedItem = allDiscovers.find((item) => String(item.id) === String(id));
+  const cachedItem = allDiscovers.find((item) => {
+    if (String(item.id) === String(id)) return true;
+    if (item.slug) {
+      if (typeof item.slug === "string" && (item.slug === id || item.slug.includes(id || ""))) return true;
+      if (localize(item.slug) === id) return true;
+    }
+    return false;
+  });
 
   // Fallback direct query if not in cache (e.g. direct load)
   const { data: fetchedItem, isLoading, isError } = useQuery<DiscoverData>({
@@ -66,6 +68,33 @@ export function DiscoverDetailPage() {
   });
 
   const rawDiscover = cachedItem || fetchedItem;
+
+  // Scroll to top on mount or discover change (jangan reset saat sekadar ganti bahasa slug)
+  useEffect(() => {
+    if (rawDiscover?.id) {
+      if (prevDiscoverIdRef.current && prevDiscoverIdRef.current === rawDiscover.id) {
+        return;
+      }
+      prevDiscoverIdRef.current = rawDiscover.id;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+    setArticlePage(1);
+    setActiveImgIndex(0);
+  }, [id, rawDiscover?.id]);
+
+  // Auto-sync URL slug saat bahasa berganti: jika sedang di /en/discover/slug-id, ubah URL ke /en/discover/slug-en
+  useEffect(() => {
+    if (!rawDiscover || !rawDiscover.slug) return;
+    const targetLang = lang || language || "id";
+    const expectedSlug = localize(rawDiscover.slug, targetLang as any);
+    if (expectedSlug && id !== expectedSlug && id !== String(rawDiscover.id)) {
+      navigate({
+        to: "/$lang/discover/$id",
+        params: { lang: targetLang, id: expectedSlug },
+        replace: true,
+      });
+    }
+  }, [lang, language, rawDiscover, id, localize, navigate]);
   const discover = rawDiscover ? {
     ...rawDiscover,
     name: localize(rawDiscover.name),

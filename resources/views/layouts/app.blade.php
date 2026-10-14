@@ -7,9 +7,17 @@
     $path = request()->path();
     $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
     $cleanPathSegment = $cleanPath ? '/' . ltrim($cleanPath, '/') : '';
-    
-    $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
-    $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
+
+    if ($article && method_exists($article, 'getLocalizedSlug')) {
+        $idUrl = rtrim($baseUrl, '/') . '/id/' . $article->getLocalizedSlug('id');
+        $enUrl = rtrim($baseUrl, '/') . '/en/' . $article->getLocalizedSlug('en');
+    } elseif ($discover && method_exists($discover, 'getLocalizedSlug')) {
+        $idUrl = rtrim($baseUrl, '/') . '/id/discover/' . $discover->getLocalizedSlug('id');
+        $enUrl = rtrim($baseUrl, '/') . '/en/discover/' . $discover->getLocalizedSlug('en');
+    } else {
+        $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
+        $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
+    }
 
     if (!function_exists('localizeTextPhp')) {
         function localizeTextPhp(?string $text, string $lang = 'id'): string {

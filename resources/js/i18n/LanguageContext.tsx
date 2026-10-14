@@ -83,7 +83,7 @@ export interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
-  localize: (text?: string | Record<string, any> | null) => string;
+  localize: (text?: string | Record<string, any> | null, lang?: Language) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -179,8 +179,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * Localize raw dynamic database strings containing [:id]...[:en]... or [id]...[/id][en]...[/en]
    */
   const localize = useCallback(
-    (text?: string | Record<string, any> | null): string => {
-      return localizeText(text, language);
+    (text?: string | Record<string, any> | null, lang?: Language): string => {
+      return localizeText(text, lang || language);
     },
     [language]
   );

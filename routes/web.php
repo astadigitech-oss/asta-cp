@@ -48,25 +48,28 @@ Route::get('/sitemap.xml', function () {
         // Dynamic Blog Article Pages (Clean URL & Multilingual)
         foreach ($articles as $article) {
             foreach ($locales as $locale) {
-                $locUrl = "{$baseUrl}/{$locale}/{$article->slug}";
+                $slug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug;
+                $locUrl = "{$baseUrl}/{$locale}/{$slug}";
                 $xml .= "  <url>\n";
                 $xml .= "    <loc>{$locUrl}</loc>\n";
                 $xml .= "    <lastmod>" . ($article->updated_at ? $article->updated_at->toIso8601String() : date('c')) . "</lastmod>\n";
                 $xml .= "    <changefreq>weekly</changefreq>\n";
                 $xml .= "    <priority>0.9</priority>\n";
                 foreach ($locales as $altLocale) {
-                    $altUrl = "{$baseUrl}/{$altLocale}/{$article->slug}";
+                    $altSlug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($altLocale) : $article->slug;
+                    $altUrl = "{$baseUrl}/{$altLocale}/{$altSlug}";
                     $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
                 }
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/{$article->slug}\"/>\n";
+                $idSlug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug('id') : $article->slug;
+                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/{$idSlug}\"/>\n";
                 $xml .= "  </url>\n";
             }
         }
 
         // Dynamic Discover & E-Learning Pages
         foreach ($discovers as $discover) {
-            $identifier = $discover->slug ?: $discover->id;
             foreach ($locales as $locale) {
+                $identifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($locale) : ($discover->slug ?: $discover->id);
                 $locUrl = "{$baseUrl}/{$locale}/discover/{$identifier}";
                 $xml .= "  <url>\n";
                 $xml .= "    <loc>{$locUrl}</loc>\n";
@@ -74,10 +77,12 @@ Route::get('/sitemap.xml', function () {
                 $xml .= "    <changefreq>weekly</changefreq>\n";
                 $xml .= "    <priority>0.8</priority>\n";
                 foreach ($locales as $altLocale) {
-                    $altUrl = "{$baseUrl}/{$altLocale}/discover/{$identifier}";
+                    $altIdentifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($altLocale) : ($discover->slug ?: $discover->id);
+                    $altUrl = "{$baseUrl}/{$altLocale}/discover/{$altIdentifier}";
                     $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
                 }
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/discover/{$identifier}\"/>\n";
+                $idIdentifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug('id') : ($discover->slug ?: $discover->id);
+                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/discover/{$idIdentifier}\"/>\n";
                 $xml .= "  </url>\n";
             }
         }
@@ -122,7 +127,10 @@ Route::get('/{any?}', function () {
             $discover = Discover::where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
                 $q->where('slug', $discoverParam)
                   ->orWhere('slug', $decodedParam)
-                  ->orWhere('slug', $slugifiedParam);
+                  ->orWhere('slug', $slugifiedParam)
+                  ->orWhere('slug', 'like', "%]{$discoverParam}%")
+                  ->orWhere('slug', 'like', "%]{$decodedParam}%")
+                  ->orWhere('slug', 'like', "%]{$slugifiedParam}%");
 
                 if (is_numeric($discoverParam)) {
                     $q->orWhere('id', (int) $discoverParam);
@@ -142,7 +150,10 @@ Route::get('/{any?}', function () {
                 ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
                     $q->where('slug', $cleanPath)
                       ->orWhere('slug', $decoded)
-                      ->orWhere('slug', $slugified);
+                      ->orWhere('slug', $slugified)
+                      ->orWhere('slug', 'like', "%]{$cleanPath}%")
+                      ->orWhere('slug', 'like', "%]{$decoded}%")
+                      ->orWhere('slug', 'like', "%]{$slugified}%");
 
                     if (is_numeric($cleanPath)) {
                         $q->orWhere('id', (int) $cleanPath);
