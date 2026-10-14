@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Service;
 use App\Models\Article;
+use App\Models\Discover;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ Route::get('/sitemap.xml', function () {
 
         $services = Service::all();
         $articles = Article::where('is_published', true)->get();
+        $discovers = Discover::all();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
@@ -61,20 +63,21 @@ Route::get('/sitemap.xml', function () {
             }
         }
 
-        // Dynamic Service Pages
-        foreach ($services as $service) {
+        // Dynamic Discover & E-Learning Pages
+        foreach ($discovers as $discover) {
+            $identifier = $discover->slug ?: $discover->id;
             foreach ($locales as $locale) {
-                $locUrl = "{$baseUrl}/{$locale}/discover/{$service->id}";
+                $locUrl = "{$baseUrl}/{$locale}/discover/{$identifier}";
                 $xml .= "  <url>\n";
                 $xml .= "    <loc>{$locUrl}</loc>\n";
-                $xml .= "    <lastmod>" . ($service->updated_at ? $service->updated_at->toIso8601String() : date('c')) . "</lastmod>\n";
+                $xml .= "    <lastmod>" . ($discover->updated_at ? $discover->updated_at->toIso8601String() : date('c')) . "</lastmod>\n";
                 $xml .= "    <changefreq>weekly</changefreq>\n";
-                $xml .= "    <priority>0.7</priority>\n";
+                $xml .= "    <priority>0.8</priority>\n";
                 foreach ($locales as $altLocale) {
-                    $altUrl = "{$baseUrl}/{$altLocale}/discover/{$service->id}";
+                    $altUrl = "{$baseUrl}/{$altLocale}/discover/{$identifier}";
                     $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
                 }
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/discover/{$service->id}\"/>\n";
+                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/discover/{$identifier}\"/>\n";
                 $xml .= "  </url>\n";
             }
         }
@@ -86,7 +89,7 @@ Route::get('/sitemap.xml', function () {
     return response($xmlContent, 200)->header('Content-Type', 'text/xml');
 })->middleware('throttle:60,1');
 
-// Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article SEO Server-side Rendering
+// Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article & Discover SEO Server-side Rendering
 // NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).
 // Locale dideteksi dari URL path, lalu diserahkan ke frontend untuk handle routing.
 Route::get('/{any?}', function () {
@@ -101,32 +104,58 @@ Route::get('/{any?}', function () {
 
     app()->setLocale($locale);
 
-    // Cek apakah URL mengakses artikel tertentu untuk SSR Meta Tags
     $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
     $article = null;
+    $discover = null;
     $seo = null;
 
     if ($cleanPath && !in_array($cleanPath, ['', 'discover', 'blog'])) {
         $decoded = urldecode($cleanPath);
         $slugified = \Illuminate\Support\Str::slug($decoded);
 
-        $article = Article::where('is_published', true)
-            ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
-                $q->where('slug', $cleanPath)
-                  ->orWhere('slug', $decoded)
-                  ->orWhere('slug', $slugified);
+        // 1. Cek apakah mengakses halaman detail discover
+        if (str_starts_with($cleanPath, 'discover/')) {
+            $discoverParam = substr($cleanPath, strlen('discover/'));
+            $decodedParam = urldecode($discoverParam);
+            $slugifiedParam = \Illuminate\Support\Str::slug($decodedParam);
 
-                if (is_numeric($cleanPath)) {
-                    $q->orWhere('id', (int) $cleanPath);
+            $discover = Discover::where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
+                $q->where('slug', $discoverParam)
+                  ->orWhere('slug', $decodedParam)
+                  ->orWhere('slug', $slugifiedParam);
+
+                if (is_numeric($discoverParam)) {
+                    $q->orWhere('id', (int) $discoverParam);
                 }
-            })
-            ->first();
+            })->first();
 
-        if ($article) {
-            try {
-                $seo = $article->seoData();
-            } catch (\Throwable $e) {
-                // Fallback
+            if ($discover) {
+                try {
+                    $seo = $discover->seoData();
+                } catch (\Throwable $e) {
+                    // Fallback
+                }
+            }
+        } else {
+            // 2. Cek apakah mengakses artikel
+            $article = Article::where('is_published', true)
+                ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
+                    $q->where('slug', $cleanPath)
+                      ->orWhere('slug', $decoded)
+                      ->orWhere('slug', $slugified);
+
+                    if (is_numeric($cleanPath)) {
+                        $q->orWhere('id', (int) $cleanPath);
+                    }
+                })
+                ->first();
+
+            if ($article) {
+                try {
+                    $seo = $article->seoData();
+                } catch (\Throwable $e) {
+                    // Fallback
+                }
             }
         }
     }
@@ -134,6 +163,7 @@ Route::get('/{any?}', function () {
     return view('layouts.app', [
         'locale' => $locale,
         'article' => $article,
+        'discover' => $discover,
         'seo' => $seo,
     ]);
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml).*');

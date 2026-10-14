@@ -30,7 +30,7 @@ class DiscoversTable
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state === 'elearning' ? 'E-Learning & Blog' : 'Discover Story')
+                    ->formatStateUsing(fn ($state) => $state === 'elearning' ? 'E-Learning' : 'Discover Story')
                     ->color(fn ($state) => $state === 'elearning' ? 'info' : 'gray')
                     ->sortable(),
                 TextColumn::make('year')

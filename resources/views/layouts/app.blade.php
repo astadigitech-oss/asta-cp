@@ -49,8 +49,11 @@
     }
 
     // Dynamic SEO computation
-    $rawTitle = $seo?->title ?? ($article ? $article->title . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
-    $rawDesc = $seo?->description ?? ($article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
+    $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : null);
+    $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : null);
+
+    $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
+    $rawDesc = $seo?->description ?? ($itemDesc ?: 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
 
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
     $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -70,6 +73,15 @@
     // Resolve OG default image via Vite manifest (supaya dapat URL dengan hash yang benar)
     $ogDefaultImage = \Illuminate\Support\Facades\Vite::asset('resources/js/assets/og-image.png');
 
+    // Discover first image fallback
+    $discoverImg = null;
+    if ($discover && !empty($discover->image)) {
+        $firstImg = is_array($discover->image) ? ($discover->image[0] ?? null) : $discover->image;
+        if ($firstImg) {
+            $discoverImg = str_starts_with($firstImg, 'http') ? $firstImg : asset('storage/' . ltrim($firstImg, '/'));
+        }
+    }
+
     $ogTitle = localizeTextPhp($seo?->ogTitle ?? $rawTitle, $currentLocale);
     $ogDesc = localizeTextPhp($seo?->ogDescription ?? $rawDesc, $currentLocale);
     $ogImage = $seo?->ogImage
@@ -77,8 +89,8 @@
             ? (str_starts_with($article->thumbnail, 'http')
                 ? $article->thumbnail
                 : asset('storage/' . ltrim($article->thumbnail, '/')))
-            : $ogDefaultImage);
-    $ogType = $article ? 'article' : ($seo?->ogType ?? 'website');
+            : ($discoverImg ?: $ogDefaultImage));
+    $ogType = ($article || $discover) ? 'article' : ($seo?->ogType ?? 'website');
 
     $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
     $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);

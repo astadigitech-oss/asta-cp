@@ -28,7 +28,7 @@ class ListDiscovers extends ListRecords
             'story' => Tab::make('Discover Story')
                 ->icon(Heroicon::OutlinedNewspaper)
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'story')->orWhereNull('type')),
-            'elearning' => Tab::make('E-Learning & Blog')
+            'elearning' => Tab::make('E-Learning')
                 ->icon(Heroicon::OutlinedAcademicCap)
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'elearning')),
         ];
