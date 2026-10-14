@@ -92,7 +92,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                   {/* Thumbnail & Category Badge */}
                   <Link
                     to="/$lang/$slug"
-                    params={{ slug: article.slug, lang }}
+                    params={{ slug: localize(article.slug), lang }}
                     className="block aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100 relative mb-4 cursor-pointer"
                   >
                     {article.thumbnail ? (
@@ -129,7 +129,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                   {/* Title */}
                   <Link
                     to="/$lang/$slug"
-                    params={{ slug: article.slug, lang }}
+                    params={{ slug: localize(article.slug), lang }}
                     className="block group/title cursor-pointer"
                   >
                     <h3 className="font-display text-lg font-bold text-gray-900 leading-snug line-clamp-2 group-hover/title:text-[#004AAD] transition-colors">
@@ -149,7 +149,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                 <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
                   <Link
                     to="/$lang/$slug"
-                    params={{ slug: article.slug, lang }}
+                    params={{ slug: localize(article.slug), lang }}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-[#004AAD] group-hover:gap-2.5 transition-all cursor-pointer"
                   >
                     <span>{t("blog.read_more")}</span>

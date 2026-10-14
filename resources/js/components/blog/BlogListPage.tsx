@@ -280,7 +280,7 @@ export function BlogListPage() {
                 >
                   <Link
                     to="/$lang/$slug"
-                    params={{ slug: article.slug, lang }}
+                    params={{ slug: localize(article.slug), lang }}
                     className="block cursor-pointer"
                   >
                     {/* Thumbnail */}
@@ -337,7 +337,7 @@ export function BlogListPage() {
                   <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-primary">
                     <Link
                       to="/$lang/$slug"
-                      params={{ slug: article.slug, lang }}
+                      params={{ slug: localize(article.slug), lang }}
                       className="inline-flex items-center gap-1.5 hover:underline"
                     >
                       <span>{lang === "en" ? "Read Article" : "Baca Artikel"}</span>

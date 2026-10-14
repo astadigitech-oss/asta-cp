@@ -241,7 +241,10 @@ class LandingController extends Controller
         }])->where(function ($q) use ($id, $decoded, $slugified) {
             $q->where('slug', $id)
               ->orWhere('slug', $decoded)
-              ->orWhere('slug', $slugified);
+              ->orWhere('slug', $slugified)
+              ->orWhere('slug', 'like', "%]{$id}%")
+              ->orWhere('slug', 'like', "%]{$decoded}%")
+              ->orWhere('slug', 'like', "%]{$slugified}%");
 
             if (is_numeric($id)) {
                 $q->orWhere('id', (int) $id);

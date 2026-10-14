@@ -44,14 +44,33 @@ class ArticleForm
                                             // Bersihkan format lokalisasi [:id]...[:en]...
                                             if (preg_match('/\[:\s*(id|en)\s*\]/i', $clean)) {
                                                 $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $clean, -1, PREG_SPLIT_DELIM_CAPTURE);
+                                                $slugs = [];
                                                 for ($i = 1; $i < count($parts); $i += 2) {
-                                                    if (strtolower(trim($parts[$i])) === 'id') {
-                                                        $clean = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
-                                                        break;
+                                                    $tag = strtolower(trim($parts[$i]));
+                                                    $val = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
+                                                    if (!empty($val)) {
+                                                        $slugs[$tag] = \Illuminate\Support\Str::slug($val);
                                                     }
                                                 }
-                                            } elseif (preg_match('/\[\s*id\s*\](.*?)\[\/\s*id\s*\]/is', $clean, $m)) {
-                                                $clean = trim($m[1]);
+                                                if (!empty($slugs)) {
+                                                    $multiSlug = '';
+                                                    foreach ($slugs as $t => $s) {
+                                                        $multiSlug .= "[:{$t}]{$s}";
+                                                    }
+                                                    $set('slug', $multiSlug);
+                                                    return;
+                                                }
+                                            } elseif (preg_match_all('/\[\s*(id|en)\s*\](.*?)\[\/\s*\1\s*\]/is', $clean, $matches, PREG_SET_ORDER)) {
+                                                $multiSlug = '';
+                                                foreach ($matches as $m) {
+                                                    $tag = strtolower(trim($m[1]));
+                                                    $s = \Illuminate\Support\Str::slug(trim($m[2]));
+                                                    $multiSlug .= "[:{$tag}]{$s}";
+                                                }
+                                                if (!empty($multiSlug)) {
+                                                    $set('slug', $multiSlug);
+                                                    return;
+                                                }
                                             }
 
                                             $set('slug', Str::slug($clean));
@@ -59,11 +78,11 @@ class ArticleForm
                                     }),
 
                                 TextInput::make('slug')
-                                    ->label('URL Slug')
-                                    ->placeholder('panduan-lengkap-optimasi-website-2026')
+                                    ->label('URL Slug (Multilingual)')
+                                    ->placeholder('[:id]judul-artikel[:en]article-title atau cukup judul-artikel')
                                     ->required()
                                     ->unique(Article::class, 'slug', ignoreRecord: true)
-                                    ->helperText('Akan diakses melalui domain.com/slug-anda'),
+                                    ->helperText('Mendukung format multilingual [:id]slug-id[:en]slug-en. Akan diakses melalui domain.com/slug-anda'),
                             ]),
 
                         Grid::make(2)

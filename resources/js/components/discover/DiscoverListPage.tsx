@@ -294,7 +294,7 @@ export function DiscoverListPage() {
                   >
                     <Link
                       to="/$lang/discover/$id"
-                      params={{ id: item.slug || String(item.id), lang }}
+                      params={{ id: localize(item.slug) || String(item.id), lang }}
                       className="block cursor-pointer"
                     >
                       <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gray-100 relative">
@@ -345,7 +345,7 @@ export function DiscoverListPage() {
                     <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-[#004AAD]">
                       <Link
                         to="/$lang/discover/$id"
-                        params={{ id: item.slug || String(item.id), lang }}
+                        params={{ id: localize(item.slug) || String(item.id), lang }}
                         className="inline-flex items-center gap-1.5 hover:underline"
                       >
                         <span>{t("discover.read_more")}</span>

@@ -79,7 +79,10 @@ class ArticleController extends Controller
             ->where(function ($q) use ($slug, $decoded, $slugified) {
                 $q->where('slug', $slug)
                   ->orWhere('slug', $decoded)
-                  ->orWhere('slug', $slugified);
+                  ->orWhere('slug', $slugified)
+                  ->orWhere('slug', 'like', "%]{$slug}%")
+                  ->orWhere('slug', 'like', "%]{$decoded}%")
+                  ->orWhere('slug', 'like', "%]{$slugified}%");
 
                 if (is_numeric($slug)) {
                     $q->orWhere('id', (int) $slug);

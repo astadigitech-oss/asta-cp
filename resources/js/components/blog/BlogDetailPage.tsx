@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { useParams, Link } from "@tanstack/react-router";
+import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "motion/react";
@@ -69,17 +69,13 @@ interface ArticleDetailData {
 
 export function BlogDetailPage() {
   const { slug, lang } = useParams({ strict: false }) as { slug?: string; lang?: string };
-  const { t, localize } = useTranslation();
+  const { t, localize, language } = useTranslation();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [previewImage, setPreviewImage] = useState<{ src: string; title?: string } | null>(null);
   const contentTopRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to top saat berpindah slug
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setActiveImgIndex(0);
-  }, [slug]);
+  const prevArticleIdRef = useRef<number | string | null>(null);
 
   // Fetch article data dari API
   const { data: article, isLoading, isError } = useQuery<ArticleDetailData>({
@@ -91,8 +87,35 @@ export function BlogDetailPage() {
     },
     enabled: !!slug,
     retry: 1,
+    placeholderData: (prev) => prev,
     staleTime: 1000 * 60 * 5, // 5 menit cache
   });
+
+  // Scroll to top saat berpindah ke artikel baru (bukan saat berganti bahasa)
+  useEffect(() => {
+    if (article?.id) {
+      if (prevArticleIdRef.current && prevArticleIdRef.current === article.id) {
+        return;
+      }
+      prevArticleIdRef.current = article.id;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+    setActiveImgIndex(0);
+  }, [slug, article?.id]);
+
+  // Auto-sync URL slug saat bahasa berganti: jika sedang di /en/slug-id, ubah URL ke /en/slug-en
+  useEffect(() => {
+    if (!article || !article.slug) return;
+    const targetLang = lang || language || "id";
+    const expectedSlug = localize(article.slug, targetLang as any);
+    if (expectedSlug && slug !== expectedSlug && slug !== String(article.id)) {
+      navigate({
+        to: "/$lang/$slug",
+        params: { lang: targetLang, slug: expectedSlug },
+        replace: true,
+      });
+    }
+  }, [lang, language, article, slug, localize, navigate]);
 
   const localizedTitle = article ? localize(article.title) : "";
   const localizedExcerpt = article?.excerpt ? localize(article.excerpt) : null;
