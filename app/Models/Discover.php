@@ -33,10 +33,24 @@ class Discover extends Model implements HasSEOContract
 
         static::saving(function ($discover) {
             if (empty($discover->slug) && !empty($discover->name)) {
-                $baseName = is_array($discover->name)
+                $raw = is_array($discover->name)
                     ? ($discover->name['id'] ?? $discover->name['en'] ?? reset($discover->name))
-                    : $discover->name;
-                $discover->slug = \Illuminate\Support\Str::slug((string) $baseName);
+                    : (string) $discover->name;
+                $clean = trim($raw);
+
+                if (preg_match('/\[:\s*(id|en)\s*\]/i', $clean)) {
+                    $parts = preg_split('/\[:\s*(id|en)\s*\]/i', $clean, -1, PREG_SPLIT_DELIM_CAPTURE);
+                    for ($i = 1; $i < count($parts); $i += 2) {
+                        if (strtolower(trim($parts[$i])) === 'id') {
+                            $clean = preg_replace('/\[:\s*\]$/', '', trim($parts[$i + 1] ?? ''));
+                            break;
+                        }
+                    }
+                } elseif (preg_match('/\[\s*id\s*\](.*?)\[\/\s*id\s*\]/is', $clean, $m)) {
+                    $clean = trim($m[1]);
+                }
+
+                $discover->slug = \Illuminate\Support\Str::slug($clean);
             }
         });
     }
