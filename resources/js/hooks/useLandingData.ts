@@ -60,12 +60,24 @@ export interface TestimonialItem {
   rating?: number;
 }
 
+export interface ArticleItem {
+  id: number;
+  title: string | { id?: string; en?: string };
+  slug: string;
+  thumbnail: string | null;
+  excerpt: string | null | { id?: string; en?: string };
+  author: string;
+  category: string;
+  published_at: string;
+}
+
 export interface LandingData {
   clients?: ClientItem[];
   services?: ServiceItem[];
   portfolios?: PortfolioItem[];
   discovers?: DiscoverData[];
   testimonials?: TestimonialItem[];
+  articles?: ArticleItem[];
 }
 
 /**

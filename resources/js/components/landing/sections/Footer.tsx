@@ -27,7 +27,7 @@ export function Footer() {
         />
       </svg>
 
-      <div className="relative mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="relative mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 pt-20 pb-10 sm:px-6 sm:pt-24 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5">
@@ -97,7 +97,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2 text-xs text-white/80">
                 <li>
                   <Link
-                    to="/$lang/blog/"
+                    to="/$lang/blog"
                     params={{ lang }}
                     className="hover:text-white transition-colors"
                   >
@@ -106,7 +106,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    to="/$lang/discover/"
+                    to="/$lang/discover"
                     params={{ lang }}
                     className="hover:text-white transition-colors"
                   >

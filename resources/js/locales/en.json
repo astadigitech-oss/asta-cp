@@ -10,6 +10,7 @@
     "services": "Products & Services",
     "portfolio": "Portfolio",
     "discover": "Discover",
+    "blog": "Blog",
     "about": "About Asta",
     "process": "Process",
     "contact": "Contact Us",
@@ -227,6 +228,16 @@
     "sol_web": "Web Apps Development",
     "sol_mobile": "Mobile Apps Development",
     "copyright": "© Copyright 2025 PT Asta Digital Agency"
+  },
+  "blog": {
+    "eyebrow": "Insights & Education",
+    "title": "Latest Tech Articles & Guides",
+    "description": "Explore practical tips, digital transformation strategies, and modern tech trends from ASTA Digital Agency.",
+    "view_all": "View All Articles",
+    "read_more": "Read More",
+    "empty": "No articles published yet.",
+    "by": "By",
+    "min_read": "min read"
   },
   "common": {
     "previous": "Previous",

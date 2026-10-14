@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\Portfolio;
 use App\Models\Client;
 use App\Models\Discover;
+use App\Models\Article;
 use App\Models\Mail;
 use App\Models\Testimonial;
 use App\Mail\ContactMessage;
@@ -137,12 +138,35 @@ class LandingController extends Controller
                 ];
             });
 
+        $articles = Article::query()
+            ->where('is_published', true)
+            ->where(function ($q) {
+                $q->whereNull('published_at')
+                  ->orWhere('published_at', '<=', now());
+            })
+            ->latest('published_at')
+            ->take(3)
+            ->get()
+            ->map(function ($article) {
+                return [
+                    'id' => $article->id,
+                    'title' => $article->title,
+                    'slug' => $article->slug,
+                    'thumbnail' => $this->formatImageUrl($article->thumbnail),
+                    'excerpt' => $article->excerpt,
+                    'author' => $article->author ?? 'ASTA Digital Team',
+                    'category' => $article->category ?? 'Technology',
+                    'published_at' => $article->published_at?->format('d M Y') ?? $article->created_at->format('d M Y'),
+                ];
+            });
+
         return response()->json([
             'services' => $services,
             'portfolios' => $portfolios,
             'clients' => $clients,
             'discovers' => $discovers,
             'testimonials' => $testimonials,
+            'articles' => $articles,
         ]);
     }
 

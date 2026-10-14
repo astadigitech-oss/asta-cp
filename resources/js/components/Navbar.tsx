@@ -181,7 +181,7 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="relative z-[100] w-full flex justify-center">
-        <div className="w-full max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] items-center h-[90px] flex justify-between px-5 lg:px-10 xl:px-12 2xl:px-16">
+        <div className="w-full max-w-[1800px] 3xl:max-w-[2100px] 4xl:max-w-[2400px] items-center h-[90px] flex justify-between px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 3xl:px-24">
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
@@ -747,6 +747,16 @@ export function Navbar() {
                 </div>
               </div>
             </div>
+
+            {/* Blog */}
+            <a
+              href={`/${language}/blog`}
+              className="relative text-[18px] font-medium text-gray-700 hover:text-[#004AAD] transition-colors py-8
+                after:content-[''] after:absolute after:left-0 after:bottom-4 after:w-full after:h-[2px] after:bg-[#004AAD]
+                after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+            >
+              {t("nav.blog")}
+            </a>
           </nav>
 
           {/* Right Section: Language Switcher & Contact Button */}
@@ -805,6 +815,13 @@ export function Navbar() {
                 className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
               >
                 {t("nav.discover")}
+              </a>
+              <a
+                href={`/${language}/blog`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
+              >
+                {t("nav.blog")}
               </a>
             </div>
 

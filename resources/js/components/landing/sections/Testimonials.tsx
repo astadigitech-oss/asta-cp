@@ -103,7 +103,7 @@ export function Testimonials() {
   return (
     <section id="testimoni" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
       <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-60" />
-      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

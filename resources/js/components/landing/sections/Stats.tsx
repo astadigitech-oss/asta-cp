@@ -16,7 +16,7 @@ export function Stats() {
   return (
     <section className="relative -mt-6 pb-6 sm:pb-6">
       <WaveDivider from="var(--surface)" to="var(--background)" />
-      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {bigStats.map((s, i) => (
             <motion.div

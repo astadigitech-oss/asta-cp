@@ -33,7 +33,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
     <section id="top" className="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6 xl:pt-34">
       <OceanBackdrop />
 
-      <div className="mx-auto max-w-[1400px] xl:max-w-[1536px] 2xl:max-w-[1680px] 3xl:max-w-[1840px] px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <div className="grid items-center gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <Eyebrow>{t("hero.eyebrow")}</Eyebrow>
@@ -59,7 +59,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
               </span>{" "}
               {t("hero.title_2")}
             </h1>
-            <p className="mt-6 max-w-xl xl:max-w-2xl 2xl:max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg xl:text-xl">
+            <p className="mt-6 max-w-xl xl:max-w-2xl 2xl:max-w-3xl 3xl:max-w-4xl text-base leading-relaxed text-muted-foreground sm:text-lg xl:text-xl 3xl:text-2xl">
               {t("hero.description")}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -104,7 +104,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative lg:col-span-5"
           >
-            <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px]">
+            <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px] 4xl:max-w-[840px]">
               <div className="absolute inset-0 rounded-[42%_58%_45%_55%/55%_40%_60%_45%] gradient-mesh opacity-90 blur-[2px]" />
               <div className="absolute inset-6 rounded-[52%_48%_40%_60%/45%_55%_45%_55%] gradient-hero shadow-glass" />
               <div className="absolute inset-0 animate-spin [animation-duration:40s]">

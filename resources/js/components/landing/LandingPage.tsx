@@ -12,6 +12,7 @@ const DiscoverSection = lazy(() => import("./sections/DiscoverSection").then((m)
 const WhyUs = lazy(() => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs })));
 const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.Stats })));
 const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
+const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
 const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
 const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
 const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
@@ -59,6 +60,10 @@ export function LandingPage() {
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[350px]" />}>
           <Process />
+        </Suspense>
+
+        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+          <BlogSection articlesList={landingData?.articles} />
         </Suspense>
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[350px]" />}>

@@ -6,6 +6,7 @@ export * from "./DiscoverSection";
 export * from "./WhyUs";
 export * from "./Stats";
 export * from "./Process";
+export * from "./BlogSection";
 export * from "./Testimonials";
 export * from "./CTA";
 export * from "./Contact";

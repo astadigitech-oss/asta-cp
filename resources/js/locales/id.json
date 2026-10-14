@@ -10,6 +10,7 @@
     "services": "Produk & Layanan",
     "portfolio": "Portofolio",
     "discover": "Temukan",
+    "blog": "Blog",
     "about": "Tentang Asta",
     "process": "Proses",
     "contact": "Hubungi Kami",
@@ -227,6 +228,16 @@
     "sol_web": "Web Apps Development",
     "sol_mobile": "Mobile Apps Development",
     "copyright": "© Copyright 2025 PT Asta Digital Agency"
+  },
+  "blog": {
+    "eyebrow": "Wawasan & Edukasi",
+    "title": "Artikel & Panduan Teknologi Terbaru",
+    "description": "Pelajari tips, strategi transformasi digital, dan wawasan teknologi terkini dari tim ahli ASTA Digital Agency.",
+    "view_all": "Lihat Semua Artikel",
+    "read_more": "Baca Selengkapnya",
+    "empty": "Belum ada artikel yang dipublikasikan.",
+    "by": "Oleh",
+    "min_read": "menit baca"
   },
   "common": {
     "previous": "Sebelumnya",
