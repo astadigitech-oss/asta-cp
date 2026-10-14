@@ -51,10 +51,11 @@
     // Dynamic SEO computation
     $rawTitle = $seo?->title ?? ($article ? $article->title . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
     $rawDesc = $seo?->description ?? ($article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
-    
-    $metaTitle = localizeTextPhp($rawTitle, $currentLocale);
+
+    // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
+    $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
-    
+
     $keywords = 'asta digital, digital agency, software house, jasa pembuatan website, pembuatan aplikasi mobile, sistem informasi, IT consultant, web developer indonesia';
     if ($seo && !empty($seo->focusKeywords)) {
         $kwList = collect($seo->focusKeywords)->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))->filter()->implode(', ');
@@ -66,9 +67,17 @@
     $robots = $seo?->robots ?? 'index, follow';
     $canonicalUrl = $seo?->canonical ?: $currentUrl;
 
+    // Resolve OG default image via Vite manifest (supaya dapat URL dengan hash yang benar)
+    $ogDefaultImage = \Illuminate\Support\Facades\Vite::asset('resources/js/assets/og-image.png');
+
     $ogTitle = localizeTextPhp($seo?->ogTitle ?? $rawTitle, $currentLocale);
     $ogDesc = localizeTextPhp($seo?->ogDescription ?? $rawDesc, $currentLocale);
-    $ogImage = $seo?->ogImage ?? ($article && $article->thumbnail ? (str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/'))) : asset('images/logo-dark.png'));
+    $ogImage = $seo?->ogImage
+        ?? ($article && $article->thumbnail
+            ? (str_starts_with($article->thumbnail, 'http')
+                ? $article->thumbnail
+                : asset('storage/' . ltrim($article->thumbnail, '/')))
+            : $ogDefaultImage);
     $ogType = $article ? 'article' : ($seo?->ogType ?? 'website');
 
     $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
@@ -120,9 +129,9 @@
       "@@type": "ProfessionalService",
       "name": "PT Asta Digital Agency",
       "alternateName": "Asta Digital",
-      "url": "https://astadigitalagency.com",
+      "url": "{{ rtrim(config('app.url'), '/') }}",
       "logo": "{{ asset('images/logo-dark.png') }}",
-      "image": "{{ asset('images/logo-dark.png') }}",
+      "image": "{{ $ogDefaultImage }}",
       "description": "PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
       "telephone": "+6281578223564",
       "email": "astadigitech@gmail.com",
@@ -131,8 +140,8 @@
         "addressCountry": "ID"
       },
       "sameAs": [
-        "https://www.instagram.com/astadigitech",
-        "https://linkedin.com/company/astadigitech"
+        "https://www.instagram.com/astadigitalagency/",
+        "https://www.linkedin.com/in/asta-digital-agency-b9441637a/"
       ]
     }
     </script>
