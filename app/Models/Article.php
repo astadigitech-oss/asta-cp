@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use Rankbeam\Seo\Contracts\HasSEO as HasSEOContract;
 use Rankbeam\Seo\Traits\HasSEO;
 
 class Article extends Model implements HasSEOContract
 {
     use HasSEO;
+    use Searchable;
     use SoftDeletes;
 
     protected static function boot()
@@ -123,5 +125,64 @@ class Article extends Model implements HasSEOContract
             : $this->excerpt;
 
         return $excerpt ? strip_tags($excerpt) : null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Laravel Scout / Meilisearch
+    // -------------------------------------------------------------------------
+
+    public function searchableAs(): string
+    {
+        return 'articles';
+    }
+
+    /** Hanya artikel yang sudah published yang masuk index */
+    public function shouldBeSearchable(): bool
+    {
+        return (bool) $this->is_published;
+    }
+
+    public function toSearchableArray(): array
+    {
+        $titleId  = is_array($this->title)  ? ($this->title['id']  ?? '') : (string) $this->title;
+        $titleEn  = is_array($this->title)  ? ($this->title['en']  ?? '') : '';
+        $excerptId = is_array($this->excerpt) ? ($this->excerpt['id'] ?? '') : (string) $this->excerpt;
+        $excerptEn = is_array($this->excerpt) ? ($this->excerpt['en'] ?? '') : '';
+
+        return [
+            'id'           => $this->id,
+            'type'         => 'article',
+            'title_id'     => strip_tags($titleId),
+            'title_en'     => strip_tags($titleEn),
+            'title'        => strip_tags($titleId ?: $titleEn),
+            'excerpt_id'   => strip_tags($excerptId),
+            'excerpt_en'   => strip_tags($excerptEn),
+            'excerpt'      => strip_tags($excerptId ?: $excerptEn),
+            'body'         => strip_tags((string) $this->body),
+            'author'       => $this->author,
+            'category'     => $this->category,
+            'slug'         => $this->slug,
+            'thumbnail'    => $this->thumbnail,
+            'is_published' => (int) $this->is_published,
+            'published_at' => $this->published_at?->timestamp,
+            'updated_at'   => $this->updated_at?->timestamp,
+        ];
+    }
+
+    /** Konfigurasi Meilisearch index settings */
+    public function toMeilisearchSettings(): array
+    {
+        return [
+            'searchableAttributes' => [
+                'title_id', 'title_en', 'title',
+                'excerpt_id', 'excerpt_en',
+                'body', 'author', 'category',
+            ],
+            'filterableAttributes' => ['is_published', 'category', 'type'],
+            'sortableAttributes'   => ['published_at', 'updated_at'],
+            'rankingRules'         => [
+                'words', 'typo', 'proximity', 'attribute', 'sort', 'exactness',
+            ],
+        ];
     }
 }
