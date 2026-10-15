@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use Rankbeam\Seo\Contracts\HasSEO as HasSEOContract;
 use Rankbeam\Seo\Traits\HasSEO;
 
 class Discover extends Model implements HasSEOContract
 {
     use HasSEO;
+    use Searchable;
     use SoftDeletes;
 
     protected $fillable = [
@@ -129,5 +131,55 @@ class Discover extends Model implements HasSEOContract
     public function DiscoverLists()
     {
         return $this->hasMany(DiscoverList::class);
+    }
+
+    // -------------------------------------------------------------------------
+    // Laravel Scout / Meilisearch
+    // -------------------------------------------------------------------------
+
+    public function searchableAs(): string
+    {
+        return 'discovers';
+    }
+
+    public function toSearchableArray(): array
+    {
+        $nameId  = is_array($this->name) ? ($this->name['id']  ?? '') : (string) $this->name;
+        $nameEn  = is_array($this->name) ? ($this->name['en']  ?? '') : '';
+        $descId  = is_array($this->short_description) ? ($this->short_description['id'] ?? '') : (string) $this->short_description;
+        $descEn  = is_array($this->short_description) ? ($this->short_description['en'] ?? '') : '';
+
+        return [
+            'id'                => $this->id,
+            'type'              => 'discover',
+            'name_id'           => strip_tags($nameId),
+            'name_en'           => strip_tags($nameEn),
+            'name'              => strip_tags($nameId ?: $nameEn),
+            'description_id'    => strip_tags($descId),
+            'description_en'    => strip_tags($descEn),
+            'description'       => strip_tags($descId ?: $descEn),
+            'discover_type'     => $this->type,
+            'slug'              => $this->slug,
+            'is_pinned'         => (int) $this->is_pinned,
+            'is_highlight'      => (int) $this->is_highlight,
+            'updated_at'        => $this->updated_at?->timestamp,
+        ];
+    }
+
+    /** Konfigurasi Meilisearch index settings */
+    public function toMeilisearchSettings(): array
+    {
+        return [
+            'searchableAttributes' => [
+                'name_id', 'name_en', 'name',
+                'description_id', 'description_en',
+                'discover_type',
+            ],
+            'filterableAttributes' => ['discover_type', 'is_pinned', 'is_highlight', 'type'],
+            'sortableAttributes'   => ['updated_at'],
+            'rankingRules'         => [
+                'words', 'typo', 'proximity', 'attribute', 'sort', 'exactness',
+            ],
+        ];
     }
 }

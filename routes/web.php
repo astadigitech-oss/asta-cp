@@ -12,87 +12,93 @@ use App\Models\Discover;
 |--------------------------------------------------------------------------
 */
 
-// XML Sitemap Route dengan Caching & Throttle Protection (Aman dari DDoS / Bot Attack)
+// XML Sitemap — dibangun dengan spatie/laravel-sitemap, cache 24 jam
+// Mendukung hreflang multilingual (id/en) untuk semua konten dinamis
 Route::get('/sitemap.xml', function () {
-    $xmlContent = Cache::remember('sitemap_xml_content', 86400, function () {
-        $baseUrl = config('app.url', url('/'));
+    $xml = Cache::remember('sitemap_xml_content', 86400, function () {
+        $baseUrl = rtrim(config('app.url', url('/')), '/');
         $locales = ['id', 'en'];
-        $staticPages = ['', 'discover'];
 
-        $services = Service::all();
-        $articles = Article::where('is_published', true)->get();
-        $discovers = Discover::all();
+        $sitemap = \Spatie\Sitemap\Sitemap::create();
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
+        // --- Static Pages ---
+        $staticPages = [
+            ''         => ['priority' => '1.0', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
+            'discover' => ['priority' => '0.8', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
+        ];
 
-        // Static Pages (Home & Discover)
-        foreach ($staticPages as $page) {
+        foreach ($staticPages as $page => $meta) {
             $pathSegment = $page ? "/{$page}" : '';
             foreach ($locales as $locale) {
-                $locUrl = "{$baseUrl}/{$locale}{$pathSegment}";
-                $xml .= "  <url>\n";
-                $xml .= "    <loc>{$locUrl}</loc>\n";
-                $xml .= "    <lastmod>" . date('c') . "</lastmod>\n";
-                $xml .= "    <changefreq>daily</changefreq>\n";
-                $xml .= "    <priority>" . ($page === '' ? '1.0' : '0.8') . "</priority>\n";
+                $url = \Spatie\Sitemap\Tags\Url::create("{$baseUrl}/{$locale}{$pathSegment}")
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency($meta['changefreq'])
+                    ->setPriority((float) $meta['priority']);
+
                 foreach ($locales as $altLocale) {
-                    $altUrl = "{$baseUrl}/{$altLocale}{$pathSegment}";
-                    $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
+                    $url->addAlternate("{$baseUrl}/{$altLocale}{$pathSegment}", $altLocale);
                 }
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id{$pathSegment}\"/>\n";
-                $xml .= "  </url>\n";
+                // x-default → bahasa Indonesia
+                $url->addAlternate("{$baseUrl}/id{$pathSegment}", 'x-default');
+
+                $sitemap->add($url);
             }
         }
 
-        // Dynamic Blog Article Pages (Clean URL & Multilingual)
-        foreach ($articles as $article) {
+        // --- Articles (published only) ---
+        Article::where('is_published', true)->each(function ($article) use ($sitemap, $baseUrl, $locales) {
             foreach ($locales as $locale) {
-                $slug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug;
+                $slug   = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug;
                 $locUrl = "{$baseUrl}/{$locale}/{$slug}";
-                $xml .= "  <url>\n";
-                $xml .= "    <loc>{$locUrl}</loc>\n";
-                $xml .= "    <lastmod>" . ($article->updated_at ? $article->updated_at->toIso8601String() : date('c')) . "</lastmod>\n";
-                $xml .= "    <changefreq>weekly</changefreq>\n";
-                $xml .= "    <priority>0.9</priority>\n";
+
+                $url = \Spatie\Sitemap\Tags\Url::create($locUrl)
+                    ->setLastModificationDate($article->updated_at ?? now())
+                    ->setChangeFrequency(\Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.9);
+
                 foreach ($locales as $altLocale) {
                     $altSlug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($altLocale) : $article->slug;
-                    $altUrl = "{$baseUrl}/{$altLocale}/{$altSlug}";
-                    $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
+                    $url->addAlternate("{$baseUrl}/{$altLocale}/{$altSlug}", $altLocale);
                 }
                 $idSlug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug('id') : $article->slug;
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/{$idSlug}\"/>\n";
-                $xml .= "  </url>\n";
-            }
-        }
+                $url->addAlternate("{$baseUrl}/id/{$idSlug}", 'x-default');
 
-        // Dynamic Discover & E-Learning Pages
-        foreach ($discovers as $discover) {
+                $sitemap->add($url);
+            }
+        });
+
+        // --- Discovers ---
+        Discover::each(function ($discover) use ($sitemap, $baseUrl, $locales) {
             foreach ($locales as $locale) {
-                $identifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($locale) : ($discover->slug ?: $discover->id);
+                $identifier = method_exists($discover, 'getLocalizedSlug')
+                    ? $discover->getLocalizedSlug($locale)
+                    : ($discover->slug ?: $discover->id);
                 $locUrl = "{$baseUrl}/{$locale}/discover/{$identifier}";
-                $xml .= "  <url>\n";
-                $xml .= "    <loc>{$locUrl}</loc>\n";
-                $xml .= "    <lastmod>" . ($discover->updated_at ? $discover->updated_at->toIso8601String() : date('c')) . "</lastmod>\n";
-                $xml .= "    <changefreq>weekly</changefreq>\n";
-                $xml .= "    <priority>0.8</priority>\n";
-                foreach ($locales as $altLocale) {
-                    $altIdentifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($altLocale) : ($discover->slug ?: $discover->id);
-                    $altUrl = "{$baseUrl}/{$altLocale}/discover/{$altIdentifier}";
-                    $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"{$altLocale}\" href=\"{$altUrl}\"/>\n";
-                }
-                $idIdentifier = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug('id') : ($discover->slug ?: $discover->id);
-                $xml .= "    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{$baseUrl}/id/discover/{$idIdentifier}\"/>\n";
-                $xml .= "  </url>\n";
-            }
-        }
 
-        $xml .= '</urlset>';
-        return $xml;
+                $url = \Spatie\Sitemap\Tags\Url::create($locUrl)
+                    ->setLastModificationDate($discover->updated_at ?? now())
+                    ->setChangeFrequency(\Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.8);
+
+                foreach ($locales as $altLocale) {
+                    $altId = method_exists($discover, 'getLocalizedSlug')
+                        ? $discover->getLocalizedSlug($altLocale)
+                        : ($discover->slug ?: $discover->id);
+                    $url->addAlternate("{$baseUrl}/{$altLocale}/discover/{$altId}", $altLocale);
+                }
+                $defaultId = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug('id') : ($discover->slug ?: $discover->id);
+                $url->addAlternate("{$baseUrl}/id/discover/{$defaultId}", 'x-default');
+
+                $sitemap->add($url);
+            }
+        });
+
+        return $sitemap->render();
     });
 
-    return response($xmlContent, 200)->header('Content-Type', 'text/xml');
+    return response($xml, 200)->header('Content-Type', 'text/xml');
 })->middleware('throttle:60,1');
+
 
 // Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article & Discover SEO Server-side Rendering
 // NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).
