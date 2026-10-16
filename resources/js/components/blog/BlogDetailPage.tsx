@@ -142,21 +142,21 @@ export function BlogDetailPage() {
   const sections = article?.content_sections || [];
 
   return (
-    <div className="min-h-screen bg-[#f8fbfe] text-gray-900 font-sans selection:bg-primary/20 selection:text-primary flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f8fbfe] text-gray-900 font-sans selection:bg-primary/20 selection:text-primary flex flex-col justify-between overflow-x-hidden w-full max-w-full">
       <Toaster position="top-right" richColors />
 
       {/* ── 1. Header / Navbar Asli ────────────────────────────── */}
       <Navbar />
 
       {/* ── 2. Blog Main Container ─────────────────────────────── */}
-      <main className="flex-1 w-full pt-28 pb-20 sm:pt-32 sm:pb-28 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1080px]">
+      <main className="flex-1 w-full max-w-full pt-28 pb-20 sm:pt-32 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="mx-auto max-w-[1080px] w-full min-w-0">
           {/* Breadcrumb Navigation Bar */}
           <motion.nav
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500 mb-8 pb-4 border-b border-gray-200/80"
+            className="flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500 mb-8 pb-4 border-b border-gray-200/80 w-full min-w-0"
           >
             <div className="flex items-center gap-2 flex-wrap">
               <Link
@@ -261,7 +261,7 @@ export function BlogDetailPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 shadow-[0_10px_40px_rgb(0,0,0,0.04)] border border-gray-100/90"
+              className="bg-white rounded-3xl p-5 sm:p-10 lg:p-12 shadow-[0_10px_40px_rgb(0,0,0,0.04)] border border-gray-100/90 w-full min-w-0 max-w-full overflow-hidden"
             >
               {/* Badges Bar */}
               <div className="flex flex-wrap items-center gap-2.5 mb-5">
@@ -282,7 +282,7 @@ export function BlogDetailPage() {
               </div>
 
               {/* Main Title */}
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.2] text-gray-900 tracking-tight">
+              <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-bold leading-[1.2] text-gray-900 tracking-tight break-words">
                 {localizedTitle}
               </h1>
 
@@ -366,24 +366,24 @@ export function BlogDetailPage() {
               )}
 
               {/* ── Lead Excerpt / Short Intro ───────────────────────── */}
-              <div ref={contentTopRef} className="mt-8 space-y-6">
+              <div ref={contentTopRef} className="mt-8 space-y-6 w-full min-w-0 max-w-full">
                 {localizedExcerpt && (
                   <div
-                    className="prose prose-blue max-w-none text-gray-800 text-lg sm:text-xl leading-relaxed font-medium border-l-4 border-primary pl-5 py-3 bg-blue-50/50 rounded-r-2xl shadow-xs"
+                    className="prose prose-blue max-w-none text-gray-800 text-base sm:text-xl leading-relaxed font-medium border-l-4 border-primary pl-4 sm:pl-5 py-3 bg-blue-50/50 rounded-r-2xl shadow-xs break-words [overflow-wrap:anywhere]"
                     dangerouslySetInnerHTML={{ __html: localizedExcerpt }}
                   />
                 )}
 
                 {/* ── Modular Dynamic Content Sections (Gambar + Teks Berurutan) ── */}
                 {sections.length > 0 && (
-                  <div className="space-y-10 pt-4">
+                  <div className="space-y-10 pt-4 w-full min-w-0 max-w-full">
                     {sections.map((section, sIdx) => {
                       const sectionIndex = sIdx + 1;
                       const embedUrl = section.video_url ? getYoutubeEmbedUrl(section.video_url) : null;
                       const isVideo = section.media_type === "video" || Boolean(embedUrl);
 
                       return (
-                        <section key={sIdx} className="space-y-4 pt-2">
+                        <section key={sIdx} className="space-y-4 pt-2 w-full min-w-0 max-w-full overflow-hidden">
                           <div className="flex items-center gap-2">
                             <span className="h-6 px-3 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center shadow-xs">
                               {lang === "en" ? `Part ${sectionIndex}` : `Bagian ${sectionIndex}`}
@@ -427,12 +427,12 @@ export function BlogDetailPage() {
                           {/* Rich Section Description */}
                           {section.description && (
                             <div
-                              className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-2
-                                prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900
+                              className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-2 break-words [overflow-wrap:anywhere]
+                                prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900 prose-headings:break-words
                                 prose-h2:text-2xl sm:prose-h2:text-3xl prose-h2:mt-6 prose-h2:mb-3
                                 prose-h3:text-xl sm:prose-h3:text-2xl prose-h3:mt-4 prose-h3:mb-2
-                                prose-p:leading-relaxed prose-p:text-gray-700
-                                prose-a:text-primary prose-a:font-semibold hover:prose-a:underline
+                                prose-p:leading-relaxed prose-p:text-gray-700 prose-p:break-words
+                                prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-a:break-all
                                 prose-strong:text-gray-900
                                 prose-img:rounded-2xl prose-img:shadow-sm"
                               dangerouslySetInnerHTML={{ __html: localize(section.description) }}
@@ -447,12 +447,12 @@ export function BlogDetailPage() {
                 {/* ── Fallback / Additional Full Body Content ─────────── */}
                 {localizedBody && (
                   <div
-                    className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-4
-                      prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900
+                    className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-4 break-words [overflow-wrap:anywhere]
+                      prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900 prose-headings:break-words
                       prose-h2:text-2xl sm:prose-h2:text-3xl prose-h2:mt-8 prose-h2:mb-3
                       prose-h3:text-xl sm:prose-h3:text-2xl prose-h3:mt-6 prose-h3:mb-2
-                      prose-p:leading-relaxed prose-p:text-gray-700
-                      prose-a:text-primary prose-a:font-semibold hover:prose-a:underline
+                      prose-p:leading-relaxed prose-p:text-gray-700 prose-p:break-words
+                      prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-a:break-all
                       prose-strong:text-gray-900
                       prose-img:rounded-2xl prose-img:shadow-sm"
                     dangerouslySetInnerHTML={{ __html: localizedBody }}

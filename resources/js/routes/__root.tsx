@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "../i18n/useTranslation";
@@ -90,6 +91,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const routerState = useRouterState();
+
+  // Automatic Google Analytics (GA4) Page View Tracking on Client-Side Route Change
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+      const pagePath = routerState.location.pathname + (routerState.location.searchStr || "");
+      (window as any).gtag("event", "page_view", {
+        page_path: pagePath,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
+    }
+  }, [routerState.location.pathname, routerState.location.searchStr]);
 
   return (
     <QueryClientProvider client={queryClient}>

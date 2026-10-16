@@ -81,7 +81,7 @@ class ArticleForm
                                     ->label('URL Slug (Multilingual)')
                                     ->placeholder('[:id]judul-artikel[:en]article-title atau cukup judul-artikel')
                                     ->required()
-                                    ->unique(Article::class, 'slug', ignoreRecord: true)
+                                    ->unique(Article::class, 'slug', ignoreRecord: true, modifyRuleUsing: fn ($rule) => $rule->whereNull('deleted_at'))
                                     ->helperText('Mendukung format multilingual [:id]slug-id[:en]slug-en. Akan diakses melalui domain.com/slug-anda'),
                             ]),
 
@@ -103,6 +103,7 @@ class ArticleForm
                                 FileUpload::make('thumbnail')
                                     ->label('Gambar Utama / Cover Thumbnail')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->directory('articles/covers')
                                     ->disk('public')
                                     ->visibility('public')
@@ -113,6 +114,7 @@ class ArticleForm
                                 FileUpload::make('images')
                                     ->label('Foto Galeri / Banner Tambahan (Carousel)')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->multiple()
                                     ->maxFiles(6)
                                     ->reorderable()
@@ -165,6 +167,7 @@ class ArticleForm
                                 FileUpload::make('image')
                                     ->label('Upload Gambar Bagian Ini')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->disk('public')
                                     ->directory('articles/sections')
                                     ->visibility('public')
@@ -236,8 +239,8 @@ class ArticleForm
                                 TextInput::make('title')
                                     ->label('Meta Title')
                                     ->placeholder('Biarkan kosong untuk otomatis memakai judul artikel')
-                                    ->maxLength(255)
-                                    ->helperText('Judul khusus yang akan muncul di hasil pencarian Google'),
+                                    ->maxLength(70)
+                                    ->helperText('Maks. 70 karakter untuk hasil pencarian Google'),
 
                                 TextInput::make('canonical')
                                     ->label('Canonical URL')
@@ -250,7 +253,7 @@ class ArticleForm
                             ->label('Meta Description')
                             ->placeholder('Deskripsi ringkas artikel untuk cuplikan mesin pencari Google...')
                             ->rows(3)
-                            ->maxLength(320)
+                            ->maxLength(160)
                             ->helperText('Panjang ideal 120-160 karakter'),
 
                         Grid::make(2)
@@ -276,16 +279,19 @@ class ArticleForm
                             ->schema([
                                 TextInput::make('og_title')
                                     ->label('Custom OpenGraph Title')
+                                    ->maxLength(70)
                                     ->placeholder('Judul khusus share ke WhatsApp/Medsos'),
 
                                 TextInput::make('twitter_title')
                                     ->label('Custom Twitter/X Title')
+                                    ->maxLength(70)
                                     ->placeholder('Judul khusus share ke X/Twitter'),
                             ]),
 
                         FileUpload::make('og_image')
                             ->label('Custom Social Share Image (OG / Twitter)')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                             ->directory('seo/og')
                             ->disk('public')
                             ->visibility('public')

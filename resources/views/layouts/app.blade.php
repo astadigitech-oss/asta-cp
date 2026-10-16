@@ -92,17 +92,25 @@
 
     $ogTitle = localizeTextPhp($seo?->ogTitle ?? $rawTitle, $currentLocale);
     $ogDesc = localizeTextPhp($seo?->ogDescription ?? $rawDesc, $currentLocale);
-    $ogImage = $seo?->ogImage
-        ?? ($article && $article->thumbnail
+
+    $rawOgImage = $seo?->ogImage;
+    if (!empty($rawOgImage)) {
+        $ogImage = str_starts_with($rawOgImage, 'http') ? $rawOgImage : asset('storage/' . ltrim($rawOgImage, '/'));
+    } else {
+        $ogImage = ($article && $article->thumbnail
             ? (str_starts_with($article->thumbnail, 'http')
                 ? $article->thumbnail
                 : asset('storage/' . ltrim($article->thumbnail, '/')))
             : ($discoverImg ?: $ogDefaultImage));
+    }
     $ogType = ($article || $discover) ? 'article' : ($seo?->ogType ?? 'website');
 
     $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
     $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);
-    $twitterImage = $seo?->twitterImage ?? $ogImage;
+    $rawTwitterImage = $seo?->twitterImage;
+    $twitterImage = !empty($rawTwitterImage)
+        ? (str_starts_with($rawTwitterImage, 'http') ? $rawTwitterImage : asset('storage/' . ltrim($rawTwitterImage, '/')))
+        : $ogImage;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', $currentLocale) }}">
@@ -165,22 +173,54 @@
       ]
     }
     </script>
+    @if ($article)
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "BlogPosting",
+      "headline": "{{ addslashes($metaTitle) }}",
+      "description": "{{ addslashes($metaDesc) }}",
+      "image": "{{ $ogImage }}",
+      "datePublished": "{{ $article->published_at?->toIso8601String() ?? now()->toIso8601String() }}",
+      "dateModified": "{{ $article->updated_at?->toIso8601String() ?? now()->toIso8601String() }}",
+      "author": {
+        "@@type": "Organization",
+        "name": "{{ addslashes($article->author ?: 'ASTA Digital Team') }}"
+      },
+      "publisher": {
+        "@@type": "Organization",
+        "name": "PT Asta Digital Agency",
+        "logo": {
+          "@@type": "ImageObject",
+          "url": "{{ asset('images/logo-dark.png') }}"
+        }
+      },
+      "mainEntityOfPage": {
+        "@@type": "WebPage",
+        "@@id": "{{ $canonicalUrl }}"
+      }
+    }
+    </script>
+    @endif
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
-    @production
+    @php
+        $gaId = config('services.google.analytics_id');
+    @endphp
+    @if (!empty($gaId))
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-599R2RLEDJ"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-599R2RLEDJ');
+        gtag('config', '{{ $gaId }}');
     </script>
-@endproduction
+    @endif
     {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

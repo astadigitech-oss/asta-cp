@@ -117,12 +117,12 @@ export function BlogListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fbfe] text-gray-900 font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f8fbfe] text-gray-900 font-sans flex flex-col justify-between overflow-x-hidden w-full max-w-full">
       <Toaster position="top-right" richColors />
       <Navbar />
 
-      <main className="flex-1 w-full pt-28 pb-20 sm:pt-32 sm:pb-28 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1080px]">
+      <main className="flex-1 w-full max-w-full pt-28 pb-20 sm:pt-32 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="mx-auto max-w-[1080px] w-full min-w-0">
           {/* Breadcrumb */}
           <motion.nav
             initial={{ opacity: 0, y: -10 }}
@@ -166,9 +166,9 @@ export function BlogListPage() {
           </motion.div>
 
           {/* Search & Filter Bar */}
-          <div className="mb-8 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center" ref={listTopRef}>
+          <div className="mb-8 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full min-w-0" ref={listTopRef}>
             {/* Search */}
-            <form onSubmit={handleSearch} className="flex-1 relative">
+            <form onSubmit={handleSearch} className="flex-1 relative w-full min-w-0">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <input
                 type="search"
@@ -189,13 +189,13 @@ export function BlogListPage() {
             </form>
 
             {/* Category tabs */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap overflow-x-auto max-w-full pb-1">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
                   onClick={() => handleCategoryChange(cat)}
-                  className={`h-9 rounded-full px-4 text-xs font-semibold transition-all border cursor-pointer ${
+                  className={`h-9 rounded-full px-4 text-xs font-semibold transition-all border cursor-pointer shrink-0 ${
                     activeCategory === cat
                       ? "bg-primary text-white border-primary shadow-sm"
                       : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
@@ -276,12 +276,12 @@ export function BlogListPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl w-full min-w-0 max-w-full"
                 >
                   <Link
                     to="/$lang/$slug"
                     params={{ slug: localize(article.slug), lang }}
-                    className="block cursor-pointer"
+                    className="block cursor-pointer w-full min-w-0"
                   >
                     {/* Thumbnail */}
                     <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-4 bg-gray-100 relative">
@@ -321,13 +321,13 @@ export function BlogListPage() {
                     </div>
 
                     {/* Title */}
-                    <h2 className="font-bold text-base sm:text-lg text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    <h2 className="font-bold text-base sm:text-lg text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition-colors break-words">
                       {localize(article.title)}
                     </h2>
 
                     {/* Excerpt */}
                     {article.excerpt && (
-                      <p className="mt-2.5 text-xs sm:text-sm text-gray-500 leading-relaxed line-clamp-3 font-normal">
+                      <p className="mt-2.5 text-xs sm:text-sm text-gray-500 leading-relaxed line-clamp-3 font-normal break-words">
                         {stripHtml(localize(article.excerpt))}
                       </p>
                     )}
