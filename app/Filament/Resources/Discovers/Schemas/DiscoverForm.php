@@ -211,8 +211,8 @@ class DiscoverForm
                                 TextInput::make('title')
                                     ->label('SEO Meta Title')
                                     ->placeholder('Biarkan kosong untuk otomatis memakai judul')
-                                    ->maxLength(255)
-                                    ->helperText('Judul khusus yang akan muncul di hasil pencarian Google'),
+                                    ->maxLength(70)
+                                    ->helperText('Maks. 70 karakter untuk hasil pencarian Google'),
 
                                 TextInput::make('canonical')
                                     ->label('Canonical URL')
@@ -225,7 +225,7 @@ class DiscoverForm
                             ->label('SEO Meta Description')
                             ->placeholder('Deskripsi ringkas konten untuk cuplikan mesin pencari Google...')
                             ->rows(3)
-                            ->maxLength(320)
+                            ->maxLength(160)
                             ->helperText('Panjang ideal 120-160 karakter')
                             ->columnSpanFull(),
 
@@ -252,16 +252,19 @@ class DiscoverForm
                             ->schema([
                                 TextInput::make('og_title')
                                     ->label('Custom OpenGraph Title')
+                                    ->maxLength(70)
                                     ->placeholder('Judul khusus share ke WhatsApp/Medsos'),
 
                                 TextInput::make('twitter_title')
                                     ->label('Custom Twitter/X Title')
+                                    ->maxLength(70)
                                     ->placeholder('Judul khusus share ke X/Twitter'),
                             ]),
 
                         FileUpload::make('og_image')
                             ->label('Custom Social Share Image (OG / Twitter)')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                             ->directory('seo/og')
                             ->disk('public')
                             ->visibility('public')

@@ -461,7 +461,7 @@ export function DiscoverDetailPage() {
 
                         {section.description && (
                           <div
-                            className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-2"
+                            className="prose prose-blue max-w-none text-gray-700 text-base sm:text-lg leading-relaxed pt-2 break-words [overflow-wrap:anywhere] prose-a:break-all"
                             dangerouslySetInnerHTML={{ __html: section.description }}
                           />
                         )}
