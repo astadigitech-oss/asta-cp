@@ -4,6 +4,10 @@ import axios from "axios";
 
 export const Route = createFileRoute("/$lang/discover/$id")({
   loader: async ({ params: { id } }) => {
+    const initialData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__ : null;
+    if (initialData?.discover && (String(initialData.id) === String(id) || initialData.discover.slug === id || String(initialData.discover.id) === id)) {
+      return initialData.discover;
+    }
     try {
       const res = await axios.get(`/api/discovers/${id}`);
       return res.data;

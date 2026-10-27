@@ -119,6 +119,13 @@ Route::get('/{any?}', function () {
     $article = null;
     $discover = null;
     $seo = null;
+    $initialData = [
+        'locale' => $locale,
+        'article' => null,
+        'discover' => null,
+        'slug' => null,
+        'id' => null,
+    ];
 
     if ($cleanPath && !in_array($cleanPath, ['', 'discover', 'blog'])) {
         $decoded = urldecode($cleanPath);
@@ -130,7 +137,9 @@ Route::get('/{any?}', function () {
             $decodedParam = urldecode($discoverParam);
             $slugifiedParam = \Illuminate\Support\Str::slug($decodedParam);
 
-            $discover = Discover::where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
+            $discover = Discover::with(['DiscoverLists' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort', 'asc');
+            }])->where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
                 $q->where('slug', $discoverParam)
                   ->orWhere('slug', $decodedParam)
                   ->orWhere('slug', $slugifiedParam)
@@ -149,6 +158,48 @@ Route::get('/{any?}', function () {
                 } catch (\Throwable $e) {
                     // Fallback
                 }
+
+                $rawImages = is_array($discover->image) ? $discover->image : (is_string($discover->image) ? [$discover->image] : []);
+                $formattedImages = collect($rawImages)->map(function ($img) {
+                    if (!$img) return null;
+                    return (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) ? $img : asset('storage/' . ltrim($img, '/'));
+                })->filter()->values()->all();
+
+                $rawSections = is_array($discover->content_sections)
+                    ? $discover->content_sections
+                    : (is_string($discover->content_sections) && !empty($discover->content_sections) ? (json_decode($discover->content_sections, true) ?: []) : []);
+
+                $formattedSections = collect($rawSections)->map(function ($section) {
+                    $img = !empty($section['image']) ? ((str_starts_with($section['image'], 'http://') || str_starts_with($section['image'], 'https://')) ? $section['image'] : asset('storage/' . ltrim($section['image'], '/'))) : null;
+                    return [
+                        'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
+                        'image' => $img,
+                        'video_url' => $section['video_url'] ?? null,
+                        'description' => $section['description'] ?? '',
+                    ];
+                })->values()->all();
+
+                $initialData['id'] = $discoverParam;
+                $initialData['discover'] = [
+                    'id' => $discover->id,
+                    'name' => $discover->name,
+                    'slug' => $discover->slug,
+                    'type' => $discover->type ?: 'story',
+                    'year' => $discover->year,
+                    'short_description' => $discover->short_description,
+                    'content_sections' => $formattedSections,
+                    'show_name' => $discover->show_name,
+                    'is_pinned' => $discover->is_pinned,
+                    'is_highlight' => (bool) $discover->is_highlight,
+                    'logo' => $discover->logo ? ((str_starts_with($discover->logo, 'http') ? $discover->logo : asset('storage/' . ltrim($discover->logo, '/')))) : null,
+                    'image' => $formattedImages,
+                    'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
+                    'DiscoverLists' => $discover->DiscoverLists,
+                    'seo' => [
+                        'meta_title' => $seo?->title ?? $discover->name,
+                        'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                    ],
+                ];
             }
         } else {
             // 2. Cek apakah mengakses artikel
@@ -173,6 +224,49 @@ Route::get('/{any?}', function () {
                 } catch (\Throwable $e) {
                     // Fallback
                 }
+
+                $thumbnailUrl = $article->thumbnail ? ((str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')))) : null;
+                $rawImages = is_array($article->images) ? $article->images : [];
+                $formattedImages = collect($rawImages)->map(function ($img) {
+                    if (!$img) return null;
+                    return (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) ? $img : asset('storage/' . ltrim($img, '/'));
+                })->filter()->values()->all();
+
+                if ($thumbnailUrl && !in_array($thumbnailUrl, $formattedImages)) {
+                    array_unshift($formattedImages, $thumbnailUrl);
+                }
+
+                $rawSections = is_array($article->content_sections) ? $article->content_sections : [];
+                $formattedSections = collect($rawSections)->map(function ($section) {
+                    $img = !empty($section['image']) ? ((str_starts_with($section['image'], 'http://') || str_starts_with($section['image'], 'https://')) ? $section['image'] : asset('storage/' . ltrim($section['image'], '/'))) : null;
+                    return [
+                        'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : (!empty($section['image']) ? 'image' : 'none')),
+                        'image' => $img,
+                        'video_url' => $section['video_url'] ?? null,
+                        'description' => $section['description'] ?? '',
+                    ];
+                })->values()->all();
+
+                $initialData['slug'] = $cleanPath;
+                $initialData['article'] = [
+                    'id' => $article->id,
+                    'title' => $article->title,
+                    'slug' => $article->slug,
+                    'thumbnail' => $thumbnailUrl,
+                    'images' => $formattedImages,
+                    'excerpt' => $article->excerpt,
+                    'body' => $article->body,
+                    'content_sections' => $formattedSections,
+                    'author' => $article->author ?? 'ASTA Digital Team',
+                    'category' => $article->category ?? 'General',
+                    'published_at' => $article->published_at?->format('d M Y') ?? $article->created_at->format('d M Y'),
+                    'published_at_iso' => $article->published_at?->toIso8601String() ?? $article->created_at->toIso8601String(),
+                    'updated_at_iso' => $article->updated_at?->toIso8601String(),
+                    'seo' => [
+                        'meta_title' => $seo?->title ?? $article->title,
+                        'meta_description' => $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? '')),
+                    ],
+                ];
             }
         }
     }
@@ -182,6 +276,7 @@ Route::get('/{any?}', function () {
         'article' => $article,
         'discover' => $discover,
         'seo' => $seo,
+        'initialData' => $initialData,
     ]);
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml).*');
 
