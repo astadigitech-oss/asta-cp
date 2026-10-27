@@ -58,6 +58,7 @@ COPY --from=frontend /app/public/build ./public/build
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Setup Nginx & Entrypoint
+RUN mkdir -p /run/nginx
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

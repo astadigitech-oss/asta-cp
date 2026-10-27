@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Wajib di Alpine: buat folder PID Nginx agar tidak crash saat start
+mkdir -p /run/nginx
+
+# Pastikan folder log Nginx ada
+mkdir -p /var/log/nginx
+
 # Pastikan permission storage & cache benar
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
@@ -8,13 +14,22 @@ chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 # Pastikan tidak ada file dev Vite tertinggal
 rm -f /var/www/public/hot
 
-# Generate storage link bersih
-rm -rf /var/www/public/storage
-php artisan storage:link || true
+# Buat storage link (aman tanpa rm -rf, tidak menghapus file di storage)
+php artisan storage:link --force || true
+
+# Jalankan migrasi jika perlu
+php artisan migrate --force || true
+
+# Test syntax konfigurasi Nginx agar jika ada error langsung terbaca di log Dokploy
+echo "==> Testing Nginx configuration..."
+nginx -t
 
 # Jalankan PHP-FPM di background
+echo "==> Starting PHP-FPM..."
 php-fpm -D
 
 # Jalankan Nginx di foreground agar container tetap hidup (tidak loop restart)
+echo "==> Starting Nginx on port 80..."
 exec nginx -g "daemon off;"
+
 
