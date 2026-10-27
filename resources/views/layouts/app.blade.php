@@ -57,11 +57,19 @@
     }
 
     // Dynamic SEO computation
+    $isBlogPage = $isBlogPage ?? false;
     $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : null);
     $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : null);
 
-    $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
-    $rawDesc = $seo?->description ?? ($itemDesc ?: 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
+    if ($isBlogPage) {
+        $rawTitle = $currentLocale === 'en' ? 'Articles & Insights — ASTA Digital Agency' : 'Artikel & Wawasan — ASTA Digital Agency';
+        $rawDesc = $currentLocale === 'en'
+            ? 'Explore articles, guides, and insights on digital transformation, technology, and business growth from ASTA Digital Agency.'
+            : 'Jelajahi kumpulan artikel, panduan, dan wawasan seputar transformasi digital, teknologi, dan pertumbuhan bisnis dari ASTA Digital Agency.';
+    } else {
+        $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
+        $rawDesc = $seo?->description ?? ($itemDesc ?: 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
+    }
 
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
     $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -103,7 +111,7 @@
                 : asset('storage/' . ltrim($article->thumbnail, '/')))
             : ($discoverImg ?: $ogDefaultImage));
     }
-    $ogType = ($article || $discover) ? 'article' : ($seo?->ogType ?? 'website');
+    $ogType = ($article || $discover) ? 'article' : ($isBlogPage ? 'blog' : ($seo?->ogType ?? 'website'));
 
     $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
     $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);
@@ -203,6 +211,30 @@
       "mainEntityOfPage": {
         "@@type": "WebPage",
         "@@id": "{{ $canonicalUrl }}"
+      }
+    }
+    </script>
+    @endif
+    @if ($isBlogPage && !empty($blogArticles['data']))
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "CollectionPage",
+      "name": "{{ addslashes($metaTitle) }}",
+      "description": "{{ addslashes($metaDesc) }}",
+      "url": "{{ $canonicalUrl }}",
+      "mainEntity": {
+        "@@type": "ItemList",
+        "itemListElement": [
+          @foreach ($blogArticles['data'] as $idx => $art)
+          {
+            "@@type": "ListItem",
+            "position": {{ $idx + 1 }},
+            "url": "{{ rtrim($baseUrl, '/') . '/' . $currentLocale . '/' . $art['slug'] }}",
+            "name": "{{ addslashes(localizeTextPhp($art['title'], $currentLocale)) }}"
+          }@if (!$loop->last),@endif
+          @endforeach
+        ]
       }
     }
     </script>
@@ -318,6 +350,54 @@
                     {!! localizeTextPhp(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : $discover->short_description, $currentLocale) !!}
                 </div>
             </article>
+        @elseif ($isBlogPage)
+            <main class="max-w-6xl mx-auto px-4 py-12">
+                <header class="mb-10 text-center">
+                    <span class="text-xs font-semibold text-blue-600 uppercase tracking-widest">
+                        {{ $currentLocale === 'en' ? 'Blog & Knowledge' : 'Artikel & Wawasan' }}
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-bold mt-2 text-gray-900 dark:text-white">
+                        {{ $currentLocale === 'en' ? 'Articles & Insights' : 'Artikel & Wawasan' }}
+                    </h1>
+                    <p class="mt-3 text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        {{ $currentLocale === 'en'
+                            ? 'Explore articles, guides, and insights on digital transformation and technology.'
+                            : 'Jelajahi kumpulan artikel, panduan, dan wawasan seputar transformasi digital dan teknologi.' }}
+                    </p>
+                </header>
+                @if (!empty($blogArticles['data']))
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        @foreach ($blogArticles['data'] as $art)
+                            <article class="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
+                                @if (!empty($art['thumbnail']))
+                                    <a href="/{{ $currentLocale }}/{{ $art['slug'] }}" class="block aspect-video overflow-hidden">
+                                        <img src="{{ $art['thumbnail'] }}" alt="{{ localizeTextPhp($art['title'], $currentLocale) }}" class="w-full h-full object-cover" loading="lazy" />
+                                    </a>
+                                @endif
+                                <div class="p-6 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider">{{ $art['category'] }}</span>
+                                        <h2 class="text-xl font-bold mt-2 text-gray-900 dark:text-white line-clamp-2">
+                                            <a href="/{{ $currentLocale }}/{{ $art['slug'] }}" class="hover:text-blue-600 transition-colors">
+                                                {{ localizeTextPhp($art['title'], $currentLocale) }}
+                                            </a>
+                                        </h2>
+                                        @if (!empty($art['excerpt']))
+                                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                                                {{ localizeTextPhp($art['excerpt'], $currentLocale) }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500">
+                                        <span>{{ $art['author'] }}</span>
+                                        <time>{{ $art['published_at'] }}</time>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+            </main>
         @else
             {{-- Profile & Services Fallback untuk Homepage / Public URLs --}}
             <main class="max-w-5xl mx-auto px-4 py-16">
