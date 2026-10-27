@@ -6,6 +6,10 @@ import axios from "axios";
 
 export const Route = createFileRoute("/$lang/$slug")({
   loader: async ({ params: { slug } }) => {
+    const initialData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__ : null;
+    if (initialData?.article && (initialData.slug === slug || initialData.article.slug === slug || String(initialData.article.id) === slug)) {
+      return initialData.article;
+    }
     try {
       const res = await axios.get(`/api/articles/${slug}`);
       return res.data;

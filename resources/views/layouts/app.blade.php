@@ -163,8 +163,13 @@
       "description": "PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
       "telephone": "+6281578223564",
       "email": "astadigitech@gmail.com",
+      "priceRange": "$$",
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": "Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Kec. Pleret",
+        "addressLocality": "Bantul",
+        "addressRegion": "D.I. Yogyakarta",
+        "postalCode": "55791",
         "addressCountry": "ID"
       },
       "sameAs": [
@@ -225,10 +230,115 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+    {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
+    <script>
+        window.__INITIAL_DATA__ = @json($initialData ?? ['locale' => $currentLocale]);
+    </script>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="bg-background text-foreground antialiased">
-    <div id="react-app"></div>
+    <div id="react-app">
+        {{-- Semantic Server-Side Pre-rendered Content untuk Mesin Pencari & Bot AI --}}
+        @if ($article)
+            <article class="max-w-4xl mx-auto px-4 py-12">
+                <header class="mb-8">
+                    @if (!empty($article->category))
+                        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">{{ $article->category }}</span>
+                    @endif
+                    <h1 class="text-3xl md:text-5xl font-bold mt-2 mb-4 text-gray-900 dark:text-white leading-tight">
+                        {{ localizeTextPhp($article->title, $currentLocale) }}
+                    </h1>
+                    <div class="flex items-center gap-3 text-sm text-gray-500">
+                        <span>{{ $article->author ?: 'PT Asta Digital Agency' }}</span>
+                        <span>•</span>
+                        <time datetime="{{ $article->published_at?->toIso8601String() ?? now()->toIso8601String() }}">
+                            {{ $article->published_at?->format('d M Y') ?? date('d M Y') }}
+                        </time>
+                    </div>
+                </header>
+
+                @if ($article->thumbnail)
+                    <div class="my-6">
+                        <img src="{{ str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')) }}"
+                             alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
+                             class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
+                    </div>
+                @endif
+
+                @if ($article->excerpt)
+                    <p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
+                        {{ localizeTextPhp($article->excerpt, $currentLocale) }}
+                    </p>
+                @endif
+
+                <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed space-y-4">
+                    {!! localizeTextPhp($article->body, $currentLocale) !!}
+                </div>
+
+                @if (!empty($article->content_sections) && is_array($article->content_sections))
+                    <div class="mt-10 space-y-8">
+                        @foreach ($article->content_sections as $sec)
+                            <div class="border-t pt-6">
+                                @if (!empty($sec['image']))
+                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                         alt="Content media"
+                                         class="w-full rounded-xl object-cover my-4" />
+                                @endif
+                                @if (!empty($sec['description']))
+                                    <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {!! localizeTextPhp($sec['description'], $currentLocale) !!}
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </article>
+        @elseif ($discover)
+            <article class="max-w-4xl mx-auto px-4 py-12">
+                <header class="mb-8">
+                    @if (!empty($discover->type))
+                        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">{{ $discover->type }}</span>
+                    @endif
+                    <h1 class="text-3xl md:text-5xl font-bold mt-2 mb-4 text-gray-900 dark:text-white leading-tight">
+                        {{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}
+                    </h1>
+                </header>
+
+                @if ($discoverImg)
+                    <div class="my-6">
+                        <img src="{{ $discoverImg }}"
+                             alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
+                             class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
+                    </div>
+                @endif
+
+                <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed space-y-4">
+                    {!! localizeTextPhp(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : $discover->short_description, $currentLocale) !!}
+                </div>
+            </article>
+        @else
+            {{-- Profile & Services Fallback untuk Homepage / Public URLs --}}
+            <main class="max-w-5xl mx-auto px-4 py-16">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+                    ASTA Digital Agency — Solusi Teknologi & Digital Agency
+                </h1>
+                <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
+                    PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.
+                </p>
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+                    <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-xl">
+                        <h2 class="text-xl font-bold mb-2">Jasa Pembuatan Website & Sistem Informasi</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Pengembangan platform web modern, cepat, aman, dan responsive sesuai kebutuhan bisnis Anda.</p>
+                    </div>
+                    <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-xl">
+                        <h2 class="text-xl font-bold mb-2">Pembuatan Aplikasi Mobile (Android & iOS)</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Aplikasi mobile native & hybrid berkinerja tinggi dengan UI/UX intuitif.</p>
+                    </div>
+                </section>
+            </main>
+        @endif
+    </div>
 </body>
 </html>

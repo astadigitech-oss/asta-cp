@@ -26,7 +26,15 @@ declare module '@tanstack/react-router' {
 }
 
 const rootElement = document.getElementById('react-app');
-if (rootElement && !rootElement.innerHTML.trim()) {
+if (rootElement) {
+  const initialData = (window as any).__INITIAL_DATA__;
+  if (initialData?.article && initialData.slug) {
+    queryClient.setQueryData(['article', String(initialData.slug)], initialData.article);
+  }
+  if (initialData?.discover && initialData.id) {
+    queryClient.setQueryData(['discover', String(initialData.id)], initialData.discover);
+  }
+
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <LanguageProvider>
@@ -35,4 +43,4 @@ if (rootElement && !rootElement.innerHTML.trim()) {
       </QueryClientProvider>
     </LanguageProvider>
   );
-}
+}
