@@ -151,7 +151,11 @@ export function Navbar() {
   );
 
   // Keep pinned discoveries first, then show the newest discoveries.
-  const discoversWithImages = discovers.filter((d) => Boolean(d.image));
+  const discoversWithImages = discovers.filter((d) => {
+    if (!d.image) return false;
+    if (Array.isArray(d.image)) return d.image.length > 0;
+    return Boolean(d.image);
+  });
   const newsItems = discoversWithImages.length > 0
     ? [...discoversWithImages].sort((a, b) => {
         if (a.is_pinned !== b.is_pinned) {
@@ -160,8 +164,8 @@ export function Navbar() {
         if (a.created_at && b.created_at) {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         }
-        const aId = typeof a.id === "number" ? a.id : Number.parseInt(a.id, 10) || 0;
-        const bId = typeof b.id === "number" ? b.id : Number.parseInt(b.id, 10) || 0;
+        const aId = typeof a.id === "number" ? a.id : Number.parseInt(String(a.id), 10) || 0;
+        const bId = typeof b.id === "number" ? b.id : Number.parseInt(String(b.id), 10) || 0;
         return bId - aId;
       })
     : defaultNewsItems;
@@ -697,42 +701,46 @@ export function Navbar() {
                           </div>
 
                           {/* Slide 1..N: Image Berita */}
-                          {newsItems.map((item, idx) => (
-                            <a
-                              key={item.id || idx}
-                              href={`/${language}/discover/${item.id}`}
-                              className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
-                            >
-                              <img
-                                src={Array.isArray(item.image) ? item.image[0] : item.image}
-                                alt={item.name}
-                                loading="lazy"
-                                decoding="async"
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-900/40 to-transparent p-3.5 flex flex-col justify-end text-white">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-semibold uppercase tracking-wider text-[#38B6FF]">
-                                    {t("nav.latest_news")}
-                                  </span>
-                                  {item.is_pinned && (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#A2FF0A]">
-                                      <Pin className="h-3 w-3 fill-[#A2FF0A]" aria-hidden="true" />
-                                      {t("nav.pinned")}
+                          {newsItems.map((item, idx) => {
+                            const isMock = typeof item.id === "string" && String(item.id).startsWith("mock");
+                            const itemHref = isMock ? `/${language}/discover` : `/${language}/discover/${item.id}`;
+                            return (
+                              <a
+                                key={item.id || idx}
+                                href={itemHref}
+                                className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
+                              >
+                                <img
+                                  src={Array.isArray(item.image) ? item.image[0] : item.image}
+                                  alt={item.name}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-900/40 to-transparent p-3.5 flex flex-col justify-end text-white">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#38B6FF]">
+                                      {t("nav.latest_news")}
                                     </span>
+                                    {item.is_pinned && (
+                                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#A2FF0A]">
+                                        <Pin className="h-3 w-3 fill-[#A2FF0A]" aria-hidden="true" />
+                                        {t("nav.pinned")}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h5 className="font-bold text-xs line-clamp-1 text-white group-hover/slide:text-[#38B6FF] transition-colors mt-0.5">
+                                    {item.name}
+                                  </h5>
+                                  {item.short_description && (
+                                    <p className="text-[11px] text-gray-200 line-clamp-1 mt-0.5 opacity-90">
+                                      {stripHtml(item.short_description)}
+                                    </p>
                                   )}
                                 </div>
-                                <h5 className="font-bold text-xs line-clamp-1 text-white group-hover/slide:text-[#38B6FF] transition-colors mt-0.5">
-                                  {item.name}
-                                </h5>
-                                {item.short_description && (
-                                  <p className="text-[11px] text-gray-200 line-clamp-1 mt-0.5 opacity-90">
-                                    {stripHtml(item.short_description)}
-                                  </p>
-                                )}
-                              </div>
-                            </a>
-                          ))}
+                              </a>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

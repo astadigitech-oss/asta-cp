@@ -34,6 +34,9 @@ if (rootElement) {
   if (initialData?.discover && initialData.id) {
     queryClient.setQueryData(['discover', String(initialData.id)], initialData.discover);
   }
+  if (initialData?.blogArticles) {
+    queryClient.setQueryData(['articles', 1, 'All', ''], initialData.blogArticles);
+  }
 
   const root = ReactDOM.createRoot(rootElement);
   root.render(

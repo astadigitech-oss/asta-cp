@@ -116,6 +116,20 @@ Route::get('/{any?}', function () {
     app()->setLocale($locale);
 
     $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
+
+    // 1. Permanent Redirect 301 untuk URL mock discover (mencegah 404 pada URL yang terlanjur terindeks)
+    if (preg_match('/^discover\/mock/i', $cleanPath)) {
+        return redirect("/{$locale}/discover", 301);
+    }
+
+    // 2. Permanent Redirect 301 jika mengakses /blog/{slug} agar selaras dengan rute /{slug}
+    if (str_starts_with($cleanPath, 'blog/') && strlen($cleanPath) > 5) {
+        $blogSlug = substr($cleanPath, 5);
+        return redirect("/{$locale}/{$blogSlug}", 301);
+    }
+
+    $isBlogPage = ($cleanPath === 'blog');
+    $blogArticles = null;
     $article = null;
     $discover = null;
     $seo = null;
@@ -123,11 +137,43 @@ Route::get('/{any?}', function () {
         'locale' => $locale,
         'article' => null,
         'discover' => null,
+        'blogArticles' => null,
         'slug' => null,
         'id' => null,
     ];
 
-    if ($cleanPath && !in_array($cleanPath, ['', 'discover', 'blog'])) {
+    if ($isBlogPage) {
+        try {
+            $query = Article::where('is_published', true)
+                ->where(function ($q) {
+                    $q->whereNull('published_at')
+                      ->orWhere('published_at', '<=', now());
+                })
+                ->latest('published_at');
+
+            $paginated = $query->paginate(9);
+            $paginated->getCollection()->transform(function ($item) {
+                $thumbnailUrl = $item->thumbnail ? ((str_starts_with($item->thumbnail, 'http') ? $item->thumbnail : asset('storage/' . ltrim($item->thumbnail, '/')))) : null;
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'slug' => $item->slug,
+                    'thumbnail' => $thumbnailUrl,
+                    'excerpt' => $item->excerpt,
+                    'author' => $item->author ?? 'ASTA Digital Team',
+                    'category' => $item->category ?? 'General',
+                    'published_at' => $item->published_at?->format('d M Y') ?? $item->created_at->format('d M Y'),
+                    'published_at_iso' => $item->published_at?->toIso8601String() ?? $item->created_at->toIso8601String(),
+                ];
+            });
+
+            $blogArticles = $paginated->toArray();
+            $initialData['blogArticles'] = $blogArticles;
+        } catch (\Throwable $e) {
+            // Graceful fallback jika DB belum siap atau error
+            $blogArticles = null;
+        }
+    } elseif ($cleanPath && !in_array($cleanPath, ['', 'discover'])) {
         $decoded = urldecode($cleanPath);
         $slugified = \Illuminate\Support\Str::slug($decoded);
 
@@ -137,20 +183,24 @@ Route::get('/{any?}', function () {
             $decodedParam = urldecode($discoverParam);
             $slugifiedParam = \Illuminate\Support\Str::slug($decodedParam);
 
-            $discover = Discover::with(['DiscoverLists' => function ($query) {
-                $query->where('is_active', true)->orderBy('sort', 'asc');
-            }])->where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
-                $q->where('slug', $discoverParam)
-                  ->orWhere('slug', $decodedParam)
-                  ->orWhere('slug', $slugifiedParam)
-                  ->orWhere('slug', 'like', "%]{$discoverParam}%")
-                  ->orWhere('slug', 'like', "%]{$decodedParam}%")
-                  ->orWhere('slug', 'like', "%]{$slugifiedParam}%");
+            try {
+                $discover = Discover::with(['DiscoverLists' => function ($query) {
+                    $query->where('is_active', true)->orderBy('sort', 'asc');
+                }])->where(function ($q) use ($discoverParam, $decodedParam, $slugifiedParam) {
+                    $q->where('slug', $discoverParam)
+                      ->orWhere('slug', $decodedParam)
+                      ->orWhere('slug', $slugifiedParam)
+                      ->orWhere('slug', 'like', "%]{$discoverParam}%")
+                      ->orWhere('slug', 'like', "%]{$decodedParam}%")
+                      ->orWhere('slug', 'like', "%]{$slugifiedParam}%");
 
-                if (is_numeric($discoverParam)) {
-                    $q->orWhere('id', (int) $discoverParam);
-                }
-            })->first();
+                    if (is_numeric($discoverParam)) {
+                        $q->orWhere('id', (int) $discoverParam);
+                    }
+                })->first();
+            } catch (\Throwable $e) {
+                $discover = null;
+            }
 
             if ($discover) {
                 try {
@@ -203,20 +253,24 @@ Route::get('/{any?}', function () {
             }
         } else {
             // 2. Cek apakah mengakses artikel
-            $article = Article::where('is_published', true)
-                ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
-                    $q->where('slug', $cleanPath)
-                      ->orWhere('slug', $decoded)
-                      ->orWhere('slug', $slugified)
-                      ->orWhere('slug', 'like', "%]{$cleanPath}%")
-                      ->orWhere('slug', 'like', "%]{$decoded}%")
-                      ->orWhere('slug', 'like', "%]{$slugified}%");
+            try {
+                $article = Article::where('is_published', true)
+                    ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
+                        $q->where('slug', $cleanPath)
+                          ->orWhere('slug', $decoded)
+                          ->orWhere('slug', $slugified)
+                          ->orWhere('slug', 'like', "%]{$cleanPath}%")
+                          ->orWhere('slug', 'like', "%]{$decoded}%")
+                          ->orWhere('slug', 'like', "%]{$slugified}%");
 
-                    if (is_numeric($cleanPath)) {
-                        $q->orWhere('id', (int) $cleanPath);
-                    }
-                })
-                ->first();
+                        if (is_numeric($cleanPath)) {
+                            $q->orWhere('id', (int) $cleanPath);
+                        }
+                    })
+                    ->first();
+            } catch (\Throwable $e) {
+                $article = null;
+            }
 
             if ($article) {
                 try {
@@ -275,6 +329,8 @@ Route::get('/{any?}', function () {
         'locale' => $locale,
         'article' => $article,
         'discover' => $discover,
+        'blogArticles' => $blogArticles,
+        'isBlogPage' => $isBlogPage,
         'seo' => $seo,
         'initialData' => $initialData,
     ]);
