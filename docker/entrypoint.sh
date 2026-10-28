@@ -28,6 +28,9 @@ php artisan storage:link --force || true
 # Jalankan migrasi jika perlu
 php artisan migrate --force || true
 
+# Bersihkan cache view, route, dan config agar perubahan Blade & web.php langsung aktif
+php artisan optimize:clear || true
+
 # Test syntax konfigurasi Nginx agar jika ada error langsung terbaca di log Dokploy
 echo "==> Testing Nginx configuration..."
 nginx -t
