@@ -334,5 +334,5 @@ Route::get('/{any?}', function () {
         'seo' => $seo,
         'initialData' => $initialData,
     ]);
-})->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml).*');
+})->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml|livewire).*');
 
