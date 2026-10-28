@@ -67,8 +67,10 @@ class Article extends Model implements HasSEOContract
         'thumbnail',
         'images',
         'excerpt',
+        'tldr_summary',
         'body',
         'content_sections',
+        'faqs',
         'author',
         'category',
         'is_published',
@@ -82,6 +84,8 @@ class Article extends Model implements HasSEOContract
             'published_at' => 'datetime',
             'images'       => 'array',
             'content_sections' => 'array',
+            'tldr_summary' => 'array',
+            'faqs'         => 'array',
         ];
     }
 

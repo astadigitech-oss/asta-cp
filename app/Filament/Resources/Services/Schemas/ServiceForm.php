@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Services\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -13,6 +14,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
 
 class ServiceForm
 {
@@ -101,6 +103,32 @@ class ServiceForm
                             ->helperText('Full detailed description of the service')
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
+
+                Section::make('Kesiapan GEO & AI (FAQ Layanan)')
+                    ->description('Pertanyaan dan jawaban terstruktur seputar layanan ini yang otomatis diekstraksi mesin pencari dan bot AI')
+                    ->icon(Heroicon::Sparkles)
+                    ->schema([
+                        Repeater::make('faqs')
+                            ->label('Daftar FAQ Layanan (3-5 Pertanyaan Spesifik)')
+                            ->schema([
+                                TextInput::make('question')
+                                    ->label('Pertanyaan Pengguna')
+                                    ->placeholder('Misal: Apa teknologi utama yang digunakan untuk layanan ini?')
+                                    ->required(),
+                                Textarea::make('answer')
+                                    ->label('Jawaban Definitif & Padat')
+                                    ->placeholder('Tulis jawaban lugas dengan menyebut entitas ASTA DIGITAL AGENCY...')
+                                    ->rows(3)
+                                    ->required(),
+                            ])
+                            ->itemLabel(fn (array $state): ?string => !empty($state['question']) ? Str::limit($state['question'], 50) : 'FAQ Layanan')
+                            ->addActionLabel('+ Tambah Pertanyaan Layanan')
+                            ->collapsible()
+                            ->reorderable()
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->columnSpanFull(),
 
                 Section::make('Search Engine Optimization (SEO) & Social Meta')
                     ->description('Pengaturan metadata Rankbeam SEO untuk Google Search, OpenGraph, dan Twitter Card')

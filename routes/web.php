@@ -129,6 +129,9 @@ Route::get('/{any?}', function () {
     }
 
     $isBlogPage = ($cleanPath === 'blog');
+    $isHomePage = ($cleanPath === '');
+    $homeServices = null;
+    $homeArticles = null;
     $blogArticles = null;
     $article = null;
     $discover = null;
@@ -142,7 +145,27 @@ Route::get('/{any?}', function () {
         'id' => null,
     ];
 
-    if ($isBlogPage) {
+    if ($isHomePage) {
+        try {
+            $homeServices = Service::with(['serviceListMains' => function ($q) {
+                $q->orderBy('sort', 'asc');
+            }])->orderBy('sort', 'asc')->get();
+        } catch (\Throwable $e) {
+            $homeServices = collect();
+        }
+
+        try {
+            $homeArticles = Article::where('is_published', true)
+                ->where(function ($q) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+                })
+                ->latest('published_at')
+                ->limit(3)
+                ->get();
+        } catch (\Throwable $e) {
+            $homeArticles = collect();
+        }
+    } elseif ($isBlogPage) {
         try {
             $query = Article::where('is_published', true)
                 ->where(function ($q) {
@@ -309,8 +332,10 @@ Route::get('/{any?}', function () {
                     'thumbnail' => $thumbnailUrl,
                     'images' => $formattedImages,
                     'excerpt' => $article->excerpt,
+                    'tldr_summary' => $article->tldr_summary ?? [],
                     'body' => $article->body,
                     'content_sections' => $formattedSections,
+                    'faqs' => $article->faqs ?? [],
                     'author' => $article->author ?? 'ASTA Digital Team',
                     'category' => $article->category ?? 'General',
                     'published_at' => $article->published_at?->format('d M Y') ?? $article->created_at->format('d M Y'),
@@ -331,6 +356,9 @@ Route::get('/{any?}', function () {
         'discover' => $discover,
         'blogArticles' => $blogArticles,
         'isBlogPage' => $isBlogPage,
+        'isHomePage' => $isHomePage,
+        'homeServices' => $homeServices,
+        'homeArticles' => $homeArticles,
         'seo' => $seo,
         'initialData' => $initialData,
     ]);

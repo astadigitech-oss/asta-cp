@@ -27,11 +27,11 @@
     "menu_aria": "Buka/Tutup Navigasi"
   },
   "hero": {
-    "eyebrow": "Agensi Digital Premium · Est. 2022",
+    "eyebrow": "Agensi Rekayasa Perangkat Lunak Premium · Est. 2022",
     "title_1": "Membangun ",
     "title_highlight": "pengalaman digital",
     "title_2": " terbaik untuk bisnis modern.",
-    "description": "Asta Digital Agency adalah studio teknologi yang membangun website, aplikasi, dan sistem informasi terbaik — dirancang dengan standar enterprise dan Dedicated Tech Team & Enterprise Software Solutions for Scaling Businesses.",
+    "description": "ASTA DIGITAL AGENCY adalah studio teknologi yang merekayasa website modern, aplikasi mobile (Android & iOS), dan sistem informasi enterprise dengan standar keandalan tinggi bagi organisasi yang bertumbuh.",
     "cta_start": "Mulai Proyek",
     "cta_portfolio": "Lihat Portofolio",
     "trust_security": "Keamanan Siap terjamin",
@@ -44,12 +44,12 @@
     "trusted_by": "DIPERCAYA OLEH INSTANSI & PERUSAHAAN TERKEMUKA"
   },
   "about": {
-    "eyebrow": "Tentang Kami",
-    "title": "Mitra Teknologi Terpercaya untuk Transformasi Digital Anda",
-    "description": "Kami menggabungkan keahlian rekayasa perangkat lunak, desain UI/UX yang estetis, dan pemikiran strategis untuk menghadirkan produk digital yang berdampak nyata pada bisnis.",
-    "vision_title": "Visi Kami",
+    "eyebrow": "Profil Entitas & Rekayasa",
+    "title": "Siapa ASTA DIGITAL AGENCY dan bagaimana keahlian rekayasa sistemnya?",
+    "description": "ASTA DIGITAL AGENCY memadukan keahlian rekayasa perangkat lunak enterprise, arsitektur data aman, dan desain antarmuka intuitif untuk menghasilkan produk digital yang terbukti memangkas waktu operasional bisnis.",
+    "vision_title": "Visi ASTA DIGITAL AGENCY",
     "vision_desc": "Menjadi agensi teknologi terdepan yang memajukan pertumbuhan bisnis dan pelayanan publik melalui solusi perangkat lunak inovatif.",
-    "mission_title": "Misi Kami",
+    "mission_title": "Misi ASTA DIGITAL AGENCY",
     "mission_desc": "Menghadirkan sistem digital berkinerja tinggi, aman, dan mudah digunakan yang disesuaikan secara khusus dengan kebutuhan setiap klien.",
     "company_story": "Cerita & Perjalanan Perusahaan",
     "cta_discover": "Jelajahi Detail",
@@ -63,9 +63,9 @@
     "val_4_desc": "Dirancang untuk kebutuhan nyata manusia di setiap konteks."
   },
   "services": {
-    "eyebrow": "Produk & Layanan Kami",
-    "title": "Solusi Teknologi Terintegrasi yang Disesuaikan Kebutuhan Anda",
-    "description": "Dari sistem kustom hingga aplikasi mobile enterprise, kami menyediakan solusi digital end-to-end yang dirancang untuk performa, keamanan, dan skalabilitas.",
+    "eyebrow": "Solusi & Layanan Teknologi",
+    "title": "Apa saja solusi dan layanan teknologi dari ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak menyeluruh: aplikasi mobile (Android & iOS) performa tinggi, sistem informasi enterprise kustom, dan portal web modern yang aman dan teruji.",
     "view_detail": "Lihat Detail",
     "empty": "Belum ada layanan yang tersedia saat ini.",
     "default_web_title": "Web Apps Development",
@@ -82,9 +82,9 @@
     }
   },
   "portfolio": {
-    "eyebrow": "Portofolio",
-    "title": "Proyek Unggulan & Sistem Kustom",
-    "description": "Temukan bagaimana kami membantu para mitra mentransformasikan ide mereka menjadi produk perangkat lunak yang berdampak.",
+    "eyebrow": "Studi Kasus & Rekam Jejak",
+    "title": "Sistem dan produk digital apa saja yang telah dibangun oleh ASTA DIGITAL AGENCY?",
+    "description": "Temukan bagaimana ASTA DIGITAL AGENCY membantu mitra mentransformasikan kebutuhan operasional menjadi produk perangkat lunak tangguh yang berdampak nyata.",
     "tab_all": "Semua",
     "tab_mobile": "Mobile Apps",
     "tab_desktop": "Desktop & Web",

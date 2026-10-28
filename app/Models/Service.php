@@ -16,6 +16,8 @@ class Service extends Model implements HasSEOContract
 
     protected $casts = [
         'image' => 'array',
+        'faqs' => 'array',
+        'comparison_data' => 'array',
     ];
 
     protected $fillable = [
@@ -27,6 +29,8 @@ class Service extends Model implements HasSEOContract
         'logo',
         'cover_image',
         'image',
+        'faqs',
+        'comparison_data',
     ];
 
     public function serviceListMains()

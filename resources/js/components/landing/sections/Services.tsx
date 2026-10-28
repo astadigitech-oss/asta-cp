@@ -15,6 +15,7 @@ import { useLandingData } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { SectionHeading } from "../common";
 import { ServiceData, getServiceImages } from "../types";
+import { ComparisonTable } from "./ComparisonTable";
 
 const defaultServicesData: ServiceData[] = [
   { id: 1, name: "Web Apps Development", short_description: "Aplikasi berbasis web modern, cepat & responsif." },
@@ -437,6 +438,9 @@ export function Services() {
             </div>
           </div>
         </div>
+
+        {/* Tabel Komparasi Metode Rekayasa: ASTA DIGITAL AGENCY vs Tradisional */}
+        <ComparisonTable />
 
         {/* Service Detail Dialog */}
         <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>

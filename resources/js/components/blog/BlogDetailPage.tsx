@@ -25,6 +25,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Navbar } from "@/components/Navbar";
 import { useTranslation } from "@/i18n/useTranslation";
 import { getYoutubeEmbedUrl } from "@/components/lib/utils";
+import { ExecutiveSummary } from "./ExecutiveSummary";
+import { FAQSection } from "@/components/common/FAQSection";
 
 const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer })));
 
@@ -42,8 +44,10 @@ interface ArticleDetailData {
   thumbnail: string | null;
   images?: string[];
   excerpt: string | null;
+  tldr_summary?: Array<{ point?: string } | string>;
   body: string | null;
   content_sections?: ContentSection[];
+  faqs?: Array<{ question: string; answer: string }>;
   author: string;
   category: string;
   published_at: string;
@@ -367,6 +371,9 @@ export function BlogDetailPage() {
 
               {/* ── Lead Excerpt / Short Intro ───────────────────────── */}
               <div ref={contentTopRef} className="mt-8 space-y-6 w-full min-w-0 max-w-full">
+                {/* ── Modul Ringkasan Eksekutif (TL;DR 3 Poin) GEO ──── */}
+                <ExecutiveSummary summary={article.tldr_summary} />
+
                 {localizedExcerpt && (
                   <div
                     className="prose prose-blue max-w-none text-gray-800 text-base sm:text-xl leading-relaxed font-medium border-l-4 border-primary pl-4 sm:pl-5 py-3 bg-blue-50/50 rounded-r-2xl shadow-xs break-words [overflow-wrap:anywhere]"
@@ -457,6 +464,11 @@ export function BlogDetailPage() {
                       prose-img:rounded-2xl prose-img:shadow-sm"
                     dangerouslySetInnerHTML={{ __html: localizedBody }}
                   />
+                )}
+
+                {/* ── Modul FAQ Permanen Artikel Blog GEO ──────────────── */}
+                {article.faqs && article.faqs.length > 0 && (
+                  <FAQSection faqs={article.faqs} />
                 )}
               </div>
 

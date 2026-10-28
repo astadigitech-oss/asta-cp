@@ -164,11 +164,11 @@
       "@@context": "https://schema.org",
       "@@type": "ProfessionalService",
       "name": "PT Asta Digital Agency",
-      "alternateName": "Asta Digital",
+      "alternateName": "ASTA DIGITAL AGENCY",
       "url": "{{ rtrim(config('app.url'), '/') }}",
       "logo": "{{ asset('images/logo-dark.png') }}",
       "image": "{{ $ogDefaultImage }}",
-      "description": "PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
+      "description": "ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, sekolah, dan perusahaan skala menengah hingga besar.",
       "telephone": "+6281578223564",
       "email": "astadigitech@gmail.com",
       "priceRange": "$$",
@@ -198,7 +198,7 @@
       "dateModified": "{{ $article->updated_at?->toIso8601String() ?? now()->toIso8601String() }}",
       "author": {
         "@@type": "Organization",
-        "name": "{{ addslashes($article->author ?: 'ASTA Digital Team') }}"
+        "name": "{{ addslashes($article->author ?: 'ASTA DIGITAL AGENCY Team') }}"
       },
       "publisher": {
         "@@type": "Organization",
@@ -212,6 +212,68 @@
         "@@type": "WebPage",
         "@@id": "{{ $canonicalUrl }}"
       }
+    }
+    </script>
+    @if (!empty($article->faqs) && is_array($article->faqs))
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "FAQPage",
+      "mainEntity": [
+        @foreach ($article->faqs as $fIdx => $faqItem)
+        {
+          "@@type": "Question",
+          "name": "{{ addslashes(localizeTextPhp($faqItem['question'] ?? '', $currentLocale)) }}",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "{{ addslashes(strip_tags(localizeTextPhp($faqItem['answer'] ?? '', $currentLocale))) }}"
+          }
+        }@if (!$loop->last),@endif
+        @endforeach
+      ]
+    }
+    </script>
+    @endif
+    @elseif (!$article && !$discover && !$isBlogPage)
+    {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction --}}
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@@type": "Question",
+          "name": "{{ $currentLocale === 'en' ? 'What services does ASTA DIGITAL AGENCY provide?' : 'Apa saja layanan utama yang ditawarkan oleh ASTA DIGITAL AGENCY?' }}",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems.' : 'ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak mencakup pembuatan aplikasi mobile (Android & iOS), pengembangan web aplikasi modern, serta sistem informasi enterprise kustom.' }}"
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "{{ $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY approach system security and performance?' : 'Bagaimana pendekatan ASTA DIGITAL AGENCY terhadap keamanan dan performa sistem?' }}",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization, automated test coverage, and high-performance clean architecture to ensure system resilience and fast response times.' : 'ASTA DIGITAL AGENCY menerapkan standar keamanan berlapis, sanitasi input ketat, pengujian otomatis, serta arsitektur clean code performa tinggi untuk menjamin ketahanan dan kecepatan respons sistem.' }}"
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "{{ $currentLocale === 'en' ? 'What is the typical project development timeline at ASTA DIGITAL AGENCY?' : 'Berapa lama estimasi pengerjaan proyek di ASTA DIGITAL AGENCY?' }}",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "{{ $currentLocale === 'en' ? 'Typical development timelines range from 2 to 12 weeks depending on technical complexity, scope, and specific client requirements.' : 'Estimasi waktu pengerjaan berkisar antara 2 hingga 12 minggu tergantung pada tingkat kompleksitas teknis, ruang lingkup, dan kebutuhan khusus klien.' }}"
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "{{ $currentLocale === 'en' ? 'Does ASTA DIGITAL AGENCY provide post-launch maintenance and support?' : 'Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?' }}",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "{{ $currentLocale === 'en' ? 'Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, server uptime monitoring, and ongoing technical SLA support.' : 'Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server, serta SLA dukungan teknis berkelanjutan pasca-rilis sistem.' }}"
+          }
+        }
+      ]
     }
     </script>
     @endif
@@ -304,6 +366,25 @@
                     </p>
                 @endif
 
+                {{-- Modul Ringkasan Eksekutif (TL;DR 3 Poin) untuk Bot AI & Pembaca Cepat --}}
+                @if (!empty($article->tldr_summary) && is_array($article->tldr_summary))
+                    <div class="my-6 p-6 rounded-2xl bg-blue-50/80 border border-blue-200/90 dark:bg-blue-950/30 dark:border-blue-900/60 shadow-xs">
+                        <div class="flex items-center gap-2 mb-3 text-blue-700 dark:text-blue-300 font-bold text-sm uppercase tracking-wider">
+                            <span>⚡ {{ $currentLocale === 'en' ? 'Executive Summary (TL;DR)' : 'Ringkasan Eksekutif (TL;DR)' }}</span>
+                        </div>
+                        <ul class="space-y-2.5 text-gray-800 dark:text-gray-200 text-base list-disc list-inside">
+                            @foreach ($article->tldr_summary as $point)
+                                @php
+                                    $ptText = is_array($point) ? ($point['point'] ?? reset($point)) : $point;
+                                @endphp
+                                <li class="leading-relaxed">
+                                    {!! localizeTextPhp($ptText, $currentLocale) !!}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed space-y-4">
                     {!! localizeTextPhp($article->body, $currentLocale) !!}
                 </div>
@@ -325,6 +406,27 @@
                             </div>
                         @endforeach
                     </div>
+                @endif
+
+                {{-- Modul FAQ Permanen Artikel Blog --}}
+                @if (!empty($article->faqs) && is_array($article->faqs))
+                    <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                        <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                            {{ $currentLocale === 'en' ? 'Frequently Asked Questions (FAQ)' : 'Pertanyaan Umum seputar Topik Ini (FAQ)' }}
+                        </h2>
+                        <div class="space-y-4">
+                            @foreach ($article->faqs as $faq)
+                                <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/50">
+                                    <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                        {{ localizeTextPhp($faq['question'] ?? '', $currentLocale) }}
+                                    </h3>
+                                    <div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                                        {!! localizeTextPhp($faq['answer'] ?? '', $currentLocale) !!}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </section>
                 @endif
             </article>
         @elseif ($discover)
@@ -399,24 +501,206 @@
                 @endif
             </main>
         @else
-            {{-- Profile & Services Fallback untuk Homepage / Public URLs --}}
-            <main class="max-w-5xl mx-auto px-4 py-16">
-                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
-                    ASTA Digital Agency — Solusi Teknologi & Digital Agency
-                </h1>
-                <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
-                    PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.
-                </p>
-                <section class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-                    <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-xl">
-                        <h2 class="text-xl font-bold mb-2">Jasa Pembuatan Website & Sistem Informasi</h2>
-                        <p class="text-gray-600 dark:text-gray-400">Pengembangan platform web modern, cepat, aman, dan responsive sesuai kebutuhan bisnis Anda.</p>
+            {{-- Semantic Server-Side Pre-rendered Content untuk Homepage & Bot AI --}}
+            <main class="max-w-5xl mx-auto px-4 py-16 space-y-16">
+                {{-- 1. Hero Section Berbasis Prompt & Aturan BLUF --}}
+                <header class="border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                        ASTA DIGITAL AGENCY · SOFTWARE HOUSE & IT CONSULTANT
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 leading-tight">
+                        {{ $currentLocale === 'en'
+                            ? 'What software engineering and digital transformation solutions does ASTA DIGITAL AGENCY provide?'
+                            : 'Apa saja solusi rekayasa perangkat lunak dan transformasi digital dari ASTA DIGITAL AGENCY?' }}
+                    </h1>
+                    {{-- BLUF Paragraf: Jawaban langsung di kalimat pertama --}}
+                    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-6 font-medium">
+                        <strong>ASTA DIGITAL AGENCY</strong> {{ $currentLocale === 'en'
+                            ? 'is a technology studio specializing in end-to-end custom software development, high-performance mobile applications (Android & iOS), and scalable enterprise information systems for companies, public institutions, and educational organizations.'
+                            : 'adalah studio teknologi yang berfokus pada rekayasa perangkat lunak kustom, pengembangan aplikasi mobile (Android & iOS) berkinerja tinggi, serta sistem informasi enterprise berskala besar untuk perusahaan, instansi, dan institusi pendidikan.' }}
+                    </p>
+                    <ul class="space-y-3 text-base text-gray-700 dark:text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span><strong>Arsitektur Skalabel:</strong> ASTA DIGITAL AGENCY merancang sistem berbasis clean architecture dan microservices yang siap menangani lonjakan data secara stabil.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span><strong>Keamanan Tingkat Enterprise:</strong> ASTA DIGITAL AGENCY menerapkan protokol proteksi data ketat, sanitasi masukan, dan pengujian kerentanan berkala.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">•</span>
+                            <span><strong>Dukungan SLA Definitif:</strong> ASTA DIGITAL AGENCY memberikan jaminan garansi pemeliharaan, pemantauan proaktif, dan respon teknis cepat.</span>
+                        </li>
+                    </ul>
+                </header>
+
+                {{-- 2. Section Layanan Utama ASTA DIGITAL AGENCY --}}
+                <section id="layanan" class="space-y-8">
+                    <div>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ $currentLocale === 'en'
+                                ? 'What core technology services does ASTA DIGITAL AGENCY offer?'
+                                : 'Layanan teknologi apa saja yang disediakan oleh ASTA DIGITAL AGENCY?' }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">
+                            {{ $currentLocale === 'en'
+                                ? 'ASTA DIGITAL AGENCY delivers end-to-end engineering tailored to specific organizational workflows:'
+                                : 'ASTA DIGITAL AGENCY menghadirkan layanan rekayasa perangkat lunak terintegrasi yang disesuaikan dengan kebutuhan bisnis:' }}
+                        </p>
                     </div>
-                    <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-xl">
-                        <h2 class="text-xl font-bold mb-2">Pembuatan Aplikasi Mobile (Android & iOS)</h2>
-                        <p class="text-gray-600 dark:text-gray-400">Aplikasi mobile native & hybrid berkinerja tinggi dengan UI/UX intuitif.</p>
+
+                    @if (!empty($homeServices) && $homeServices->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach ($homeServices as $svc)
+                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                                        {{ localizeTextPhp($svc->name, $currentLocale) }}
+                                    </h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                                        {!! strip_tags(localizeTextPhp($svc->short_description ?: $svc->description, $currentLocale)) !!}
+                                    </p>
+                                    @if ($svc->serviceListMains && $svc->serviceListMains->count() > 0)
+                                        <ul class="text-xs space-y-1.5 text-gray-500 border-t pt-3">
+                                            @foreach ($svc->serviceListMains as $feature)
+                                                <li>• {{ localizeTextPhp($feature->description, $currentLocale) }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Web Apps & Portal Enterprise</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">ASTA DIGITAL AGENCY mengembangkan portal web modern, sistem manajemen internal, dan aplikasi berbasis cloud yang aman dan responsif.</p>
+                            </div>
+                            <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Mobile Apps (Android & iOS)</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">ASTA DIGITAL AGENCY membangun aplikasi mobile native dan multiplatform berkinerja tinggi dengan UI/UX modern dan intuitif.</p>
+                            </div>
+                            <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">IT Consulting & Sistem Kustom</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">ASTA DIGITAL AGENCY memberikan konsultasi arsitektur sistem, audit keamanan, dan integrasi API untuk instansi maupun korporasi.</p>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Tabel Komparasi Metode Rekayasa: ASTA vs Tradisional --}}
+                    <div class="mt-10 overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-2xl p-6 bg-gray-50/50 dark:bg-gray-900/50">
+                        <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                            {{ $currentLocale === 'en'
+                                ? 'Comparison: ASTA DIGITAL AGENCY Method vs Traditional Development'
+                                : 'Tabel Komparasi: Metode Rekayasa ASTA DIGITAL AGENCY vs Metode Pengembangan Tradisional' }}
+                        </h3>
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                    <th class="py-3 px-4 font-bold text-gray-900 dark:text-white">Parameter Evaluasi</th>
+                                    <th class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400">Metode ASTA DIGITAL AGENCY</th>
+                                    <th class="py-3 px-4 font-bold text-gray-500">Metode Tradisional</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">Arsitektur Kode & Skalabilitas</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">Clean architecture, modular, siap skala tinggi tanpa refactor ulang total.</td>
+                                    <td class="py-3 px-4 text-gray-500">Monolitik kaku, sulit dikembangkan lebih lanjut, utang teknis tinggi.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">Kesiapan AI & Mesin Pencari (GEO/SEO)</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">Struktur semantik lengkap, skema Schema.org (JSON-LD), ramah ekstraksi bot AI.</td>
+                                    <td class="py-3 px-4 text-gray-500">Client-Side Rendering murni tanpa pre-rendering, konten tersembunyi dari perayap.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">Keamanan & Audit Sistem</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">Validasi input ketat, sanitasi berlapis, enkripsi data, dan proteksi CSRF/XSS.</td>
+                                    <td class="py-3 px-4 text-gray-500">Pengujian keamanan sekunder atau diabaikan hingga insiden terjadi.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">Jaminan Garansi & SLA</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">Garansi pemeliharaan pasca-rilis dengan SLA respon terikat kontrak.</td>
+                                    <td class="py-3 px-4 text-gray-500">Dukungan berakhir setelah serah terima awal tanpa jaminan bug fixing.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
+
+                {{-- 3. Section FAQ Permanen Homepage --}}
+                <section id="faq" class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                        {{ $currentLocale === 'en'
+                            ? 'Frequently Asked Questions about ASTA DIGITAL AGENCY (FAQ)'
+                            : 'Pertanyaan Umum seputar Layanan ASTA DIGITAL AGENCY (FAQ)' }}
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                Apa saja layanan utama yang disediakan oleh ASTA DIGITAL AGENCY?
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                ASTA DIGITAL AGENCY menyediakan layanan komprehensif berupa pengembangan aplikasi mobile native dan hybrid (Android & iOS), rekayasa sistem informasi enterprise kustom, pembuatan platform web modern, serta audit arsitektur teknologi.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                Bagaimana ASTA DIGITAL AGENCY menjamin keamanan data pada sistem yang dibangun?
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                ASTA DIGITAL AGENCY menerapkan prinsip security-by-design dengan enkripsi data saat transit dan saat disimpan, sanitasi input terhadap kerentanan OWASP Top 10, manajemen hak akses berbasis peran (RBAC), serta pencatatan audit log sistem yang lengkap.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                Berapa lama durasi rata-rata pengerjaan proyek di ASTA DIGITAL AGENCY?
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                Durasi pengerjaan proyek bervariasi antara 2 hingga 12 minggu bergantung pada ruang lingkup modul, kompleksitas integrasi API pihak ketiga, dan kebutuhan kustomisasi sistem yang disepakati.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                Apakah ASTA DIGITAL AGENCY menyediakan layanan konsultasi sebelum proyek dimulai?
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                Ya, ASTA DIGITAL AGENCY menyediakan sesi konsultasi teknis dan pemetaan kebutuhan (discovery) awal secara cuma-cuma untuk merumuskan spesifikasi produk, arsitektur yang tepat, dan estimasi investasi yang efisien.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- 4. Section Artikel & Wawasan Terbaru --}}
+                @if (!empty($homeArticles) && $homeArticles->count() > 0)
+                    <section class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                                {{ $currentLocale === 'en' ? 'Latest Technology Insights & Articles' : 'Wawasan Teknologi & Artikel Terbaru' }}
+                            </h2>
+                            <a href="/{{ $currentLocale }}/blog" class="text-sm font-semibold text-blue-600 hover:underline">
+                                {{ $currentLocale === 'en' ? 'View All Insights →' : 'Lihat Semua Artikel →' }}
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            @foreach ($homeArticles as $art)
+                                <article class="p-5 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                                    <span class="text-xs font-bold text-blue-600 uppercase">{{ $art->category ?: 'Technology' }}</span>
+                                    <h3 class="font-bold text-base mt-2 text-gray-900 dark:text-white line-clamp-2">
+                                        <a href="/{{ $currentLocale }}/{{ method_exists($art, 'getLocalizedSlug') ? $art->getLocalizedSlug($currentLocale) : $art->slug }}" class="hover:text-blue-600 transition-colors">
+                                            {{ localizeTextPhp($art->title, $currentLocale) }}
+                                        </a>
+                                    </h3>
+                                    @if ($art->excerpt)
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-2 line-clamp-3 leading-relaxed">
+                                            {{ localizeTextPhp($art->excerpt, $currentLocale) }}
+                                        </p>
+                                    @endif
+                                </article>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
             </main>
         @endif
     </div>
