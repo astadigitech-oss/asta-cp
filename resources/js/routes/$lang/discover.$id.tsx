@@ -62,9 +62,54 @@ export const Route = createFileRoute("/$lang/discover/$id")({
       links.push({ rel: "canonical", href: seo.canonical_url });
     }
 
+    const scripts: Array<{ type: string; children: string }> = [];
+
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: metaTitle,
+      description: typeof metaDesc === "string" ? metaDesc.replace(/<[^>]*>?/gm, "") : name,
+      image: ogImg,
+      datePublished: loaderData.created_at || new Date().toISOString(),
+      author: {
+        "@type": "Organization",
+        name: "ASTA DIGITAL AGENCY Team",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "PT Asta Digital Agency",
+        logo: {
+          "@type": "ImageObject",
+          url: "/images/logo-dark.png",
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": seo?.canonical_url || (typeof window !== "undefined" ? window.location.href : ""),
+      },
+    };
+
+    scripts.push({
+      type: "application/ld+json",
+      children: JSON.stringify(articleSchema),
+    });
+
+    if (seo?.schema_jsonld) {
+      const jsonLdString =
+        typeof seo.schema_jsonld === "string"
+          ? seo.schema_jsonld
+          : JSON.stringify(seo.schema_jsonld);
+
+      scripts.push({
+        type: "application/ld+json",
+        children: jsonLdString,
+      });
+    }
+
     return {
       meta: metaTags,
       links,
+      scripts,
     };
   },
   component: DiscoverDetailPage,

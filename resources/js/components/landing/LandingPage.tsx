@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
@@ -26,6 +26,25 @@ function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }
 
 export function LandingPage() {
   const { data: landingData } = useLandingData();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const targetId = hash.replace("#", "");
+
+    let attempts = 0;
+    const interval = setInterval(() => {
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+        clearInterval(interval);
+      } else if (++attempts > 25) {
+        clearInterval(interval);
+      }
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-accent/30 selection:text-accent font-sans">

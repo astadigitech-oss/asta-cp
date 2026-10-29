@@ -669,7 +669,7 @@ export function DiscoverDetailPage() {
               asChild
               className="rounded-full bg-white text-[#004AAD] hover:bg-blue-50 font-bold px-7 py-3 text-sm shadow-lg shrink-0 transition-transform active:scale-95"
             >
-              <a href="/#kontak">
+              <a href={`/${language}/#kontak`}>
                 {t("common.consult_now")} <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useTranslation } from "@/i18n/useTranslation";
 import axios from "axios";
-import { Eyebrow } from "../common";
+import { Eyebrow, OfficeMap } from "../common";
 
 export function Contact() {
   const { t } = useTranslation();
@@ -212,6 +212,16 @@ export function Contact() {
               </Button>
             </form>
           </div>
+        </motion.div>
+
+        {/* Office Map */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <OfficeMap />
         </motion.div>
       </div>
     </section>

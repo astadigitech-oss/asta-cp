@@ -187,118 +187,163 @@
     }
     </script>
     @if ($article)
+    @php
+        $blogPostingSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $metaTitle,
+            'description' => $metaDesc,
+            'image' => $ogImage,
+            'datePublished' => $article->published_at?->toIso8601String() ?? now()->toIso8601String(),
+            'dateModified' => $article->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+            'author' => [
+                '@type' => 'Organization',
+                'name' => $article->author ?: 'ASTA DIGITAL AGENCY Team',
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'PT Asta Digital Agency',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo-dark.png'),
+                ],
+            ],
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $canonicalUrl,
+            ],
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "BlogPosting",
-      "headline": "{{ addslashes($metaTitle) }}",
-      "description": "{{ addslashes($metaDesc) }}",
-      "image": "{{ $ogImage }}",
-      "datePublished": "{{ $article->published_at?->toIso8601String() ?? now()->toIso8601String() }}",
-      "dateModified": "{{ $article->updated_at?->toIso8601String() ?? now()->toIso8601String() }}",
-      "author": {
-        "@@type": "Organization",
-        "name": "{{ addslashes($article->author ?: 'ASTA DIGITAL AGENCY Team') }}"
-      },
-      "publisher": {
-        "@@type": "Organization",
-        "name": "PT Asta Digital Agency",
-        "logo": {
-          "@@type": "ImageObject",
-          "url": "{{ asset('images/logo-dark.png') }}"
-        }
-      },
-      "mainEntityOfPage": {
-        "@@type": "WebPage",
-        "@@id": "{{ $canonicalUrl }}"
-      }
-    }
+    {!! json_encode($blogPostingSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @if (!empty($article->faqs) && is_array($article->faqs))
+    @php
+        $faqSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => collect($article->faqs)->map(fn ($faqItem) => [
+                '@type' => 'Question',
+                'name' => localizeTextPhp($faqItem['question'] ?? '', $currentLocale),
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => strip_tags(localizeTextPhp($faqItem['answer'] ?? '', $currentLocale)),
+                ],
+            ])->all(),
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "FAQPage",
-      "mainEntity": [
-        @foreach ($article->faqs as $fIdx => $faqItem)
-        {
-          "@@type": "Question",
-          "name": "{{ addslashes(localizeTextPhp($faqItem['question'] ?? '', $currentLocale)) }}",
-          "acceptedAnswer": {
-            "@@type": "Answer",
-            "text": "{{ addslashes(strip_tags(localizeTextPhp($faqItem['answer'] ?? '', $currentLocale))) }}"
-          }
-        }@if (!$loop->last),@endif
-        @endforeach
-      ]
-    }
+    {!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @endif
+    @if (!empty($seo?->schemaJsonld))
+    <script type="application/ld+json">
+    {!! is_string($seo->schemaJsonld) ? $seo->schemaJsonld : json_encode($seo->schemaJsonld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @endif
+    @elseif ($discover)
+    @php
+        $discoverSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $metaTitle,
+            'description' => $metaDesc,
+            'image' => $ogImage,
+            'datePublished' => $discover->created_at?->toIso8601String() ?? now()->toIso8601String(),
+            'dateModified' => $discover->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+            'author' => [
+                '@type' => 'Organization',
+                'name' => 'ASTA DIGITAL AGENCY Team',
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'PT Asta Digital Agency',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo-dark.png'),
+                ],
+            ],
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $canonicalUrl,
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($discoverSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @if (!empty($seo?->schemaJsonld))
+    <script type="application/ld+json">
+    {!! is_string($seo->schemaJsonld) ? $seo->schemaJsonld : json_encode($seo->schemaJsonld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endif
     @elseif (!$article && !$discover && !$isBlogPage)
     {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction --}}
+    @php
+        $homeFaqSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'What services does ASTA DIGITAL AGENCY provide?' : 'Apa saja layanan utama yang ditawarkan oleh ASTA DIGITAL AGENCY?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems.' : 'ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak mencakup pembuatan aplikasi mobile (Android & iOS), pengembangan web aplikasi modern, serta sistem informasi enterprise kustom.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY approach system security and performance?' : 'Bagaimana pendekatan ASTA DIGITAL AGENCY terhadap keamanan dan performa sistem?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization, automated test coverage, and high-performance clean architecture to ensure system resilience and fast response times.' : 'ASTA DIGITAL AGENCY menerapkan standar keamanan berlapis, sanitasi input ketat, pengujian otomatis, serta arsitektur clean code performa tinggi untuk menjamin ketahanan dan kecepatan respons sistem.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'What is the typical project development timeline at ASTA DIGITAL AGENCY?' : 'Berapa lama estimasi pengerjaan proyek di ASTA DIGITAL AGENCY?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'Typical development timelines range from 2 to 12 weeks depending on technical complexity, scope, and specific client requirements.' : 'Estimasi waktu pengerjaan berkisar antara 2 hingga 12 minggu tergantung pada tingkat kompleksitas teknis, ruang lingkup, dan kebutuhan khusus klien.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'Does ASTA DIGITAL AGENCY provide post-launch maintenance and support?' : 'Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, server uptime monitoring, and ongoing technical SLA support.' : 'Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server, serta SLA dukungan teknis berkelanjutan pasca-rilis sistem.',
+                    ],
+                ],
+            ],
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@@type": "Question",
-          "name": "{{ $currentLocale === 'en' ? 'What services does ASTA DIGITAL AGENCY provide?' : 'Apa saja layanan utama yang ditawarkan oleh ASTA DIGITAL AGENCY?' }}",
-          "acceptedAnswer": {
-            "@@type": "Answer",
-            "text": "{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems.' : 'ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak mencakup pembuatan aplikasi mobile (Android & iOS), pengembangan web aplikasi modern, serta sistem informasi enterprise kustom.' }}"
-          }
-        },
-        {
-          "@@type": "Question",
-          "name": "{{ $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY approach system security and performance?' : 'Bagaimana pendekatan ASTA DIGITAL AGENCY terhadap keamanan dan performa sistem?' }}",
-          "acceptedAnswer": {
-            "@@type": "Answer",
-            "text": "{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization, automated test coverage, and high-performance clean architecture to ensure system resilience and fast response times.' : 'ASTA DIGITAL AGENCY menerapkan standar keamanan berlapis, sanitasi input ketat, pengujian otomatis, serta arsitektur clean code performa tinggi untuk menjamin ketahanan dan kecepatan respons sistem.' }}"
-          }
-        },
-        {
-          "@@type": "Question",
-          "name": "{{ $currentLocale === 'en' ? 'What is the typical project development timeline at ASTA DIGITAL AGENCY?' : 'Berapa lama estimasi pengerjaan proyek di ASTA DIGITAL AGENCY?' }}",
-          "acceptedAnswer": {
-            "@@type": "Answer",
-            "text": "{{ $currentLocale === 'en' ? 'Typical development timelines range from 2 to 12 weeks depending on technical complexity, scope, and specific client requirements.' : 'Estimasi waktu pengerjaan berkisar antara 2 hingga 12 minggu tergantung pada tingkat kompleksitas teknis, ruang lingkup, dan kebutuhan khusus klien.' }}"
-          }
-        },
-        {
-          "@@type": "Question",
-          "name": "{{ $currentLocale === 'en' ? 'Does ASTA DIGITAL AGENCY provide post-launch maintenance and support?' : 'Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?' }}",
-          "acceptedAnswer": {
-            "@@type": "Answer",
-            "text": "{{ $currentLocale === 'en' ? 'Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, server uptime monitoring, and ongoing technical SLA support.' : 'Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server, serta SLA dukungan teknis berkelanjutan pasca-rilis sistem.' }}"
-          }
-        }
-      ]
-    }
+    {!! json_encode($homeFaqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endif
     @if ($isBlogPage && !empty($blogArticles['data']))
+    @php
+        $collectionSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'CollectionPage',
+            'name' => $metaTitle,
+            'description' => $metaDesc,
+            'url' => $canonicalUrl,
+            'mainEntity' => [
+                '@type' => 'ItemList',
+                'itemListElement' => collect($blogArticles['data'])->values()->map(fn ($art, $idx) => [
+                    '@type' => 'ListItem',
+                    'position' => $idx + 1,
+                    'url' => rtrim($baseUrl, '/') . '/' . $currentLocale . '/' . $art['slug'],
+                    'name' => localizeTextPhp($art['title'], $currentLocale),
+                ])->all(),
+            ],
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "CollectionPage",
-      "name": "{{ addslashes($metaTitle) }}",
-      "description": "{{ addslashes($metaDesc) }}",
-      "url": "{{ $canonicalUrl }}",
-      "mainEntity": {
-        "@@type": "ItemList",
-        "itemListElement": [
-          @foreach ($blogArticles['data'] as $idx => $art)
-          {
-            "@@type": "ListItem",
-            "position": {{ $idx + 1 }},
-            "url": "{{ rtrim($baseUrl, '/') . '/' . $currentLocale . '/' . $art['slug'] }}",
-            "name": "{{ addslashes(localizeTextPhp($art['title'], $currentLocale)) }}"
-          }@if (!$loop->last),@endif
-          @endforeach
-        ]
-      }
-    }
+    {!! json_encode($collectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endif
 

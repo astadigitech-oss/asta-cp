@@ -21,6 +21,7 @@ import { useLandingData } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { DiscoverData, getDiscoverImages } from "@/components/landing/types";
 import p1 from "@/assets/portfolio-1.jpg";
+import FAQDiscover from "../common/FAQDiscover";
 
 const Footer = lazy(() =>
   import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer }))
@@ -151,11 +152,10 @@ export function DiscoverListPage() {
                     setActiveTab("all");
                     setCurrentPage(1);
                   }}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                    activeTab === "all"
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${activeTab === "all"
                       ? "bg-[#004AAD] text-white shadow-sm"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200/80"
-                  }`}
+                    }`}
                 >
                   {t("discover.tab_all")} ({localizedList.length})
                 </button>
@@ -165,11 +165,10 @@ export function DiscoverListPage() {
                     setActiveTab("story");
                     setCurrentPage(1);
                   }}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                    activeTab === "story"
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${activeTab === "story"
                       ? "bg-[#004AAD] text-white shadow-sm"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200/80"
-                  }`}
+                    }`}
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   {t("discover.tab_story")}
@@ -180,11 +179,10 @@ export function DiscoverListPage() {
                     setActiveTab("elearning");
                     setCurrentPage(1);
                   }}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                    activeTab === "elearning"
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${activeTab === "elearning"
                       ? "bg-[#004AAD] text-white shadow-sm"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200/80"
-                  }`}
+                    }`}
                 >
                   <BookOpen className="h-3.5 w-3.5" />
                   {t("discover.tab_elearning")}
@@ -361,7 +359,7 @@ export function DiscoverListPage() {
 
           {/* Pagination Component */}
           {!isLoading && totalPages > 1 && (
-            <div className="mt-12 flex items-center justify-center gap-2">
+            <div className="mt-12 flex items-center justify-center gap-2 py-12">
               <Button
                 variant="outline"
                 size="sm"
@@ -381,11 +379,10 @@ export function DiscoverListPage() {
                       key={pNum}
                       type="button"
                       onClick={() => handlePageChange(pNum)}
-                      className={`h-9 w-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        currentPage === pNum
+                      className={`h-9 w-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === pNum
                           ? "bg-[#004AAD] text-white shadow-sm"
                           : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                      }`}
+                        }`}
                     >
                       {pNum}
                     </button>
@@ -406,6 +403,9 @@ export function DiscoverListPage() {
             </div>
           )}
 
+          <FAQDiscover
+          />
+
           {/* Bottom Consultation CTA */}
           <div className="mt-20 rounded-3xl bg-gradient-to-br from-[#004AAD] via-[#053d86] to-[#02204a] p-8 sm:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="max-w-xl text-center sm:text-left">
@@ -420,7 +420,7 @@ export function DiscoverListPage() {
               asChild
               className="rounded-full bg-white text-[#004AAD] hover:bg-blue-50 font-bold px-7 py-3 text-sm shadow-lg shrink-0 transition-transform active:scale-95"
             >
-              <a href="/#kontak">
+              <a href={`/${language}/#kontak`}>
                 {t("common.consult_now")} <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>

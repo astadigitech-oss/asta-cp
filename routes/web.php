@@ -271,6 +271,17 @@ Route::get('/{any?}', function () {
                     'seo' => [
                         'meta_title' => $seo?->title ?? $discover->name,
                         'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                        'canonical_url' => $seo?->canonical ?? url("/{$locale}/discover/" . (method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($locale) : ($discover->slug ?: $discover->id))),
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
             }
@@ -324,6 +335,15 @@ Route::get('/{any?}', function () {
                     ];
                 })->values()->all();
 
+                $canonicalUrl = $seo?->canonical ?: url("/{$locale}/" . (method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug));
+                $keywords = '';
+                if ($seo && !empty($seo->focusKeywords)) {
+                    $keywords = collect($seo->focusKeywords)
+                        ->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))
+                        ->filter()
+                        ->implode(', ');
+                }
+
                 $initialData['slug'] = $cleanPath;
                 $initialData['article'] = [
                     'id' => $article->id,
@@ -344,6 +364,18 @@ Route::get('/{any?}', function () {
                     'seo' => [
                         'meta_title' => $seo?->title ?? $article->title,
                         'meta_description' => $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? '')),
+                        'canonical_url' => $canonicalUrl,
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $article->title),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $article->title),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'keywords' => $keywords,
+                        'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
             }
