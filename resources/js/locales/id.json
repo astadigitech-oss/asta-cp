@@ -237,7 +237,9 @@
     "read_more": "Baca Selengkapnya",
     "empty": "Belum ada artikel yang dipublikasikan.",
     "by": "Oleh",
-    "min_read": "menit baca"
+    "min_read": "menit baca",
+    "faq_title": "Pertanyaan Umum seputar Topik Ini (FAQ)",
+    "tldr_title": "Ringkasan Eksekutif (TL;DR)"
   },
   "common": {
     "previous": "Sebelumnya",
@@ -272,5 +274,38 @@
     "cta_similar_title": "Tertarik Mengembangkan Solusi Serupa?",
     "cta_similar_desc": "Diskusikan kebutuhan teknologi Anda bersama tim ahli ASTA Digital untuk solusi yang tepat guna dan skalabel.",
     "consult_now": "Konsultasi Sekarang"
+  },
+  "comparison": {
+    "eyebrow": "TOLOK UKUR STANDAR",
+    "title": "Mengapa Instansi & Korporasi Memilih ASTA DIGITAL AGENCY?",
+    "description": "Bandingkan bagaimana standar rekayasa perangkat lunak modern ASTA DIGITAL AGENCY mengungguli metode pengembangan agensi konvensional.",
+    "col_parameter": "Parameter Evaluasi",
+    "col_asta": "Metode ASTA DIGITAL AGENCY",
+    "col_traditional": "Metode Tradisional",
+    "row_1_param": "Arsitektur Kode & Skalabilitas",
+    "row_1_asta": "Clean architecture, modular, dan cloud-native yang siap menangani pertumbuhan bisnis tanpa refactor total.",
+    "row_1_traditional": "Monolitik kaku, rentan utang teknis tinggi, dan sulit dikembangkan saat beban sistem meningkat.",
+    "row_2_param": "Kesiapan Mesin Pencari & Bot AI (GEO/SEO)",
+    "row_2_asta": "Struktur semantik lengkap, Schema.org (JSON-LD), serta Server-Side Pre-rendering untuk ekstraksi instan bot AI.",
+    "row_2_traditional": "Client-Side Rendering murni tanpa pre-rendering, menyembunyikan teks konten di balik JavaScript.",
+    "row_3_param": "Standar Keamanan & Audit Sistem",
+    "row_3_asta": "Sanitasi input ketat, kontrol akses RBAC berlapis, enkripsi data, dan proteksi dari kerentanan OWASP Top 10.",
+    "row_3_traditional": "Pengujian keamanan sekunder atau diabaikan, baru diperbaiki setelah terjadi insiden kebocoran data.",
+    "row_4_param": "Jaminan Garansi & SLA Dukungan",
+    "row_4_asta": "Garansi pemeliharaan pasca-rilis dengan SLA respon cepat terikat kontrak hukum dan monitoring proaktif.",
+    "row_4_traditional": "Dukungan berakhir langsung setelah serah terima awal tanpa jaminan perbaikan bug."
+  },
+  "faq": {
+    "eyebrow": "PERTANYAAN UMUM",
+    "title": "Pertanyaan Umum seputar Layanan ASTA DIGITAL AGENCY (FAQ)",
+    "description": "Jawaban langsung dan definitif seputar proses kerja, keamanan sistem, estimasi waktu, serta garansi pemeliharaan dari ASTA DIGITAL AGENCY.",
+    "q1": "Apa saja layanan utama yang disediakan oleh ASTA DIGITAL AGENCY?",
+    "a1": "ASTA DIGITAL AGENCY menyediakan layanan komprehensif berupa pengembangan aplikasi mobile native dan hybrid (Android & iOS), rekayasa sistem informasi enterprise kustom, pembuatan platform web modern, serta audit arsitektur teknologi.",
+    "q2": "Bagaimana ASTA DIGITAL AGENCY menjamin keamanan data pada sistem yang dibangun?",
+    "a2": "ASTA DIGITAL AGENCY menerapkan prinsip security-by-design dengan enkripsi data saat transit dan saat disimpan, sanitasi input terhadap kerentanan OWASP Top 10, manajemen hak akses berbasis peran (RBAC), serta pencatatan audit log sistem yang lengkap.",
+    "q3": "Berapa lama durasi rata-rata pengerjaan proyek di ASTA DIGITAL AGENCY?",
+    "a3": "Durasi pengerjaan proyek bervariasi antara 2 hingga 12 minggu bergantung pada ruang lingkup modul, kompleksitas integrasi API pihak ketiga, dan kebutuhan kustomisasi sistem yang disepakati.",
+    "q4": "Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?",
+    "a4": "Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server proaktif, jaminan penanganan kendala sistem, serta SLA dukungan teknis berkelanjutan pasca-rilis."
   }
 }

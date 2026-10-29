@@ -26,16 +26,13 @@ export function FAQSection({
   faqs,
   className = "",
 }: FAQSectionProps) {
-  const { language, localize } = useTranslation();
+  const { t, localize } = useTranslation();
 
   if (!faqs || faqs.length === 0) {
     return null;
   }
 
-  const defaultTitle =
-    language === "en"
-      ? "Frequently Asked Questions (FAQ)"
-      : "Pertanyaan Umum (FAQ)";
+  const defaultTitle = t("blog.faq_title");
 
   return (
     <section className={`my-12 sm:my-16 ${className}`}>

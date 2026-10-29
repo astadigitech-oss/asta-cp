@@ -7,6 +7,7 @@ import { Hero } from "./sections/Hero";
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
 const Services = lazy(() => import("./sections/Services").then((m) => ({ default: m.Services })));
+const ComparisonTable = lazy(() => import("./sections/ComparisonTable").then((m) => ({ default: m.ComparisonTable })));
 const Portfolio = lazy(() => import("./sections/Portfolio").then((m) => ({ default: m.Portfolio })));
 const DiscoverSection = lazy(() => import("./sections/DiscoverSection").then((m) => ({ default: m.DiscoverSection })));
 const WhyUs = lazy(() => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs })));
@@ -41,6 +42,10 @@ export function LandingPage() {
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
           <Services />
+        </Suspense>
+
+        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+          <ComparisonTable />
         </Suspense>
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>

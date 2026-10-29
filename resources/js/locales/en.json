@@ -237,7 +237,9 @@
     "read_more": "Read More",
     "empty": "No articles published yet.",
     "by": "By",
-    "min_read": "min read"
+    "min_read": "min read",
+    "faq_title": "Frequently Asked Questions (FAQ)",
+    "tldr_title": "Executive Summary (TL;DR)"
   },
   "common": {
     "previous": "Previous",
@@ -272,5 +274,38 @@
     "cta_similar_title": "Interested in Developing a Similar Solution?",
     "cta_similar_desc": "Discuss your technology needs with the ASTA Digital expert team for targeted and scalable solutions.",
     "consult_now": "Consult Now"
+  },
+  "comparison": {
+    "eyebrow": "ENGINEERING BENCHMARK",
+    "title": "Why Leading Organizations Choose ASTA DIGITAL AGENCY?",
+    "description": "Compare how ASTA DIGITAL AGENCY modern software engineering standards outperform conventional agency practices.",
+    "col_parameter": "Evaluation Parameter",
+    "col_asta": "ASTA DIGITAL AGENCY Method",
+    "col_traditional": "Traditional Method",
+    "row_1_param": "Code Architecture & Scalability",
+    "row_1_asta": "Clean architecture, modular, and cloud-native designed for long-term scalability without full rewrites.",
+    "row_1_traditional": "Rigid monolithic codebase, prone to technical debt and difficult to expand as workload grows.",
+    "row_2_param": "AI & Search Engine Readability (GEO/SEO)",
+    "row_2_asta": "Full semantic structure, Schema.org (JSON-LD) explicit facts, and server-side pre-rendered content for instant AI extraction.",
+    "row_2_traditional": "Pure Client-Side Rendering with empty shell tags, hiding actual content from search and AI bots.",
+    "row_3_param": "Security Standards & System Auditing",
+    "row_3_asta": "Strict input sanitization, RBAC access control, data encryption, and OWASP Top 10 hardening.",
+    "row_3_traditional": "Minimal security checks, often addressed only after security incidents occur.",
+    "row_4_param": "Maintenance Guarantee & SLA Support",
+    "row_4_asta": "Contractual post-launch warranty, active uptime monitoring, and guaranteed response SLAs.",
+    "row_4_traditional": "Support ends immediately upon delivery, without bug-fixing guarantees."
+  },
+  "faq": {
+    "eyebrow": "FREQUENTLY ASKED",
+    "title": "Frequently Asked Questions about ASTA DIGITAL AGENCY (FAQ)",
+    "description": "Clear, definitive answers regarding ASTA DIGITAL AGENCY development processes, system security, timelines, and technical warranties.",
+    "q1": "What core software engineering services does ASTA DIGITAL AGENCY provide?",
+    "a1": "ASTA DIGITAL AGENCY provides end-to-end custom software development, high-performance mobile applications (Android & iOS), modern scalable web platforms, and enterprise cloud information systems tailored to business processes.",
+    "q2": "How does ASTA DIGITAL AGENCY ensure enterprise-grade security and scalability?",
+    "a2": "ASTA DIGITAL AGENCY implements clean architecture, role-based access control (RBAC), end-to-end data encryption, rigorous input sanitization protecting against OWASP Top 10 vulnerabilities, and automated test coverage.",
+    "q3": "What is the typical project development timeline at ASTA DIGITAL AGENCY?",
+    "a3": "Average project development timelines range from 2 to 12 weeks, depending on system complexity, module requirements, third-party API integrations, and customized workflows.",
+    "q4": "Does ASTA DIGITAL AGENCY provide post-launch maintenance and support SLAs?",
+    "a4": "Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, proactive server uptime monitoring, bug-fixing guarantees, and ongoing technical support backed by transparent SLAs."
   }
 }

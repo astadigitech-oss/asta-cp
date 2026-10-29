@@ -1,62 +1,82 @@
-import React from "react";
-import { FAQSection, FAQItem } from "@/components/common/FAQSection";
+import { motion } from "motion/react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useTranslation } from "@/i18n/useTranslation";
+import { SectionHeading } from "../common";
 
 export function HomeFAQ() {
-  const { language } = useTranslation();
+  const { t } = useTranslation();
 
-  const faqs: FAQItem[] = language === "en" ? [
+  const faqItems = [
     {
-      question: "What core software engineering services does ASTA DIGITAL AGENCY provide?",
-      answer: "<strong>ASTA DIGITAL AGENCY</strong> provides end-to-end custom software development, high-performance mobile applications (Android & iOS), modern scalable web platforms, and enterprise cloud information systems tailored to business processes.",
+      question: t("faq.q1"),
+      answer: t("faq.a1"),
     },
     {
-      question: "How does ASTA DIGITAL AGENCY ensure enterprise-grade security and scalability?",
-      answer: "ASTA DIGITAL AGENCY implements clean architecture, role-based access control (RBAC), end-to-end data encryption, rigorous input sanitization protecting against OWASP Top 10 vulnerabilities, and automated test coverage.",
+      question: t("faq.q2"),
+      answer: t("faq.a2"),
     },
     {
-      question: "What is the typical project development timeline at ASTA DIGITAL AGENCY?",
-      answer: "Average project development timelines range from 2 to 12 weeks, depending on system complexity, module requirements, third-party API integrations, and customized workflows.",
+      question: t("faq.q3"),
+      answer: t("faq.a3"),
     },
     {
-      question: "Does ASTA DIGITAL AGENCY provide post-launch maintenance and support SLAs?",
-      answer: "Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, proactive server uptime monitoring, bug-fixing guarantees, and ongoing technical support backed by transparent SLAs.",
-    },
-  ] : [
-    {
-      question: "Apa saja layanan utama yang disediakan oleh ASTA DIGITAL AGENCY?",
-      answer: "<strong>ASTA DIGITAL AGENCY</strong> menyediakan layanan komprehensif berupa pengembangan aplikasi mobile native dan hybrid (Android & iOS), rekayasa sistem informasi enterprise kustom, pembuatan platform web modern, serta audit arsitektur teknologi.",
-    },
-    {
-      question: "Bagaimana ASTA DIGITAL AGENCY menjamin keamanan data pada sistem yang dibangun?",
-      answer: "ASTA DIGITAL AGENCY menerapkan prinsip security-by-design dengan enkripsi data saat transit dan saat disimpan, sanitasi input terhadap kerentanan OWASP Top 10, manajemen hak akses berbasis peran (RBAC), serta pencatatan audit log sistem yang lengkap.",
-    },
-    {
-      question: "Berapa lama durasi rata-rata pengerjaan proyek di ASTA DIGITAL AGENCY?",
-      answer: "Durasi pengerjaan proyek bervariasi antara 2 hingga 12 minggu bergantung pada ruang lingkup modul, kompleksitas integrasi API pihak ketiga, dan kebutuhan kustomisasi sistem yang disepakati.",
-    },
-    {
-      question: "Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?",
-      answer: "Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server proaktif, jaminan penanganan kendala sistem, serta SLA dukungan teknis berkelanjutan pasca-rilis.",
+      question: t("faq.q4"),
+      answer: t("faq.a4"),
     },
   ];
 
   return (
-    <div id="faq" className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <FAQSection
-        title={
-          language === "en"
-            ? "Frequently Asked Questions about ASTA DIGITAL AGENCY (FAQ)"
-            : "Pertanyaan Umum seputar Layanan ASTA DIGITAL AGENCY (FAQ)"
-        }
-        description={
-          language === "en"
-            ? "Clear, definitive answers regarding ASTA DIGITAL AGENCY development processes, system security, timelines, and technical warranties."
-            : "Jawaban langsung dan definitif seputar proses kerja, keamanan sistem, estimasi waktu, serta garansi pemeliharaan dari ASTA DIGITAL AGENCY."
-        }
-        faqs={faqs}
-      />
-    </div>
+    <section id="faq" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
+      <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-60" />
+      <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <SectionHeading
+            eyebrow={t("faq.eyebrow")}
+            title={t("faq.title")}
+            desc={t("faq.description")}
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto mt-12 sm:mt-16 max-w-4xl"
+        >
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            {faqItems.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`faq-${index}`}
+                className="overflow-hidden rounded sm:rounded px-6 sm:px-8 transition-all duration-300"
+              >
+                <AccordionTrigger className="py-5 text-left font-display text-base sm:text-lg font-bold text-primary hover:underline cursor-pointer">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground">
+                  <div
+                    className="prose prose-sm max-w-none text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
+      </div>
+    </section>
   );
 }
 
+export default HomeFAQ;

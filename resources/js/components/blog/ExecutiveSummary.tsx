@@ -8,7 +8,7 @@ interface ExecutiveSummaryProps {
 }
 
 export function ExecutiveSummary({ summary, className = "" }: ExecutiveSummaryProps) {
-  const { language, localize } = useTranslation();
+  const { t, localize } = useTranslation();
 
   if (!summary || !Array.isArray(summary) || summary.length === 0) {
     return null;
@@ -40,7 +40,7 @@ export function ExecutiveSummary({ summary, className = "" }: ExecutiveSummaryPr
           <Sparkles className="h-4 w-4" />
         </span>
         <h2 className="text-sm sm:text-base font-bold text-primary uppercase tracking-wider">
-          {language === "en" ? "Executive Summary (TL;DR)" : "Ringkasan Eksekutif (TL;DR)"}
+          {t("blog.tldr_title")}
         </h2>
       </div>
 
