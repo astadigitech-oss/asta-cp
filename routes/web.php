@@ -136,6 +136,7 @@ Route::get('/{any?}', function () {
     $homeServices = null;
     $homeArticles = null;
     $homePortfolios = null;
+    $homeDiscovers = null;
     $blogArticles = null;
     $discoverItems = null;
     $article = null;
@@ -176,6 +177,19 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             $homePortfolios = collect();
         }
+
+        try {
+            $homeDiscovers = Discover::with(['DiscoverLists' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort', 'asc');
+            }])
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+        } catch (\Throwable $e) {
+            $homeDiscovers = collect();
+        }
     } elseif ($isBlogPage) {
         try {
             $query = Article::where('is_published', true)
@@ -212,8 +226,9 @@ Route::get('/{any?}', function () {
             $discoverItems = Discover::with(['DiscoverLists' => function ($query) {
                 $query->where('is_active', true)->orderBy('sort', 'asc');
             }])
-            ->orderBy('is_pinned', 'desc')
-            ->orderBy('sort', 'asc')
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
             ->get();
         } catch (\Throwable $e) {
             $discoverItems = collect();
@@ -404,7 +419,10 @@ Route::get('/{any?}', function () {
         }
     }
 
-    return view('layouts.app', [
+    $isNotFound = (!$isHomePage && !$isBlogPage && !$isDiscoverPage && !$article && !$discover);
+    $statusCode = $isNotFound ? 404 : 200;
+
+    return response()->view('layouts.app', [
         'locale' => $locale,
         'article' => $article,
         'discover' => $discover,
@@ -413,11 +431,13 @@ Route::get('/{any?}', function () {
         'isDiscoverPage' => $isDiscoverPage,
         'discoverItems' => $discoverItems,
         'isHomePage' => $isHomePage,
+        'isNotFound' => $isNotFound,
         'homeServices' => $homeServices,
         'homeArticles' => $homeArticles,
         'homePortfolios' => $homePortfolios,
+        'homeDiscovers' => $homeDiscovers,
         'seo' => $seo,
         'initialData' => $initialData,
-    ]);
+    ], $statusCode);
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml|livewire).*');
 
