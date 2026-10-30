@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Service;
 use App\Models\Article;
 use App\Models\Discover;
+use App\Models\Portfolio;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ Route::get('/sitemap.xml', function () {
         // --- Static Pages ---
         $staticPages = [
             ''         => ['priority' => '1.0', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
+            'blog'     => ['priority' => '0.9', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
             'discover' => ['priority' => '0.8', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
         ];
 
@@ -115,7 +117,7 @@ Route::get('/{any?}', function () {
 
     app()->setLocale($locale);
 
-    $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
+    $cleanPath = trim(preg_replace('/^(id|en)(\/|$)/i', '', $path), '/');
 
     // 1. Permanent Redirect 301 untuk URL mock discover (mencegah 404 pada URL yang terlanjur terindeks)
     if (preg_match('/^discover\/mock/i', $cleanPath)) {
@@ -129,10 +131,13 @@ Route::get('/{any?}', function () {
     }
 
     $isBlogPage = ($cleanPath === 'blog');
+    $isDiscoverPage = ($cleanPath === 'discover');
     $isHomePage = ($cleanPath === '');
     $homeServices = null;
     $homeArticles = null;
+    $homePortfolios = null;
     $blogArticles = null;
+    $discoverItems = null;
     $article = null;
     $discover = null;
     $seo = null;
@@ -165,6 +170,12 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             $homeArticles = collect();
         }
+
+        try {
+            $homePortfolios = Portfolio::orderBy('sort', 'asc')->limit(6)->get();
+        } catch (\Throwable $e) {
+            $homePortfolios = collect();
+        }
     } elseif ($isBlogPage) {
         try {
             $query = Article::where('is_published', true)
@@ -180,7 +191,7 @@ Route::get('/{any?}', function () {
                 return [
                     'id' => $item->id,
                     'title' => $item->title,
-                    'slug' => $item->slug,
+                    'slug' => method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($locale) : $item->slug,
                     'thumbnail' => $thumbnailUrl,
                     'excerpt' => $item->excerpt,
                     'author' => $item->author ?? 'ASTA Digital Team',
@@ -195,6 +206,17 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             // Graceful fallback jika DB belum siap atau error
             $blogArticles = null;
+        }
+    } elseif ($isDiscoverPage) {
+        try {
+            $discoverItems = Discover::with(['DiscoverLists' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort', 'asc');
+            }])
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('sort', 'asc')
+            ->get();
+        } catch (\Throwable $e) {
+            $discoverItems = collect();
         }
     } elseif ($cleanPath && !in_array($cleanPath, ['', 'discover'])) {
         $decoded = urldecode($cleanPath);
@@ -388,9 +410,12 @@ Route::get('/{any?}', function () {
         'discover' => $discover,
         'blogArticles' => $blogArticles,
         'isBlogPage' => $isBlogPage,
+        'isDiscoverPage' => $isDiscoverPage,
+        'discoverItems' => $discoverItems,
         'isHomePage' => $isHomePage,
         'homeServices' => $homeServices,
         'homeArticles' => $homeArticles,
+        'homePortfolios' => $homePortfolios,
         'seo' => $seo,
         'initialData' => $initialData,
     ]);

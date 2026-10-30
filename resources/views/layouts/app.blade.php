@@ -5,8 +5,8 @@
     
     // Extraksi path tanpa prefix locale untuk generator Hreflang
     $path = request()->path();
-    $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
-    $cleanPathSegment = $cleanPath ? '/' . ltrim($cleanPath, '/') : '';
+    $cleanPath = trim(preg_replace('/^(id|en)(\/|$)/i', '', $path), '/');
+    $cleanPathSegment = $cleanPath ? '/' . $cleanPath : '';
 
     if ($article && method_exists($article, 'getLocalizedSlug')) {
         $idUrl = rtrim($baseUrl, '/') . '/id/' . $article->getLocalizedSlug('id');
@@ -58,6 +58,7 @@
 
     // Dynamic SEO computation
     $isBlogPage = $isBlogPage ?? false;
+    $isDiscoverPage = $isDiscoverPage ?? false;
     $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : null);
     $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : null);
 
@@ -66,6 +67,13 @@
         $rawDesc = $currentLocale === 'en'
             ? 'Explore articles, guides, and insights on digital transformation, technology, and business growth from ASTA Digital Agency.'
             : 'Jelajahi kumpulan artikel, panduan, dan wawasan seputar transformasi digital, teknologi, dan pertumbuhan bisnis dari ASTA Digital Agency.';
+    } elseif ($isDiscoverPage) {
+        $rawTitle = $currentLocale === 'en'
+            ? 'Technology Insights, Case Studies & Solutions — ASTA Digital Agency'
+            : 'Semua Wawasan, Cerita & Panduan Teknologi — ASTA Digital Agency';
+        $rawDesc = $currentLocale === 'en'
+            ? 'Explore industry insights, digital transformation case studies, and software engineering solutions from ASTA Digital Agency.'
+            : 'Jelajahi kumpulan wawasan industri, studi kasus transformasi digital, dan panduan rekayasa perangkat lunak dari para ahli di ASTA Digital Agency.';
     } else {
         $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
         $rawDesc = $seo?->description ?? ($itemDesc ?: 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
@@ -111,7 +119,7 @@
                 : asset('storage/' . ltrim($article->thumbnail, '/')))
             : ($discoverImg ?: $ogDefaultImage));
     }
-    $ogType = ($article || $discover) ? 'article' : ($isBlogPage ? 'blog' : ($seo?->ogType ?? 'website'));
+    $ogType = ($article || $discover) ? 'article' : ($isBlogPage ? 'blog' : ($isDiscoverPage ? 'website' : ($seo?->ogType ?? 'website')));
 
     $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
     $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);
@@ -159,32 +167,35 @@
     <meta name="twitter:image" content="{{ $twitterImage }}">
 
     <!-- Structured Data (JSON-LD) -->
+    @php
+        $professionalServiceSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ProfessionalService',
+            'name' => 'PT Asta Digital Agency',
+            'alternateName' => 'ASTA DIGITAL AGENCY',
+            'url' => rtrim(config('app.url', url('/')), '/'),
+            'logo' => asset('images/logo-dark.png'),
+            'image' => $ogDefaultImage,
+            'description' => 'ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, sekolah, dan perusahaan skala menengah hingga besar.',
+            'telephone' => '+6281578223564',
+            'email' => 'astadigitech@gmail.com',
+            'priceRange' => '$$',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => 'Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Kec. Pleret',
+                'addressLocality' => 'Bantul',
+                'addressRegion' => 'D.I. Yogyakarta',
+                'postalCode' => '55791',
+                'addressCountry' => 'ID',
+            ],
+            'sameAs' => [
+                'https://www.instagram.com/astadigitalagency/',
+                'https://www.linkedin.com/in/asta-digital-agency-b9441637a/',
+            ],
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "ProfessionalService",
-      "name": "PT Asta Digital Agency",
-      "alternateName": "ASTA DIGITAL AGENCY",
-      "url": "{{ rtrim(config('app.url'), '/') }}",
-      "logo": "{{ asset('images/logo-dark.png') }}",
-      "image": "{{ $ogDefaultImage }}",
-      "description": "ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, sekolah, dan perusahaan skala menengah hingga besar.",
-      "telephone": "+6281578223564",
-      "email": "astadigitech@gmail.com",
-      "priceRange": "$$",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Kec. Pleret",
-        "addressLocality": "Bantul",
-        "addressRegion": "D.I. Yogyakarta",
-        "postalCode": "55791",
-        "addressCountry": "ID"
-      },
-      "sameAs": [
-        "https://www.instagram.com/astadigitalagency/",
-        "https://www.linkedin.com/in/asta-digital-agency-b9441637a/"
-      ]
-    }
+    {!! json_encode($professionalServiceSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @if ($article)
     @php
@@ -277,7 +288,7 @@
     {!! is_string($seo->schemaJsonld) ? $seo->schemaJsonld : json_encode($seo->schemaJsonld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endif
-    @elseif (!$article && !$discover && !$isBlogPage)
+    @elseif (!$article && !$discover && !$isBlogPage && !$isDiscoverPage)
     {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction --}}
     @php
         $homeFaqSchema = [
@@ -345,6 +356,66 @@
     <script type="application/ld+json">
     {!! json_encode($collectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
+    @endif
+    @if ($isDiscoverPage)
+    @php
+        $discoverFaqSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'Is your organization ready to grow with ASTA DIGITAL AGENCY?' : 'Siapkah perusahaan Anda berkembang bersama ASTA DIGITAL AGENCY?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY partners with enterprises to build progressive technology solutions, optimizing operational workflows and delivering high production cost efficiency.' : 'ASTA DIGITAL AGENCY siap bekerjasama dengan perusahaan Anda agar lebih maju, efektif, dan berkembang. Pengerjaan sistem yang cepat memberikan dampak progresif serta efisiensi biaya operasional tinggi.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY ensure custom digital systems meet organizational goals?' : 'Bagaimana ASTA DIGITAL AGENCY memastikan hasil kustomisasi sistem sesuai dengan tujuan perusahaan?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY maintains full strategic alignment with clients, conducting iterative architecture reviews so that every technical specification strictly matches enterprise goals.' : 'ASTA DIGITAL AGENCY memegang teguh komitmen menjaga satu visi dengan klien melalui proses kolaboratif sehingga setiap detail arsitektur digital selaras dengan ekspektasi bisnis Anda.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => $currentLocale === 'en' ? 'Does the partnership end once the software or website is launched?' : 'Apakah kemitraan berakhir setelah pembuatan website atau sistem selesai?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $currentLocale === 'en' ? 'No, ASTA DIGITAL AGENCY provides continuous long-term technological partnerships, ensuring systems remain secure, scalable, and up-to-date post-launch.' : 'Tidak, ASTA DIGITAL AGENCY berkomitmen membangun ekosistem digital secara berkelanjutan dan bertindak sebagai mitra teknologi jangka panjang seiring pertumbuhan skala bisnis.',
+                    ],
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($discoverFaqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @if (!empty($discoverItems) && $discoverItems->count() > 0)
+    @php
+        $discoverCollectionSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'CollectionPage',
+            'name' => $metaTitle,
+            'description' => $metaDesc,
+            'url' => $canonicalUrl,
+            'mainEntity' => [
+                '@type' => 'ItemList',
+                'itemListElement' => $discoverItems->values()->map(fn ($item, $idx) => [
+                    '@type' => 'ListItem',
+                    'position' => $idx + 1,
+                    'url' => rtrim($baseUrl, '/') . '/' . $currentLocale . '/discover/' . (method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id)),
+                    'name' => html_entity_decode(localizeTextPhp(is_array($item->name) ? ($item->name[$currentLocale] ?? reset($item->name)) : $item->name, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                ])->all(),
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($discoverCollectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    @endif
     @endif
 
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
@@ -496,6 +567,63 @@
                 <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed space-y-4">
                     {!! localizeTextPhp(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : $discover->short_description, $currentLocale) !!}
                 </div>
+
+                @if ($discover->DiscoverLists && $discover->DiscoverLists->count() > 0)
+                    <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+                            {{ $currentLocale === 'en' ? 'Key Technical Highlights & Deliverables' : 'Poin Kunci & Hasil Rekayasa Sistem' }}
+                        </h3>
+                        <ul class="grid sm:grid-cols-2 gap-3.5">
+                            @foreach ($discover->DiscoverLists as $dl)
+                                <li class="flex items-start gap-3 bg-blue-50/60 dark:bg-blue-950/30 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/50 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                    <span class="text-blue-600 font-bold">•</span>
+                                    <span>{{ strip_tags(localizeTextPhp($dl->description, $currentLocale)) }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if (!empty($discover->content_sections) && is_array($discover->content_sections))
+                    <div class="mt-10 space-y-8">
+                        @foreach ($discover->content_sections as $sIdx => $sec)
+                            <section class="border-t pt-6 space-y-3">
+                                <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                    {{ $currentLocale === 'en' ? 'Part ' . ($sIdx + 1) : 'Bagian ' . ($sIdx + 1) }}
+                                </span>
+                                @if (!empty($sec['image']))
+                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                         alt="Section media"
+                                         class="w-full rounded-2xl object-cover max-h-[500px]" />
+                                @endif
+                                @if (!empty($sec['description']))
+                                    <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {!! localizeTextPhp($sec['description'], $currentLocale) !!}
+                                    </div>
+                                @endif
+                            </section>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Modul FAQ Permanen Detail Solusi / Discover --}}
+                <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                        {{ $currentLocale === 'en' ? 'Frequently Asked Questions (FAQ)' : 'Pertanyaan Umum seputar Solusi Ini (FAQ)' }}
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/50">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {{ $currentLocale === 'en' ? 'Can ASTA DIGITAL AGENCY build a similar customized solution for my company?' : 'Apakah ASTA DIGITAL AGENCY dapat membangun solusi serupa untuk perusahaan saya?' }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                                {{ $currentLocale === 'en'
+                                    ? 'Yes, ASTA DIGITAL AGENCY develops tailor-made enterprise software, web portals, and mobile apps aligned with your specific business goals, security standards, and workflow requirements.'
+                                    : 'Ya, ASTA DIGITAL AGENCY merekayasa aplikasi mobile, website modern, dan sistem informasi enterprise kustom yang disesuaikan secara presisi dengan kebutuhan alur kerja dan standar industri Anda.' }}
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </article>
         @elseif ($isBlogPage)
             <main class="max-w-6xl mx-auto px-4 py-12">
@@ -544,6 +672,105 @@
                         @endforeach
                     </div>
                 @endif
+            </main>
+        @elseif ($isDiscoverPage)
+            <main class="max-w-6xl mx-auto px-4 py-16 space-y-12">
+                <header class="text-center max-w-3xl mx-auto space-y-4">
+                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest">
+                        ASTA DIGITAL AGENCY · PORTOFOLIO & INOVASI TEKNOLOGI
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+                        {{ $currentLocale === 'en'
+                            ? 'What technology case studies and software solutions has ASTA DIGITAL AGENCY developed?'
+                            : 'Apa saja studi kasus teknologi dan inovasi perangkat lunak dari ASTA DIGITAL AGENCY?' }}
+                    </h1>
+                    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                        <strong>ASTA DIGITAL AGENCY</strong> {{ $currentLocale === 'en'
+                            ? 'presents real-world software engineering case studies, enterprise platforms, and digital transformation insights crafted for clients across various industries.'
+                            : 'menghadirkan dokumentasi rekayasa perangkat lunak, portal enterprise, aplikasi mobile, serta studi kasus transformasi digital yang terbukti memangkas waktu kerja dan meningkatkan produktivitas.' }}
+                    </p>
+                </header>
+
+                @if (!empty($discoverItems) && $discoverItems->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        @foreach ($discoverItems as $item)
+                            @php
+                                $dName = is_array($item->name) ? ($item->name[$currentLocale] ?? reset($item->name)) : $item->name;
+                                $dDesc = is_array($item->short_description) ? ($item->short_description[$currentLocale] ?? reset($item->short_description)) : $item->short_description;
+                                $dSlug = method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id);
+                                $dImg = null;
+                                if (!empty($item->image)) {
+                                    $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
+                                    if ($first) {
+                                        $dImg = str_starts_with($first, 'http') ? $first : asset('storage/' . ltrim($first, '/'));
+                                    }
+                                }
+                            @endphp
+                            <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
+                                @if ($dImg)
+                                    <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" class="w-full h-full object-cover" loading="lazy" />
+                                    </a>
+                                @endif
+                                <div class="p-6 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-xs font-bold text-blue-600 uppercase">{{ $item->type ?: 'Story' }}</span>
+                                            @if ($item->year)
+                                                <span class="text-xs text-gray-400">• {{ $item->year }}</span>
+                                            @endif
+                                        </div>
+                                        <h2 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-2">
+                                            <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="hover:text-blue-600 transition-colors">
+                                                {{ localizeTextPhp($dName, $currentLocale) }}
+                                            </a>
+                                        </h2>
+                                        @if ($dDesc)
+                                            <p class="mt-2.5 text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                                                {!! strip_tags(localizeTextPhp($dDesc, $currentLocale)) !!}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                        <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                                            <span>{{ $currentLocale === 'en' ? 'Read Case Study' : 'Pelajari Studi Kasus' }}</span>
+                                            <span>→</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- FAQ Permanen Katalog Discover untuk Bot AI & Pengunjung --}}
+                <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                        {{ $currentLocale === 'en' ? 'Frequently Asked Questions about ASTA Solutions (FAQ)' : 'Pertanyaan Umum seputar Solusi & Inovasi ASTA DIGITAL AGENCY (FAQ)' }}
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-base sm:text-lg text-gray-900 dark:text-white mb-2">
+                                {{ $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY ensure systems match organizational needs?' : 'Bagaimana ASTA DIGITAL AGENCY memastikan hasil kustomisasi sistem sesuai dengan tujuan perusahaan?' }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                                {{ $currentLocale === 'en'
+                                    ? 'ASTA DIGITAL AGENCY collaborates directly with stakeholders to align system architecture with business KPIs, maintaining complete transparency throughout every milestone.'
+                                    : 'ASTA DIGITAL AGENCY memegang teguh komitmen menjaga satu visi dengan klien. Seluruh proses kustomisasi dilakukan secara kolaboratif agar setiap detail arsitektur digital selaras dengan ekspektasi dan target strategis bisnis Anda.' }}
+                            </p>
+                        </div>
+                        <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                            <h3 class="font-bold text-base sm:text-lg text-gray-900 dark:text-white mb-2">
+                                {{ $currentLocale === 'en' ? 'Does partnership end once the software or platform goes live?' : 'Apakah kemitraan berakhir setelah pembuatan website atau sistem selesai?' }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                                {{ $currentLocale === 'en'
+                                    ? 'No. ASTA DIGITAL AGENCY provides ongoing engineering support, uptime monitoring, and continuous iterations to ensure systems scale smoothly as your enterprise grows.'
+                                    : 'Tidak. ASTA DIGITAL AGENCY memiliki komitmen membangun dan mengembangkan ekosistem digital Anda secara berkelanjutan dengan pendampingan teknis, garansi pemeliharaan, dan skalabilitas jangka panjang.' }}
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </main>
         @else
             {{-- Semantic Server-Side Pre-rendered Content untuk Homepage & Bot AI --}}
@@ -672,6 +899,45 @@
                         </table>
                     </div>
                 </section>
+
+                {{-- Section Portofolio Unggulan ASTA DIGITAL AGENCY --}}
+                @if (!empty($homePortfolios) && $homePortfolios->count() > 0)
+                    <section id="portfolio" class="space-y-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+                        <div>
+                            <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                                BUKTI KERJA & HASIL REKAYASA
+                            </span>
+                            <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                {{ $currentLocale === 'en'
+                                    ? 'What software solutions and platforms has ASTA DIGITAL AGENCY built?'
+                                    : 'Portofolio perangkat lunak dan platform digital apa saja yang telah dibangun oleh ASTA DIGITAL AGENCY?' }}
+                            </h2>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">
+                                {{ $currentLocale === 'en'
+                                    ? 'ASTA DIGITAL AGENCY engineers mission-critical web applications and mobile apps for enterprises, public sector institutions, and expanding businesses:'
+                                    : 'ASTA DIGITAL AGENCY merekayasa aplikasi web dan aplikasi mobile berstandar tinggi untuk perusahaan, sektor publik, dan bisnis berkembang:' }}
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach ($homePortfolios as $pf)
+                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xs font-bold text-blue-600 uppercase">{{ $pf->type === 'mobile' ? 'Mobile App' : 'Web & Enterprise System' }}</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                        {{ localizeTextPhp($pf->name, $currentLocale) }}
+                                    </h3>
+                                    @if ($pf->description)
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                            {!! strip_tags(localizeTextPhp($pf->description, $currentLocale)) !!}
+                                        </p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
 
                 {{-- 3. Section FAQ Permanen Homepage --}}
                 <section id="faq" class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
