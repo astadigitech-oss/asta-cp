@@ -56,6 +56,17 @@
         }
     }
 
+    // Load client translation dictionaries so SSR is 100% synchronized with CSR (React i18n)
+    $localesPath = resource_path("js/locales/{$currentLocale}.json");
+    $transDict = file_exists($localesPath) ? (json_decode(file_get_contents($localesPath), true) ?: []) : [];
+
+    if (!function_exists('transKey')) {
+        function transKey(array $dict, string $key, string $default = ''): string {
+            $val = data_get($dict, $key, $default);
+            return is_string($val) ? $val : (is_scalar($val) ? (string) $val : $default);
+        }
+    }
+
     // Dynamic SEO computation
     $isBlogPage = $isBlogPage ?? false;
     $isDiscoverPage = $isDiscoverPage ?? false;
@@ -81,8 +92,8 @@
             ? 'Explore industry insights, digital transformation case studies, and software engineering solutions from ASTA Digital Agency.'
             : 'Jelajahi kumpulan wawasan industri, studi kasus transformasi digital, dan panduan rekayasa perangkat lunak dari para ahli di ASTA Digital Agency.';
     } else {
-        $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
-        $rawDesc = $seo?->description ?? ($itemDesc ?: 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.');
+        $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : transKey($transDict, 'meta.title', 'ASTA Digital Agency — Solusi Teknologi & Digital Agency'));
+        $rawDesc = $seo?->description ?? ($itemDesc ?: transKey($transDict, 'meta.description', 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.'));
     }
 
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
@@ -297,7 +308,7 @@
     </script>
     @endif
     @elseif (!$article && !$discover && !$isBlogPage && !$isDiscoverPage && !$isNotFound)
-    {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction --}}
+    {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction (100% Sinkron CSR) --}}
     @php
         $homeFaqSchema = [
             '@context' => 'https://schema.org',
@@ -305,34 +316,34 @@
             'mainEntity' => [
                 [
                     '@type' => 'Question',
-                    'name' => $currentLocale === 'en' ? 'What services does ASTA DIGITAL AGENCY provide?' : 'Apa saja layanan utama yang ditawarkan oleh ASTA DIGITAL AGENCY?',
+                    'name' => transKey($transDict, 'faq.q1', 'Mengapa harus ASTA DIGITAL AGENCY?'),
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems.' : 'ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak mencakup pembuatan aplikasi mobile (Android & iOS), pengembangan web aplikasi modern, serta sistem informasi enterprise kustom.',
+                        'text' => transKey($transDict, 'faq.a1', 'ASTA DIGITAL AGENCY memiliki tim IT yang sangat kompeten, presisi, dan tepat waktu.'),
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY approach system security and performance?' : 'Bagaimana pendekatan ASTA DIGITAL AGENCY terhadap keamanan dan performa sistem?',
+                    'name' => transKey($transDict, 'faq.q2', 'Apa Yang ASTA DIGITAL AGENCY tawarkan?'),
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization, automated test coverage, and high-performance clean architecture to ensure system resilience and fast response times.' : 'ASTA DIGITAL AGENCY menerapkan standar keamanan berlapis, sanitasi input ketat, pengujian otomatis, serta arsitektur clean code performa tinggi untuk menjamin ketahanan dan kecepatan respons sistem.',
+                        'text' => transKey($transDict, 'faq.a2', 'ASTA DIGITAL AGENCY menawarkan mahakarya digitalisasi yang eksklusif dan dirancang khusus secara orisinal untuk bisnis Anda.'),
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => $currentLocale === 'en' ? 'What is the typical project development timeline at ASTA DIGITAL AGENCY?' : 'Berapa lama estimasi pengerjaan proyek di ASTA DIGITAL AGENCY?',
+                    'name' => transKey($transDict, 'faq.q3', 'Begaimana cara mendapatkan tim IT dedicated tanpa perlu repot melakukan rekrutment?'),
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'Typical development timelines range from 2 to 12 weeks depending on technical complexity, scope, and specific client requirements.' : 'Estimasi waktu pengerjaan berkisar antara 2 hingga 12 minggu tergantung pada tingkat kompleksitas teknis, ruang lingkup, dan kebutuhan khusus klien.',
+                        'text' => transKey($transDict, 'faq.a3', 'ASTA DIGITAL AGENCY menyediakan tim IT dedicated yang ahli dan siap bekerja secara eksklusif untuk proyek Anda.'),
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => $currentLocale === 'en' ? 'Does ASTA DIGITAL AGENCY provide post-launch maintenance and support?' : 'Apakah ASTA DIGITAL AGENCY menyediakan dukungan pemeliharaan (maintenance) pasca-peluncuran?',
+                    'name' => transKey($transDict, 'faq.q4', 'Apakah ASTA DIGITAL AGENCY menjamin ketepatan waktu dalam setiap proyek pembuatan website'),
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'Yes, ASTA DIGITAL AGENCY provides explicit maintenance warranties, server uptime monitoring, and ongoing technical SLA support.' : 'Ya, ASTA DIGITAL AGENCY menyediakan garansi pemeliharaan teknis, monitoring server, serta SLA dukungan teknis berkelanjutan pasca-rilis sistem.',
+                        'text' => transKey($transDict, 'faq.a4', 'Pasti. Kami didukung oleh tim yang handal dengan manajemen proyek yang presisi.'),
                     ],
                 ],
             ],
@@ -842,59 +853,140 @@
                 </a>
             </main>
         @else
-            {{-- Semantic Server-Side Pre-rendered Content untuk Homepage & Bot AI --}}
-            <main class="max-w-5xl mx-auto px-4 py-16 space-y-16">
-                {{-- 1. Hero Section Berbasis Prompt & Aturan BLUF --}}
-                <header class="border-b border-gray-100 dark:border-gray-800 pb-12">
-                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
-                        ASTA DIGITAL AGENCY · SOFTWARE HOUSE & IT CONSULTANT
+            {{-- Semantic Server-Side Pre-rendered Content untuk Homepage & Bot AI (100% Sinkron CSR) --}}
+            <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+                {{-- 1. Hero Section (#top) --}}
+                <header id="top" class="border-b border-gray-100 dark:border-gray-800 pb-12 space-y-6">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300">
+                        <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                        {{ transKey($transDict, 'hero.eyebrow', 'Agensi Digital Premium · Est. 2022') }}
                     </span>
-                    <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 leading-tight">
-                        {{ $currentLocale === 'en'
-                            ? 'What software engineering and digital transformation solutions does ASTA DIGITAL AGENCY provide?'
-                            : 'Apa saja solusi rekayasa perangkat lunak dan transformasi digital dari ASTA DIGITAL AGENCY?' }}
+
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.08]">
+                        {{ transKey($transDict, 'hero.title_1', 'Membangun ') }}
+                        <span class="text-blue-600 underline decoration-blue-400 decoration-wavy decoration-2 underline-offset-8">
+                            {{ transKey($transDict, 'hero.title_highlight', 'pengalaman digital') }}
+                        </span>
+                        {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
                     </h1>
-                    {{-- BLUF Paragraf: Jawaban langsung di kalimat pertama --}}
-                    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-6 font-medium">
-                        <strong>ASTA DIGITAL AGENCY</strong> {{ $currentLocale === 'en'
-                            ? 'is a technology studio specializing in end-to-end custom software development, high-performance mobile applications (Android & iOS), and scalable enterprise information systems for companies, public institutions, and educational organizations.'
-                            : 'adalah studio teknologi yang berfokus pada rekayasa perangkat lunak kustom, pengembangan aplikasi mobile (Android & iOS) berkinerja tinggi, serta sistem informasi enterprise berskala besar untuk perusahaan, instansi, dan institusi pendidikan.' }}
+
+                    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-normal max-w-4xl">
+                        {{ transKey($transDict, 'hero.description') }}
                     </p>
-                    <ul class="space-y-3 text-base text-gray-700 dark:text-gray-300">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 font-bold">•</span>
-                            <span><strong>{{ $currentLocale === 'en' ? 'Scalable Architecture:' : 'Arsitektur Skalabel:' }}</strong> {{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY engineers systems based on clean architecture and microservices ready to handle high data loads reliably.' : 'ASTA DIGITAL AGENCY merancang sistem berbasis clean architecture dan microservices yang siap menangani lonjakan data secara stabil.' }}</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 font-bold">•</span>
-                            <span><strong>{{ $currentLocale === 'en' ? 'Enterprise-Grade Security:' : 'Keamanan Tingkat Enterprise:' }}</strong> {{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY enforces rigorous data protection protocols, strict input sanitization, and periodic vulnerability testing.' : 'ASTA DIGITAL AGENCY menerapkan protokol proteksi data ketat, sanitasi masukan, dan pengujian kerentanan berkala.' }}</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 font-bold">•</span>
-                            <span><strong>{{ $currentLocale === 'en' ? 'Definitive SLA Support:' : 'Dukungan SLA Definitif:' }}</strong> {{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY guarantees post-launch maintenance, proactive uptime monitoring, and rapid technical response.' : 'ASTA DIGITAL AGENCY memberikan jaminan garansi pemeliharaan, pemantauan proaktif, dan respon teknis cepat.' }}</span>
-                        </li>
-                    </ul>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <a href="#kontak" class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] text-white px-6 py-3 text-sm font-semibold shadow-md hover:opacity-95 transition-all">
+                            {{ transKey($transDict, 'hero.cta_start', 'Mulai Proyek') }}
+                            <span>→</span>
+                        </a>
+                        <a href="#portofolio" class="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 shadow-xs hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            {{ transKey($transDict, 'hero.cta_portfolio', 'Lihat Portofolio') }}
+                        </a>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
+                            <span class="text-emerald-500">🛡</span> {{ transKey($transDict, 'hero.trust_security', 'Keamanan Siap terjamin') }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
+                            <span class="text-amber-500">🏆</span> {{ transKey($transDict, 'hero.trust_award', 'Kualitas Penghargaan') }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
+                            <span class="text-blue-500">⚡</span> {{ transKey($transDict, 'hero.trust_fast', 'Fast & Scalable') }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-gray-100 dark:border-gray-800">
+                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">20+</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_projects', 'PROYEK') }}</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">8+</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_clients', 'KLIEN') }}</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">4+</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_years', 'TAHUN') }}</div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">98%</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_satisfaction', 'KEPUASAN') }}</div>
+                        </div>
+                    </div>
                 </header>
 
-                {{-- 2. Section Layanan Utama ASTA DIGITAL AGENCY --}}
-                <section id="layanan" class="space-y-8">
+                {{-- 2. Section Tentang ASTA (#tentang) --}}
+                <section id="tentang" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
                     <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'about.eyebrow', 'Profil Entitas & Rekayasa') }}
+                        </span>
                         <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                            {{ $currentLocale === 'en'
-                                ? 'What core technology services does ASTA DIGITAL AGENCY offer?'
-                                : 'Layanan teknologi apa saja yang disediakan oleh ASTA DIGITAL AGENCY?' }}
+                            {{ transKey($transDict, 'about.title') }}
                         </h2>
-                        <p class="mt-2 text-gray-600 dark:text-gray-400">
-                            {{ $currentLocale === 'en'
-                                ? 'ASTA DIGITAL AGENCY delivers end-to-end engineering tailored to specific organizational workflows:'
-                                : 'ASTA DIGITAL AGENCY menghadirkan layanan rekayasa perangkat lunak terintegrasi yang disesuaikan dengan kebutuhan bisnis:' }}
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'about.description') }}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
+                                {{ transKey($transDict, 'about.vision_title') }}
+                            </h3>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                {{ transKey($transDict, 'about.vision_desc') }}
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
+                                {{ transKey($transDict, 'about.mission_title') }}
+                            </h3>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                {{ transKey($transDict, 'about.mission_desc') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_1_title') }}</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_1_desc') }}</p>
+                        </div>
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_2_title') }}</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_2_desc') }}</p>
+                        </div>
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_3_title') }}</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_3_desc') }}</p>
+                        </div>
+                        <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_4_title') }}</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_4_desc') }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- 3. Section Layanan Utama (#layanan) --}}
+                <section id="layanan" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'services.eyebrow', 'Solusi & Layanan Teknologi') }}
+                        </span>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ transKey($transDict, 'services.title') }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'services.description') }}
                         </p>
                     </div>
 
                     @if (!empty($homeServices) && $homeServices->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach ($homeServices as $svc)
-                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs hover:shadow-md transition-shadow">
                                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
                                         {{ localizeTextPhp($svc->name, $currentLocale) }}
                                     </h3>
@@ -902,7 +994,7 @@
                                         {!! strip_tags(localizeTextPhp($svc->short_description ?: $svc->description, $currentLocale)) !!}
                                     </p>
                                     @if ($svc->serviceListMains && $svc->serviceListMains->count() > 0)
-                                        <ul class="text-xs space-y-1.5 text-gray-500 border-t pt-3">
+                                        <ul class="text-xs space-y-1.5 text-gray-500 border-t border-gray-100 dark:border-gray-800 pt-3">
                                             @foreach ($svc->serviceListMains as $feature)
                                                 <li>• {{ localizeTextPhp($feature->description, $currentLocale) }}</li>
                                             @endforeach
@@ -914,85 +1006,90 @@
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $currentLocale === 'en' ? 'Web Apps & Enterprise Portals' : 'Web Apps & Portal Enterprise' }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY develops modern web portals, internal management systems, and secure, responsive cloud-based applications.' : 'ASTA DIGITAL AGENCY mengembangkan portal web modern, sistem manajemen internal, dan aplikasi berbasis cloud yang aman dan responsif.' }}</p>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_web_title', 'Web Apps Development') }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_web_desc', 'Aplikasi berbasis web modern, cepat & responsif.') }}</p>
                             </div>
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $currentLocale === 'en' ? 'Mobile Apps (Android & iOS)' : 'Mobile Apps (Android & iOS)' }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY builds high-performance native and cross-platform mobile apps with modern, intuitive UI/UX.' : 'ASTA DIGITAL AGENCY membangun aplikasi mobile native dan multiplatform berkinerja tinggi dengan UI/UX modern dan intuitif.' }}</p>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_mobile_title', 'Mobile Apps Development') }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_mobile_desc', 'Aplikasi Android & iOS performa tinggi.') }}</p>
                             </div>
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $currentLocale === 'en' ? 'IT Consulting & Custom Systems' : 'IT Consulting & Sistem Kustom' }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY provides system architecture consulting, security audits, and API integrations for institutions and enterprises.' : 'ASTA DIGITAL AGENCY memberikan konsultasi arsitektur sistem, audit keamanan, dan integrasi API untuk instansi maupun korporasi.' }}</p>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_it_title', 'Layanan IT & Konsultasi') }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_it_desc', 'Dukungan IT dan konsultasi arsitektur sistem.') }}</p>
                             </div>
                         </div>
                     @endif
+                </section>
 
-                    {{-- Tabel Komparasi Metode Rekayasa: ASTA vs Tradisional --}}
-                    <div class="mt-10 overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-2xl p-6 bg-gray-50/50 dark:bg-gray-900/50">
-                        <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-                            {{ $currentLocale === 'en'
-                                ? 'Comparison: ASTA DIGITAL AGENCY Method vs Traditional Development'
-                                : 'Tabel Komparasi: Metode Rekayasa ASTA DIGITAL AGENCY vs Metode Pengembangan Tradisional' }}
-                        </h3>
+                {{-- 4. Section Komparasi Metode (#komparasi) --}}
+                <section id="komparasi" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'comparison.eyebrow', 'TOLOK UKUR STANDAR') }}
+                        </span>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ transKey($transDict, 'comparison.title') }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'comparison.description') }}
+                        </p>
+                    </div>
+
+                    <div class="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-2xl p-6 bg-gray-50/50 dark:bg-gray-900/50">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <th class="py-3 px-4 font-bold text-gray-900 dark:text-white">{{ $currentLocale === 'en' ? 'Evaluation Parameter' : 'Parameter Evaluasi' }}</th>
-                                    <th class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400">{{ $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY Method' : 'Metode ASTA DIGITAL AGENCY' }}</th>
-                                    <th class="py-3 px-4 font-bold text-gray-500">{{ $currentLocale === 'en' ? 'Traditional Method' : 'Metode Tradisional' }}</th>
+                                    <th class="py-3 px-4 font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'comparison.col_parameter', 'Parameter Evaluasi') }}</th>
+                                    <th class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400">{{ transKey($transDict, 'comparison.col_asta', 'Metode ASTA DIGITAL AGENCY') }}</th>
+                                    <th class="py-3 px-4 font-bold text-gray-500">{{ transKey($transDict, 'comparison.col_traditional', 'Metode Tradisional') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
                                 <tr>
-                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ $currentLocale === 'en' ? 'Code Architecture & Scalability' : 'Arsitektur Kode & Skalabilitas' }}</td>
-                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ $currentLocale === 'en' ? 'Clean architecture, modular, scalable without complete refactoring.' : 'Clean architecture, modular, siap skala tinggi tanpa refactor ulang total.' }}</td>
-                                    <td class="py-3 px-4 text-gray-500">{{ $currentLocale === 'en' ? 'Rigid monolith, difficult to maintain, high technical debt.' : 'Monolitik kaku, sulit dikembangkan lebih lanjut, utang teknis tinggi.' }}</td>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ transKey($transDict, 'comparison.row_1_param') }}</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ transKey($transDict, 'comparison.row_1_asta') }}</td>
+                                    <td class="py-3 px-4 text-gray-500">{{ transKey($transDict, 'comparison.row_1_traditional') }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ $currentLocale === 'en' ? 'AI & Search Engine Readiness (GEO/SEO)' : 'Kesiapan AI & Mesin Pencari (GEO/SEO)' }}</td>
-                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ $currentLocale === 'en' ? 'Comprehensive semantic structure, Schema.org (JSON-LD), highly extractable for AI bots.' : 'Struktur semantik lengkap, skema Schema.org (JSON-LD), ramah ekstraksi bot AI.' }}</td>
-                                    <td class="py-3 px-4 text-gray-500">{{ $currentLocale === 'en' ? 'Pure Client-Side Rendering without pre-rendering, content hidden from web crawlers.' : 'Client-Side Rendering murni tanpa pre-rendering, konten tersembunyi dari perayap.' }}</td>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ transKey($transDict, 'comparison.row_2_param') }}</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ transKey($transDict, 'comparison.row_2_asta') }}</td>
+                                    <td class="py-3 px-4 text-gray-500">{{ transKey($transDict, 'comparison.row_2_traditional') }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ $currentLocale === 'en' ? 'Security & System Audits' : 'Keamanan & Audit Sistem' }}</td>
-                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ $currentLocale === 'en' ? 'Strict input validation, multi-layer sanitization, data encryption, and CSRF/XSS protection.' : 'Validasi input ketat, sanitasi berlapis, enkripsi data, dan proteksi CSRF/XSS.' }}</td>
-                                    <td class="py-3 px-4 text-gray-500">{{ $currentLocale === 'en' ? 'Secondary security checks or overlooked until security incidents occur.' : 'Pengujian keamanan sekunder atau diabaikan hingga insiden terjadi.' }}</td>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ transKey($transDict, 'comparison.row_3_param') }}</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ transKey($transDict, 'comparison.row_3_asta') }}</td>
+                                    <td class="py-3 px-4 text-gray-500">{{ transKey($transDict, 'comparison.row_3_traditional') }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ $currentLocale === 'en' ? 'Warranty & SLA Guarantees' : 'Jaminan Garansi & SLA' }}</td>
-                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ $currentLocale === 'en' ? 'Post-launch maintenance warranty with contractually guaranteed response times.' : 'Garansi pemeliharaan pasca-rilis dengan SLA respon terikat kontrak.' }}</td>
-                                    <td class="py-3 px-4 text-gray-500">{{ $currentLocale === 'en' ? 'Support terminates after initial handover without bug fixing guarantees.' : 'Dukungan berakhir setelah serah terima awal tanpa jaminan bug fixing.' }}</td>
+                                    <td class="py-3 px-4 font-medium text-gray-900 dark:text-gray-200">{{ transKey($transDict, 'comparison.row_4_param') }}</td>
+                                    <td class="py-3 px-4 text-gray-800 dark:text-gray-300">{{ transKey($transDict, 'comparison.row_4_asta') }}</td>
+                                    <td class="py-3 px-4 text-gray-500">{{ transKey($transDict, 'comparison.row_4_traditional') }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </section>
 
-                {{-- Section Portofolio Unggulan ASTA DIGITAL AGENCY --}}
+                {{-- 5. Section Portofolio (#portofolio) --}}
                 @if (!empty($homePortfolios) && $homePortfolios->count() > 0)
-                    <section id="portfolio" class="space-y-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <section id="portofolio" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
                         <div>
                             <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
-                                {{ $currentLocale === 'en' ? 'PROVEN TRACK RECORD & ENGINEERING HIGHLIGHTS' : 'BUKTI KERJA & HASIL REKAYASA' }}
+                                {{ transKey($transDict, 'portfolio.eyebrow', 'Studi Kasus & Rekam Jejak') }}
                             </span>
                             <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                                {{ $currentLocale === 'en'
-                                    ? 'What software solutions and platforms has ASTA DIGITAL AGENCY built?'
-                                    : 'Portofolio perangkat lunak dan platform digital apa saja yang telah dibangun oleh ASTA DIGITAL AGENCY?' }}
+                                {{ transKey($transDict, 'portfolio.title') }}
                             </h2>
-                            <p class="mt-2 text-gray-600 dark:text-gray-400">
-                                {{ $currentLocale === 'en'
-                                    ? 'ASTA DIGITAL AGENCY engineers mission-critical web applications and mobile apps for enterprises, public sector institutions, and expanding businesses:'
-                                    : 'ASTA DIGITAL AGENCY merekayasa aplikasi web dan aplikasi mobile berstandar tinggi untuk perusahaan, sektor publik, dan bisnis berkembang:' }}
+                            <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                                {{ transKey($transDict, 'portfolio.description') }}
                             </p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach ($homePortfolios as $pf)
-                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                                <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs hover:shadow-md transition-shadow">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xs font-bold text-blue-600 uppercase">{{ $pf->type === 'mobile' ? ($currentLocale === 'en' ? 'Mobile App' : 'Aplikasi Mobile') : ($currentLocale === 'en' ? 'Web & Enterprise System' : 'Sistem Web & Enterprise') }}</span>
+                                        <span class="text-xs font-bold text-blue-600 uppercase">{{ $pf->type === 'mobile' ? transKey($transDict, 'portfolio.tab_mobile', 'Mobile Apps') : transKey($transDict, 'portfolio.tab_desktop', 'Desktop & Web') }}</span>
                                     </div>
                                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
                                         {{ localizeTextPhp($pf->name, $currentLocale) }}
@@ -1008,30 +1105,26 @@
                     </section>
                 @endif
 
-                {{-- Section Discover / Studi Kasus Unggulan ASTA DIGITAL AGENCY di Homepage --}}
+                {{-- 6. Section Discover / Studi Kasus (#discover) --}}
                 @php
                     $homeDiscovers = $homeDiscovers ?? collect();
                 @endphp
                 @if (!empty($homeDiscovers) && $homeDiscovers->count() > 0)
-                    <section id="discover" class="space-y-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <section id="discover" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
                         <div class="flex items-center justify-between">
                             <div>
                                 <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
-                                    {{ $currentLocale === 'en' ? 'INNOVATION & CASE STUDIES' : 'INOVASI & STUDI KASUS TEKNOLOGI' }}
+                                    {{ transKey($transDict, 'discover.eyebrow', 'Temukan & Wawasan') }}
                                 </span>
                                 <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                                    {{ $currentLocale === 'en'
-                                        ? 'What technology case studies and digital solutions has ASTA DIGITAL AGENCY engineered?'
-                                        : 'Studi kasus teknologi dan solusi digital apa saja yang telah direkayasa oleh ASTA DIGITAL AGENCY?' }}
+                                    {{ transKey($transDict, 'discover.title') }}
                                 </h2>
-                                <p class="mt-2 text-gray-600 dark:text-gray-400">
-                                    {{ $currentLocale === 'en'
-                                        ? 'Explore how ASTA DIGITAL AGENCY solves complex architectural challenges and optimizes digital transformation for partners:'
-                                        : 'Pelajari bagaimana ASTA DIGITAL AGENCY menyelesaikan tantangan arsitektur kompleks dan mengoptimalkan transformasi digital klien:' }}
+                                <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                                    {{ transKey($transDict, 'discover.description') }}
                                 </p>
                             </div>
                             <a href="/{{ $currentLocale }}/discover" class="hidden sm:inline-block text-sm font-semibold text-blue-600 hover:underline shrink-0">
-                                {{ $currentLocale === 'en' ? 'View All Case Studies →' : 'Lihat Semua Studi Kasus →' }}
+                                {{ $currentLocale === 'en' ? 'View All →' : 'Lihat Semua →' }}
                             </a>
                         </div>
 
@@ -1076,7 +1169,7 @@
                                         </div>
                                         <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                                             <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                                                <span>{{ $currentLocale === 'en' ? 'Read Case Study' : 'Pelajari Studi Kasus' }}</span>
+                                                <span>{{ $currentLocale === 'en' ? 'Read Story' : 'Pelajari Selengkapnya' }}</span>
                                                 <span>→</span>
                                             </a>
                                         </div>
@@ -1084,88 +1177,113 @@
                                 </article>
                             @endforeach
                         </div>
-
-                        <div class="text-center sm:hidden pt-2">
-                            <a href="/{{ $currentLocale }}/discover" class="text-sm font-semibold text-blue-600 hover:underline">
-                                {{ $currentLocale === 'en' ? 'View All Case Studies →' : 'Lihat Semua Studi Kasus →' }}
-                            </a>
-                        </div>
                     </section>
                 @endif
 
-                {{-- 3. Section FAQ Permanen Homepage --}}
-                <section id="faq" class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                    <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                        {{ $currentLocale === 'en'
-                            ? 'Frequently Asked Questions about ASTA DIGITAL AGENCY (FAQ)'
-                            : 'Pertanyaan Umum seputar Layanan ASTA DIGITAL AGENCY (FAQ)' }}
-                    </h2>
-                    <div class="space-y-4">
-                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                                {{ $currentLocale === 'en'
-                                    ? 'What services does ASTA DIGITAL AGENCY provide?'
-                                    : 'Apa saja layanan utama yang disediakan oleh ASTA DIGITAL AGENCY?' }}
-                            </h3>
-                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
-                                {{ $currentLocale === 'en'
-                                    ? 'ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems.'
-                                    : 'ASTA DIGITAL AGENCY menyediakan layanan komprehensif berupa pengembangan aplikasi mobile native dan hybrid (Android & iOS), rekayasa sistem informasi enterprise kustom, pembuatan platform web modern, serta audit arsitektur teknologi.' }}
-                            </p>
+                {{-- 7. Section Mengapa Kami (Why Us) --}}
+                <section class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'why_us.eyebrow', 'Mengapa Kami') }}
+                        </span>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ transKey($transDict, 'why_us.title') }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'why_us.description') }}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_1_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_1_desc') }}</p>
                         </div>
-                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                                {{ $currentLocale === 'en'
-                                    ? 'How does ASTA DIGITAL AGENCY approach system security and performance?'
-                                    : 'Bagaimana ASTA DIGITAL AGENCY menjamin keamanan data pada sistem yang dibangun?' }}
-                            </h3>
-                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
-                                {{ $currentLocale === 'en'
-                                    ? 'ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization against OWASP vulnerabilities, role-based access control (RBAC), and clean architecture to ensure system resilience and fast response times.'
-                                    : 'ASTA DIGITAL AGENCY menerapkan prinsip security-by-design dengan enkripsi data saat transit dan saat disimpan, sanitasi input terhadap kerentanan OWASP Top 10, manajemen hak akses berbasis peran (RBAC), serta pencatatan audit log sistem yang lengkap.' }}
-                            </p>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_2_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_2_desc') }}</p>
                         </div>
-                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                                {{ $currentLocale === 'en'
-                                    ? 'What is the typical project development timeline at ASTA DIGITAL AGENCY?'
-                                    : 'Berapa lama durasi rata-rata pengerjaan proyek di ASTA DIGITAL AGENCY?' }}
-                            </h3>
-                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
-                                {{ $currentLocale === 'en'
-                                    ? 'Typical development timelines range from 2 to 12 weeks depending on technical complexity, module scope, third-party API integration, and specific client requirements.'
-                                    : 'Durasi pengerjaan proyek bervariasi antara 2 hingga 12 minggu bergantung pada ruang lingkup modul, kompleksitas integrasi API pihak ketiga, dan kebutuhan kustomisasi sistem yang disepakati.' }}
-                            </p>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_3_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_3_desc') }}</p>
                         </div>
-                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                                {{ $currentLocale === 'en'
-                                    ? 'Does ASTA DIGITAL AGENCY provide technical consultation and discovery before starting?'
-                                    : 'Apakah ASTA DIGITAL AGENCY menyediakan layanan konsultasi sebelum proyek dimulai?' }}
-                            </h3>
-                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
-                                {{ $currentLocale === 'en'
-                                    ? 'Yes, ASTA DIGITAL AGENCY provides complimentary initial discovery sessions and technical consultations to formulate product specifications, optimal system architecture, and efficient investment plans.'
-                                    : 'Ya, ASTA DIGITAL AGENCY menyediakan sesi konsultasi teknis dan pemetaan kebutuhan (discovery) awal secara cuma-cuma untuk merumuskan spesifikasi produk, arsitektur yang tepat, dan estimasi investasi yang efisien.' }}
-                            </p>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_4_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_4_desc') }}</p>
                         </div>
                     </div>
                 </section>
 
-                {{-- 4. Section Artikel & Wawasan Terbaru --}}
+                {{-- 8. Section Proses Kerja (#proses) --}}
+                <section id="proses" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'process.eyebrow', 'Proses Kerja') }}
+                        </span>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ transKey($transDict, 'process.title') }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'process.description') }}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">01</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_1_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_1_desc') }}</p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">02</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_2_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_2_desc') }}</p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">03</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_3_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_3_desc') }}</p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">04</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_4_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_4_desc') }}</p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">05</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_5_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_5_desc') }}</p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <span class="text-xs font-bold text-blue-600 uppercase">06</span>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_6_title') }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_6_desc') }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- 9. Section Blog / Wawasan (#blog) --}}
                 @if (!empty($homeArticles) && $homeArticles->count() > 0)
-                    <section class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <section id="blog" class="space-y-6 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                                {{ $currentLocale === 'en' ? 'Latest Technology Insights & Articles' : 'Wawasan Teknologi & Artikel Terbaru' }}
-                            </h2>
-                            <a href="/{{ $currentLocale }}/blog" class="text-sm font-semibold text-blue-600 hover:underline">
-                                {{ $currentLocale === 'en' ? 'View All Insights →' : 'Lihat Semua Artikel →' }}
+                            <div>
+                                <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                                    {{ transKey($transDict, 'blog.eyebrow', 'Wawasan & Edukasi') }}
+                                </span>
+                                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                                    {{ transKey($transDict, 'blog.title') }}
+                                </h2>
+                                <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                                    {{ transKey($transDict, 'blog.description') }}
+                                </p>
+                            </div>
+                            <a href="/{{ $currentLocale }}/blog" class="text-sm font-semibold text-blue-600 hover:underline shrink-0">
+                                {{ transKey($transDict, 'blog.view_all', 'Lihat Semua Artikel') }} →
                             </a>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             @foreach ($homeArticles as $art)
-                                <article class="p-5 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
+                                <article class="p-5 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs hover:shadow-md transition-shadow">
                                     <span class="text-xs font-bold text-blue-600 uppercase">{{ $art->category ?: 'Technology' }}</span>
                                     <h3 class="font-bold text-base mt-2 text-gray-900 dark:text-white line-clamp-2">
                                         <a href="/{{ $currentLocale }}/{{ method_exists($art, 'getLocalizedSlug') ? $art->getLocalizedSlug($currentLocale) : $art->slug }}" class="hover:text-blue-600 transition-colors">
@@ -1182,6 +1300,115 @@
                         </div>
                     </section>
                 @endif
+
+                {{-- 10. Section Testimoni --}}
+                <section class="space-y-4 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12 text-center max-w-3xl mx-auto">
+                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest">
+                        {{ transKey($transDict, 'testimonials.eyebrow', 'Testimoni') }}
+                    </span>
+                    <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                        {{ transKey($transDict, 'testimonials.title') }}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {{ transKey($transDict, 'testimonials.description') }}
+                    </p>
+                </section>
+
+                {{-- 11. Section FAQ (#faq) --}}
+                <section id="faq" class="space-y-6 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
+                    <div>
+                        <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                            {{ transKey($transDict, 'faq.eyebrow', 'PERTANYAAN UMUM') }}
+                        </span>
+                        <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                            {{ transKey($transDict, 'faq.title') }}
+                        </h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-4xl leading-relaxed">
+                            {{ transKey($transDict, 'faq.description') }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {{ transKey($transDict, 'faq.q1', 'Mengapa harus ASTA DIGITAL AGENCY?') }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                {{ transKey($transDict, 'faq.a1') }}
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {{ transKey($transDict, 'faq.q2', 'Apa Yang ASTA DIGITAL AGENCY tawarkan?') }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                {{ transKey($transDict, 'faq.a2') }}
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {{ transKey($transDict, 'faq.q3', 'Begaimana cara mendapatkan tim IT dedicated tanpa perlu repot melakukan rekrutment?') }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                {{ transKey($transDict, 'faq.a3') }}
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {{ transKey($transDict, 'faq.q4', 'Apakah ASTA DIGITAL AGENCY menjamin ketepatan waktu dalam setiap proyek pembuatan website') }}
+                            </h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+                                {{ transKey($transDict, 'faq.a4') }}
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- 12. Section CTA --}}
+                <section class="p-8 md:p-12 rounded-3xl bg-[#004AAD] text-white text-center space-y-4 shadow-xl">
+                    <h2 class="text-2xl md:text-4xl font-bold">
+                        {{ transKey($transDict, 'cta.title') }}
+                    </h2>
+                    <p class="text-base md:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+                        {{ transKey($transDict, 'cta.description') }}
+                    </p>
+                    <div class="pt-2">
+                        <a href="#kontak" class="inline-flex items-center gap-2 rounded-full bg-white text-[#004AAD] px-8 py-3.5 text-sm font-bold shadow-lg hover:bg-blue-50 transition-colors">
+                            {{ transKey($transDict, 'cta.button', 'Jadwalkan Konsultasi Gratis') }}
+                        </a>
+                    </div>
+                </section>
+
+                {{-- 13. Section Kontak & Footer (#kontak) --}}
+                <footer id="kontak" class="pt-4 space-y-8 text-sm text-gray-600 dark:text-gray-400">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="space-y-3">
+                            <span class="text-lg font-bold text-gray-900 dark:text-white">ASTA DIGITAL AGENCY</span>
+                            <p class="text-xs leading-relaxed">
+                                {{ transKey($transDict, 'footer.description') }}
+                            </p>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.office_title', 'Alamat Kantor') }}</span>
+                            <p class="text-xs leading-relaxed">
+                                {{ transKey($transDict, 'contact.info_office_address') }}
+                            </p>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
+                            <p class="text-xs">Email: <a href="mailto:{{ transKey($transDict, 'contact.info_email', 'halo@astadigital.id') }}" class="text-blue-600 hover:underline">halo@astadigital.id</a></p>
+                            <p class="text-xs">Phone: +62 812-3456-7890</p>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.hours_title', 'Jam Kerja') }}</span>
+                            <p class="text-xs">{{ transKey($transDict, 'footer.hours_weekdays', 'Senin - Jumat: 08:00 - 17:00') }}</p>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between text-xs gap-3">
+                        <p>{{ transKey($transDict, 'footer.copyright', '© Copyright 2025 PT Asta Digital Agency') }}</p>
+                        <p class="text-gray-400">Software House & IT Consultant Indonesia</p>
+                    </div>
+                </footer>
             </main>
         @endif
     </div>
