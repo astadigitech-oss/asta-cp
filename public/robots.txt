@@ -5,4 +5,3 @@ Disallow: /admin/
 Disallow: /api/
 
 Sitemap: https://astadigitalagency.com/sitemap.xml
-

@@ -229,6 +229,48 @@ class ArticleForm
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
 
+                Section::make('Kesiapan GEO & AI (Ringkasan Eksekutif & FAQ)')
+                    ->description('Modul khusus untuk optimasi mesin pencari AI (GEO): 3 poin ringkasan eksekutif dan modul FAQ')
+                    ->icon(Heroicon::Sparkles)
+                    ->schema([
+                        Repeater::make('tldr_summary')
+                            ->label('Ringkasan Eksekutif / TL;DR (Wajib 3 Poin Kunci)')
+                            ->schema([
+                                TextInput::make('point')
+                                    ->label('Butir Ringkasan (Gunakan **kata kunci tebal** di awal)')
+                                    ->placeholder('Misal: **Performa Cepat**: Sistem memangkas latensi respon hingga 40%.')
+                                    ->required(),
+                            ])
+                            ->minItems(3)
+                            ->maxItems(3)
+                            ->itemLabel(fn (array $state): ?string => !empty($state['point']) ? Str::limit(strip_tags($state['point']), 50) : 'Poin Ringkasan')
+                            ->addActionLabel('+ Tambah Poin Ringkasan')
+                            ->helperText('Tampil sebagai kartu ringkasan di paling atas artikel sebelum paragraf pengantar')
+                            ->columnSpanFull(),
+
+                        Repeater::make('faqs')
+                            ->label('Modul Pertanyaan Umum (FAQ)')
+                            ->schema([
+                                TextInput::make('question')
+                                    ->label('Pertanyaan (Gunakan Bahasa Alami / Natural Language)')
+                                    ->placeholder('Misal: Apa keunggulan arsitektur sistem ASTA DIGITAL AGENCY?')
+                                    ->required(),
+                                Textarea::make('answer')
+                                    ->label('Jawaban Definitif (Fakta Mandiri & Lugas)')
+                                    ->placeholder('Tulis jawaban langsung dan padat tanpa kalimat bersayap...')
+                                    ->rows(3)
+                                    ->required(),
+                            ])
+                            ->itemLabel(fn (array $state): ?string => !empty($state['question']) ? Str::limit($state['question'], 50) : 'Pertanyaan FAQ')
+                            ->addActionLabel('+ Tambah Pertanyaan & Jawaban FAQ')
+                            ->collapsible()
+                            ->reorderable()
+                            ->helperText('Otomatis di-injeksi ke Schema.org JSON-LD (FAQPage) untuk rich result di mesin pencari dan bot AI')
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->columnSpanFull(),
+
                 Section::make('Search Engine Optimization & Social Meta')
                     ->description('Pengaturan metadata SEO untuk Google Search, OpenGraph, dan Twitter Card')
                     ->icon(Heroicon::MagnifyingGlass)

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Service;
 use App\Models\Article;
 use App\Models\Discover;
+use App\Models\Portfolio;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ Route::get('/sitemap.xml', function () {
         // --- Static Pages ---
         $staticPages = [
             ''         => ['priority' => '1.0', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
+            'blog'     => ['priority' => '0.9', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
             'discover' => ['priority' => '0.8', 'changefreq' => \Spatie\Sitemap\Tags\Url::CHANGE_FREQUENCY_DAILY],
         ];
 
@@ -115,7 +117,7 @@ Route::get('/{any?}', function () {
 
     app()->setLocale($locale);
 
-    $cleanPath = preg_replace('/^(id|en)\/?/', '', $path);
+    $cleanPath = trim(preg_replace('/^(id|en)(\/|$)/i', '', $path), '/');
 
     // 1. Permanent Redirect 301 untuk URL mock discover (mencegah 404 pada URL yang terlanjur terindeks)
     if (preg_match('/^discover\/mock/i', $cleanPath)) {
@@ -129,7 +131,14 @@ Route::get('/{any?}', function () {
     }
 
     $isBlogPage = ($cleanPath === 'blog');
+    $isDiscoverPage = ($cleanPath === 'discover');
+    $isHomePage = ($cleanPath === '');
+    $homeServices = null;
+    $homeArticles = null;
+    $homePortfolios = null;
+    $homeDiscovers = null;
     $blogArticles = null;
+    $discoverItems = null;
     $article = null;
     $discover = null;
     $seo = null;
@@ -142,7 +151,46 @@ Route::get('/{any?}', function () {
         'id' => null,
     ];
 
-    if ($isBlogPage) {
+    if ($isHomePage) {
+        try {
+            $homeServices = Service::with(['serviceListMains' => function ($q) {
+                $q->orderBy('sort', 'asc');
+            }])->orderBy('sort', 'asc')->get();
+        } catch (\Throwable $e) {
+            $homeServices = collect();
+        }
+
+        try {
+            $homeArticles = Article::where('is_published', true)
+                ->where(function ($q) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+                })
+                ->latest('published_at')
+                ->limit(3)
+                ->get();
+        } catch (\Throwable $e) {
+            $homeArticles = collect();
+        }
+
+        try {
+            $homePortfolios = Portfolio::orderBy('sort', 'asc')->limit(6)->get();
+        } catch (\Throwable $e) {
+            $homePortfolios = collect();
+        }
+
+        try {
+            $homeDiscovers = Discover::with(['DiscoverLists' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort', 'asc');
+            }])
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+        } catch (\Throwable $e) {
+            $homeDiscovers = collect();
+        }
+    } elseif ($isBlogPage) {
         try {
             $query = Article::where('is_published', true)
                 ->where(function ($q) {
@@ -157,7 +205,7 @@ Route::get('/{any?}', function () {
                 return [
                     'id' => $item->id,
                     'title' => $item->title,
-                    'slug' => $item->slug,
+                    'slug' => method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($locale) : $item->slug,
                     'thumbnail' => $thumbnailUrl,
                     'excerpt' => $item->excerpt,
                     'author' => $item->author ?? 'ASTA Digital Team',
@@ -172,6 +220,18 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             // Graceful fallback jika DB belum siap atau error
             $blogArticles = null;
+        }
+    } elseif ($isDiscoverPage) {
+        try {
+            $discoverItems = Discover::with(['DiscoverLists' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort', 'asc');
+            }])
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('year')
+            ->orderByDesc('created_at')
+            ->get();
+        } catch (\Throwable $e) {
+            $discoverItems = collect();
         }
     } elseif ($cleanPath && !in_array($cleanPath, ['', 'discover'])) {
         $decoded = urldecode($cleanPath);
@@ -248,6 +308,17 @@ Route::get('/{any?}', function () {
                     'seo' => [
                         'meta_title' => $seo?->title ?? $discover->name,
                         'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                        'canonical_url' => $seo?->canonical ?? url("/{$locale}/discover/" . (method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($locale) : ($discover->slug ?: $discover->id))),
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
             }
@@ -301,6 +372,15 @@ Route::get('/{any?}', function () {
                     ];
                 })->values()->all();
 
+                $canonicalUrl = $seo?->canonical ?: url("/{$locale}/" . (method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug));
+                $keywords = '';
+                if ($seo && !empty($seo->focusKeywords)) {
+                    $keywords = collect($seo->focusKeywords)
+                        ->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))
+                        ->filter()
+                        ->implode(', ');
+                }
+
                 $initialData['slug'] = $cleanPath;
                 $initialData['article'] = [
                     'id' => $article->id,
@@ -309,8 +389,10 @@ Route::get('/{any?}', function () {
                     'thumbnail' => $thumbnailUrl,
                     'images' => $formattedImages,
                     'excerpt' => $article->excerpt,
+                    'tldr_summary' => $article->tldr_summary ?? [],
                     'body' => $article->body,
                     'content_sections' => $formattedSections,
+                    'faqs' => $article->faqs ?? [],
                     'author' => $article->author ?? 'ASTA Digital Team',
                     'category' => $article->category ?? 'General',
                     'published_at' => $article->published_at?->format('d M Y') ?? $article->created_at->format('d M Y'),
@@ -319,20 +401,54 @@ Route::get('/{any?}', function () {
                     'seo' => [
                         'meta_title' => $seo?->title ?? $article->title,
                         'meta_description' => $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? '')),
+                        'canonical_url' => $canonicalUrl,
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $article->title),
+                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'og_type' => $seo?->ogType ?? 'article',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $article->title),
+                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'keywords' => $keywords,
+                        'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
+
+                $recommendedArticles = Article::where('is_published', true)
+                    ->where('id', '!=', $article->id)
+                    ->where(function ($q) {
+                        $q->whereNull('published_at')
+                          ->orWhere('published_at', '<=', now());
+                    })
+                    ->latest('published_at')
+                    ->limit(3)
+                    ->get();
             }
         }
     }
 
-    return view('layouts.app', [
+    $isNotFound = (!$isHomePage && !$isBlogPage && !$isDiscoverPage && !$article && !$discover);
+    $statusCode = $isNotFound ? 404 : 200;
+
+    return response()->view('layouts.app', [
         'locale' => $locale,
         'article' => $article,
+        'recommendedArticles' => $recommendedArticles ?? collect(),
         'discover' => $discover,
         'blogArticles' => $blogArticles,
         'isBlogPage' => $isBlogPage,
+        'isDiscoverPage' => $isDiscoverPage,
+        'discoverItems' => $discoverItems,
+        'isHomePage' => $isHomePage,
+        'isNotFound' => $isNotFound,
+        'homeServices' => $homeServices,
+        'homeArticles' => $homeArticles,
+        'homePortfolios' => $homePortfolios,
+        'homeDiscovers' => $homeDiscovers,
         'seo' => $seo,
         'initialData' => $initialData,
-    ]);
+    ], $statusCode);
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml|livewire).*');
 

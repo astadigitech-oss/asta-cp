@@ -18,6 +18,8 @@ import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useTranslation } from "@/i18n/useTranslation";
+import { CTA } from "../landing/sections";
+import FAQBlog from "../common/FAQBlog";
 
 const Footer = lazy(() =>
   import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer }))
@@ -404,6 +406,8 @@ export function BlogListPage() {
           )}
         </div>
       </main>
+      <FAQBlog />
+      <CTA />
 
       <Suspense fallback={null}>
         <Footer />

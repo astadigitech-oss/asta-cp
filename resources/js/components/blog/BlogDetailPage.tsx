@@ -9,6 +9,7 @@ import {
   Share2,
   Check,
   ArrowLeft,
+  ArrowRight,
   Tag,
   Home,
   ChevronRight,
@@ -21,10 +22,13 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Navbar } from "@/components/Navbar";
 import { useTranslation } from "@/i18n/useTranslation";
-import { getYoutubeEmbedUrl } from "@/components/lib/utils";
+import { getYoutubeEmbedUrl, stripHtml } from "@/components/lib/utils";
+import { ExecutiveSummary } from "./ExecutiveSummary";
+import { FAQSection } from "@/components/common/FAQSection";
 
 const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer })));
 
@@ -42,8 +46,10 @@ interface ArticleDetailData {
   thumbnail: string | null;
   images?: string[];
   excerpt: string | null;
+  tldr_summary?: Array<{ point?: string } | string>;
   body: string | null;
   content_sections?: ContentSection[];
+  faqs?: Array<{ question: string; answer: string }>;
   author: string;
   category: string;
   published_at: string;
@@ -117,6 +123,46 @@ export function BlogDetailPage() {
     }
   }, [lang, language, article, slug, localize, navigate]);
 
+  // Fetch rekomendasi artikel blog lain untuk bagian bawah (khusus blog)
+  const { data: recommendedData } = useQuery<{
+    data: Array<{
+      id: number;
+      title: string | Record<string, string>;
+      slug: string | Record<string, string>;
+      thumbnail: string | null;
+      excerpt: string | Record<string, string> | null;
+      author: string;
+      category: string;
+      published_at: string;
+    }>;
+  }>({
+    queryKey: ["articles-recommended", article?.id],
+    queryFn: async () => {
+      const res = await axios.get("/api/articles", {
+        params: { limit: 6 },
+      });
+      return res.data;
+    },
+    enabled: !!article?.id,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const recommendedArticles = (recommendedData?.data || [])
+    .filter((item) => String(item.id) !== String(article?.id) && item.slug !== article?.slug)
+    .slice(0, 3);
+
+  // Navigasi kembali ke halaman sebelumnya (browser history) dengan fallback ke daftar blog
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate({
+        to: "/$lang/blog",
+        params: { lang: lang || language || "id" },
+      });
+    }
+  };
+
   const localizedTitle = article ? localize(article.title) : "";
   const localizedExcerpt = article?.excerpt ? localize(article.excerpt) : null;
   const localizedBody = article?.body ? localize(article.body) : null;
@@ -169,7 +215,7 @@ export function BlogDetailPage() {
               </Link>
               <span>/</span>
               <Link
-                to="/$lang"
+                to="/$lang/blog"
                 params={{ lang: lang || "id" }}
                 className="font-medium hover:text-primary transition-colors"
               >
@@ -202,14 +248,15 @@ export function BlogDetailPage() {
                 )}
               </button>
 
-              <Link
-                to="/$lang"
-                params={{ lang: lang || "id" }}
-                className="inline-flex items-center gap-1.5 h-8 rounded-full border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-primary shadow-xs transition-all"
+              <button
+                type="button"
+                onClick={handleBack}
+                className="inline-flex items-center gap-1.5 h-8 rounded-full border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-primary shadow-xs transition-all cursor-pointer"
+                title={lang === "en" ? "Back to Previous Page" : "Kembali ke Halaman Sebelumnya"}
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>{lang === "en" ? "Back" : "Kembali"}</span>
-              </Link>
+              </button>
             </div>
           </motion.nav>
 
@@ -242,14 +289,22 @@ export function BlogDetailPage() {
                   ? "The article you are looking for might have been moved or is no longer published."
                   : "Artikel yang Anda cari mungkin telah dipindahkan atau belum dipublikasikan."}
               </p>
-              <div className="mt-6">
-                <Link
-                  to="/$lang"
-                  params={{ lang: lang || "id" }}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary text-white px-6 py-2.5 text-sm font-semibold hover:opacity-90 transition-all"
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary text-white px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-all cursor-pointer"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  <span>{lang === "en" ? "Back to Home" : "Kembali ke Beranda"}</span>
+                  <span>{lang === "en" ? "Back to Previous Page" : "Kembali ke Halaman Sebelumnya"}</span>
+                </button>
+                <Link
+                  to="/$lang/blog"
+                  params={{ lang: lang || "id" }}
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white text-gray-700 px-5 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-all"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span>{lang === "en" ? "All Articles" : "Lihat Semua Artikel"}</span>
                 </Link>
               </div>
             </div>
@@ -367,6 +422,9 @@ export function BlogDetailPage() {
 
               {/* ── Lead Excerpt / Short Intro ───────────────────────── */}
               <div ref={contentTopRef} className="mt-8 space-y-6 w-full min-w-0 max-w-full">
+                {/* ── Modul Ringkasan Eksekutif (TL;DR 3 Poin) GEO ──── */}
+                <ExecutiveSummary summary={article.tldr_summary} />
+
                 {localizedExcerpt && (
                   <div
                     className="prose prose-blue max-w-none text-gray-800 text-base sm:text-xl leading-relaxed font-medium border-l-4 border-primary pl-4 sm:pl-5 py-3 bg-blue-50/50 rounded-r-2xl shadow-xs break-words [overflow-wrap:anywhere]"
@@ -458,18 +516,34 @@ export function BlogDetailPage() {
                     dangerouslySetInnerHTML={{ __html: localizedBody }}
                   />
                 )}
+
+                {/* ── Modul FAQ Permanen Artikel Blog GEO ──────────────── */}
+                {article.faqs && article.faqs.length > 0 && (
+                  <FAQSection faqs={article.faqs} />
+                )}
               </div>
 
               {/* ── Share Action Footer ───────────────────────────────── */}
               <div className="mt-14 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <Link
-                  to="/$lang"
-                  params={{ lang: lang || "id" }}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-primary transition-colors"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>{lang === "en" ? "Back to All Insights" : "Kembali ke Wawasan Lainnya"}</span>
-                </Link>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-primary transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>{lang === "en" ? "Back to Previous Page" : "Kembali ke Halaman Sebelumnya"}</span>
+                  </button>
+                  <span className="text-gray-300">·</span>
+                  <Link
+                    to="/$lang/blog"
+                    params={{ lang: lang || "id" }}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-colors"
+                  >
+                    <BookOpen className="h-3.5 w-3.5" />
+                    <span>{lang === "en" ? "All Articles" : "Semua Artikel"}</span>
+                  </Link>
+                </div>
 
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-medium text-gray-500">
@@ -498,6 +572,120 @@ export function BlogDetailPage() {
               </div>
             </motion.article>
           )}
+
+          {/* ── Rekomendasi Artikel Terkait (Khusus Blog) ───────────── */}
+          {recommendedArticles.length > 0 && (
+            <div className="mt-16 sm:mt-20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div>
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">
+                    {lang === "en" ? "Related Articles & Insights" : "Artikel & Rekomendasi Terkait"}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {lang === "en"
+                      ? "Explore more tips, strategies, and digital technology insights from ASTA Digital."
+                      : "Jelajahi panduan, tips, dan wawasan teknologi terbaru dari tim ahli ASTA Digital."}
+                  </p>
+                </div>
+                <Button asChild variant="outline" className="rounded-full border-gray-200 text-xs font-semibold self-start sm:self-auto">
+                  <Link to="/$lang/blog" params={{ lang: lang || "id" }}>
+                    {lang === "en" ? "View All Articles" : "Lihat Semua Artikel"} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {recommendedArticles.map((rec) => {
+                  const recTitle = localize(rec.title);
+                  const rawExcerpt = rec.excerpt ? localize(rec.excerpt) : "";
+                  const recExcerpt = rawExcerpt ? stripHtml(rawExcerpt) : "";
+                  const recSlug = localize(rec.slug) || String(rec.id);
+                  const recCategory = rec.category ? localize(rec.category) : "";
+
+                  return (
+                    <Link
+                      key={rec.id}
+                      to="/$lang/$slug"
+                      params={{ slug: recSlug, lang: lang || "id" }}
+                      className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+                    >
+                      <div>
+                        <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
+                          {rec.thumbnail ? (
+                            <img
+                              src={rec.thumbnail}
+                              alt={recTitle}
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-blue-50">
+                              <BookOpen className="h-10 w-10 text-primary/30" />
+                            </div>
+                          )}
+                          {recCategory && (
+                            <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-[#004AAD] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs">
+                              <Tag className="h-2.5 w-2.5" />
+                              {recCategory}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[11px] text-gray-400 mb-2">
+                          <Calendar className="h-3 w-3 shrink-0" />
+                          <span>{rec.published_at}</span>
+                          {rec.author && (
+                            <>
+                              <span>·</span>
+                              <span className="font-medium text-gray-500 truncate">{rec.author}</span>
+                            </>
+                          )}
+                        </div>
+
+                        <h4 className="font-bold text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-[#004AAD] transition-colors">
+                          {recTitle}
+                        </h4>
+
+                        {recExcerpt && (
+                          <p className="mt-2 text-xs text-gray-500 line-clamp-2 font-normal leading-relaxed">
+                            {recExcerpt}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-[#004AAD]">
+                        <span>{lang === "en" ? "Read Article" : "Baca Selengkapnya"}</span>
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Consultation CTA Card */}
+          <div className="mt-16 rounded-3xl bg-gradient-to-br from-[#004AAD] via-[#053d86] to-[#02204a] p-8 sm:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="max-w-xl text-center sm:text-left">
+              <h3 className="font-display text-2xl sm:text-3xl font-bold">
+                {lang === "en" ? "Have Questions or Need a Digital Solution?" : "Punya Pertanyaan atau Butuh Solusi Digital?"}
+              </h3>
+              <p className="mt-2 text-sm text-blue-100 leading-relaxed">
+                {lang === "en"
+                  ? "Consult your technology and software development needs with ASTA Digital experts today."
+                  : "Konsultasikan kebutuhan teknologi dan pengembangan sistem digital Anda bersama tim ahli ASTA Digital."}
+              </p>
+            </div>
+            <Button
+              asChild
+              className="rounded-full bg-white text-[#004AAD] hover:bg-blue-50 font-bold px-7 py-3 text-sm shadow-lg shrink-0 transition-transform active:scale-95 cursor-pointer"
+            >
+              <a href={`/${lang || "id"}/#kontak`}>
+                {lang === "en" ? "Consult Now" : "Konsultasi Sekarang"} <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </div>
         </div>
       </main>
 

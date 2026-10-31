@@ -4,4 +4,5 @@ export * from "./Eyebrow";
 export * from "./SectionHeading";
 export * from "./Counter";
 export * from "./SectionPagination";
+export * from "./OfficeMap";
 

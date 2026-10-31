@@ -31,7 +31,7 @@
     "title_1": "Building the best ",
     "title_highlight": "digital experience",
     "title_2": " for modern business.",
-    "description": "Asta Digital Agency is a technology studio that builds the best websites, apps, and information systems — crafted with enterprise standards and elegant, immersive designs.",
+    "description": "Asta Digital Agency is a technology studio that builds the best websites, applications, and information systems — designed with enterprise standards and Dedicated Tech Team & Enterprise Software Solutions for Scaling Businesses.",
     "cta_start": "Start Project",
     "cta_portfolio": "View Portfolio",
     "trust_security": "Enterprise Security",
@@ -44,12 +44,12 @@
     "trusted_by": "TRUSTED BY LEADING INSTITUTIONS & COMPANIES"
   },
   "about": {
-    "eyebrow": "About Us",
-    "title": "Reliable Technology Partner for Your Digital Transformation",
-    "description": "We combine software engineering expertise, aesthetic UI/UX design, and strategic thinking to deliver digital products that create real business impact.",
-    "vision_title": "Our Vision",
-    "vision_desc": "To become a leading technology agency that empowers business growth and public services through innovative software solutions.",
-    "mission_title": "Our Mission",
+    "eyebrow": "Entity Profile & Engineering",
+    "title": "Who is ASTA DIGITAL AGENCY and what are its core software engineering capabilities?",
+    "description": "ASTA DIGITAL AGENCY combines enterprise software engineering, robust system architecture, and human-centric design to create high-performance digital products that demonstrably reduce business operational overhead.",
+    "vision_title": "ASTA DIGITAL AGENCY Vision",
+    "vision_desc": "To become a premier technology agency advancing business growth and public operations through innovative software solutions.",
+    "mission_title": "ASTA DIGITAL AGENCY Mission",
     "mission_desc": "Delivering high-performance, secure, and user-friendly digital systems customized to every client's unique requirements.",
     "company_story": "Company Story & Timeline",
     "cta_discover": "Explore Details",
@@ -63,9 +63,9 @@
     "val_4_desc": "Designed around real human needs in every practical context."
   },
   "services": {
-    "eyebrow": "Products & Our Services",
-    "title": "Integrated Technology Solutions tailored to your needs.",
-    "description": "From custom software to enterprise mobile apps, we deliver end-to-end digital solutions designed for performance, security, and scalability.",
+    "eyebrow": "Solutions & Technology Services",
+    "title": "What technology solutions and software services does ASTA DIGITAL AGENCY provide?",
+    "description": "ASTA DIGITAL AGENCY provides end-to-end custom software development: high-performance mobile applications (Android & iOS), enterprise information systems, and secure modern web platforms.",
     "view_detail": "View Details",
     "empty": "No services available at the moment.",
     "default_web_title": "Web Apps Development",
@@ -82,9 +82,9 @@
     }
   },
   "portfolio": {
-    "eyebrow": "Portfolio",
-    "title": "Featured Projects & Custom Systems",
-    "description": "Discover how we help our partners transform their ideas into impactful software products.",
+    "eyebrow": "Case Studies & Track Record",
+    "title": "What digital systems and products has ASTA DIGITAL AGENCY built?",
+    "description": "Discover how ASTA DIGITAL AGENCY helps organizational partners transform complex operational workflows into resilient, impactful software products.",
     "tab_all": "All",
     "tab_mobile": "Mobile Apps",
     "tab_desktop": "Desktop & Web",
@@ -237,7 +237,9 @@
     "read_more": "Read More",
     "empty": "No articles published yet.",
     "by": "By",
-    "min_read": "min read"
+    "min_read": "min read",
+    "faq_title": "Frequently Asked Questions (FAQ)",
+    "tldr_title": "Executive Summary (TL;DR)"
   },
   "common": {
     "previous": "Previous",
@@ -272,5 +274,54 @@
     "cta_similar_title": "Interested in Developing a Similar Solution?",
     "cta_similar_desc": "Discuss your technology needs with the ASTA Digital expert team for targeted and scalable solutions.",
     "consult_now": "Consult Now"
+  },
+  "comparison": {
+    "eyebrow": "ENGINEERING BENCHMARK",
+    "title": "Why Leading Organizations Choose ASTA DIGITAL AGENCY?",
+    "description": "Compare how ASTA DIGITAL AGENCY modern software engineering standards outperform conventional agency practices.",
+    "col_parameter": "Evaluation Parameter",
+    "col_asta": "ASTA DIGITAL AGENCY Method",
+    "col_traditional": "Traditional Method",
+    "row_1_param": "Code Architecture & Scalability",
+    "row_1_asta": "Clean architecture, modular, and cloud-native designed for long-term scalability without full rewrites.",
+    "row_1_traditional": "Rigid monolithic codebase, prone to technical debt and difficult to expand as workload grows.",
+    "row_2_param": "AI & Search Engine Readability (GEO/SEO)",
+    "row_2_asta": "Full semantic structure, Schema.org (JSON-LD) explicit facts, and server-side pre-rendered content for instant AI extraction.",
+    "row_2_traditional": "Pure Client-Side Rendering with empty shell tags, hiding actual content from search and AI bots.",
+    "row_3_param": "Security Standards & System Auditing",
+    "row_3_asta": "Strict input sanitization, RBAC access control, data encryption, and OWASP Top 10 hardening.",
+    "row_3_traditional": "Minimal security checks, often addressed only after security incidents occur.",
+    "row_4_param": "Maintenance Guarantee & SLA Support",
+    "row_4_asta": "Contractual post-launch warranty, active uptime monitoring, and guaranteed response SLAs.",
+    "row_4_traditional": "Support ends immediately upon delivery, without bug-fixing guarantees."
+  },
+  "faq": {
+    "eyebrow": "FREQUENTLY ASKED QUESTIONS",
+    "title": "Why Choose ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY has a highly competent, precise, and punctual IT team. Every project we undertake delivers satisfactory results with 99% precision",
+    "q1": "Why Choose ASTA DIGITAL AGENCY?",
+    "a1": "ASTA DIGITAL AGENCY has a highly competent, precise, and punctual IT team. Every project we undertake delivers satisfying results with 99% precision.",
+    "q2": "What does ASTA DIGITAL AGENCY offer?",
+    "a2": "ASTA DIGITAL AGENCY offers exclusive digital solutions that are custom-designed specifically for your business. Every digital solution we build is custom-made and free from duplication, ensuring your company's systems have a unique identity that's relevant to your business needs.  ",
+    "q3": "How can I get a dedicated IT team without the hassle of recruitment?",
+    "a3": "ASTA DIGITAL AGENCY provides a dedicated team of IT experts ready to work exclusively on your project. Your company can immediately start a digital project without wasting time on an HR screening process, as we directly assign competent experts whose quality and portfolios are guaranteed.",
+    "q4": "Does ASTA DIGITAL AGENCY guarantee on-time delivery for every website development project?",
+    "a4": "Absolutely. We're backed by a reliable team with precise project management. We provide a full guarantee of on-time delivery for every system, ensuring projects launch on schedule without compromising the quality or performance of your business systems in the slightest."
+  },
+  "faq_discover": {
+    "title": "Ready to grow with ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY is ready to partner with your company to help it become more advanced, effective, and successful. Our fast turnaround can have a PROGRESSIVE impact on your company and also improve production cost EFFICIENCY.",
+    "q1": "Ready to Grow with ASTA DIGITAL AGENCY?",
+    "a1": "ASTA DIGITAL AGENCY is ready to partner with your company to help it become more advanced, effective, and successful. Our fast turnaround can have a progressive impact on your company and also improve production cost efficiency.",
+    "q2": "How does ASTA DIGITAL AGENCY ensure that the customized system aligns with the company's goals?",
+    "a2": "We are fully committed to maintaining a shared vision and always being on the same page as our clients. The entire customization process is conducted collaboratively to ensure every detail of the digital architecture aligns with your business's expectations and strategic goals.",
+    "q3": "Does the partnership end once the website is completed?",
+    "a3": "No. ASTA DIGITAL AGENCY is committed to building and developing your digital ecosystem sustainably. We don't stop at the initial launch—we're ready to be your long-term technology partner, ensuring your systems continue to evolve alongside your company's scalability."
+  },
+  "faq_blog": {
+    "title": "Can ASTA DIGITAL AGENCY build a website tailored to my business needs?",
+    "description": "Yes. Website development can be tailored to business objectives, user needs, required features, and company characteristics to ensure the solution built is relevant to the client's needs.",
+    "q1": "Ready to Grow with ASTA DIGITAL AGENCY",
+    "a1": "Yes. Website development can be tailored to business objectives, user needs, required features, and company characteristics so that the solution built is relevant to the client's needs."
   }
 }

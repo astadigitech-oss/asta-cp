@@ -438,6 +438,7 @@ export function Services() {
           </div>
         </div>
 
+
         {/* Service Detail Dialog */}
         <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
           <DialogContent showClose={false} className="w-[94vw] sm:w-full max-w-3xl overflow-hidden rounded-[24px] sm:rounded-3xl bg-white p-0 border border-gray-100/80 shadow-2xl focus:outline-none">

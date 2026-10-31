@@ -72,8 +72,63 @@ export const Route = createFileRoute("/$lang/$slug")({
       links.push({ rel: "canonical", href: canonical });
     }
 
-    // Inject JSON-LD Schema if available from Rankbeam
+    // Inject JSON-LD Schema (BlogPosting, FAQPage, and custom schema_jsonld)
     const scripts: Array<{ type: string; children: string }> = [];
+
+    // 1. Core BlogPosting Schema
+    const blogPostingSchema = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: metaTitle,
+      description: metaDesc,
+      image: ogImage,
+      datePublished: loaderData.published_at_iso || new Date().toISOString(),
+      dateModified: loaderData.updated_at_iso || loaderData.published_at_iso || new Date().toISOString(),
+      author: {
+        "@type": "Organization",
+        name: loaderData.author || "ASTA DIGITAL AGENCY Team",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "PT Asta Digital Agency",
+        logo: {
+          "@type": "ImageObject",
+          url: "/images/logo-dark.png",
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": canonical,
+      },
+    };
+
+    scripts.push({
+      type: "application/ld+json",
+      children: JSON.stringify(blogPostingSchema),
+    });
+
+    // 2. FAQPage Schema if article has FAQs
+    if (loaderData.faqs && Array.isArray(loaderData.faqs) && loaderData.faqs.length > 0) {
+      const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: loaderData.faqs.map((faq: { question: string; answer: string }) => ({
+          "@type": "Question",
+          name: localizeText(faq.question, lang),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: localizeText(faq.answer, lang).replace(/<[^>]*>?/gm, ""),
+          },
+        })),
+      };
+
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify(faqSchema),
+      });
+    }
+
+    // 3. Custom Schema JSON-LD if provided from Rankbeam/API
     if (seo?.schema_jsonld) {
       const jsonLdString =
         typeof seo.schema_jsonld === "string"

@@ -44,12 +44,12 @@
     "trusted_by": "DIPERCAYA OLEH INSTANSI & PERUSAHAAN TERKEMUKA"
   },
   "about": {
-    "eyebrow": "Tentang Kami",
-    "title": "Mitra Teknologi Terpercaya untuk Transformasi Digital Anda",
-    "description": "Kami menggabungkan keahlian rekayasa perangkat lunak, desain UI/UX yang estetis, dan pemikiran strategis untuk menghadirkan produk digital yang berdampak nyata pada bisnis.",
-    "vision_title": "Visi Kami",
+    "eyebrow": "Profil Entitas & Rekayasa",
+    "title": "Siapa ASTA DIGITAL AGENCY dan bagaimana keahlian rekayasa sistemnya?",
+    "description": "ASTA DIGITAL AGENCY memadukan keahlian rekayasa perangkat lunak enterprise, arsitektur data aman, dan desain antarmuka intuitif untuk menghasilkan produk digital yang terbukti memangkas waktu operasional bisnis.",
+    "vision_title": "Visi ASTA DIGITAL AGENCY",
     "vision_desc": "Menjadi agensi teknologi terdepan yang memajukan pertumbuhan bisnis dan pelayanan publik melalui solusi perangkat lunak inovatif.",
-    "mission_title": "Misi Kami",
+    "mission_title": "Misi ASTA DIGITAL AGENCY",
     "mission_desc": "Menghadirkan sistem digital berkinerja tinggi, aman, dan mudah digunakan yang disesuaikan secara khusus dengan kebutuhan setiap klien.",
     "company_story": "Cerita & Perjalanan Perusahaan",
     "cta_discover": "Jelajahi Detail",
@@ -63,9 +63,9 @@
     "val_4_desc": "Dirancang untuk kebutuhan nyata manusia di setiap konteks."
   },
   "services": {
-    "eyebrow": "Produk & Layanan Kami",
-    "title": "Solusi Teknologi Terintegrasi yang Disesuaikan Kebutuhan Anda",
-    "description": "Dari sistem kustom hingga aplikasi mobile enterprise, kami menyediakan solusi digital end-to-end yang dirancang untuk performa, keamanan, dan skalabilitas.",
+    "eyebrow": "Solusi & Layanan Teknologi",
+    "title": "Apa saja solusi dan layanan teknologi dari ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak menyeluruh: aplikasi mobile (Android & iOS) performa tinggi, sistem informasi enterprise kustom, dan portal web modern yang aman dan teruji.",
     "view_detail": "Lihat Detail",
     "empty": "Belum ada layanan yang tersedia saat ini.",
     "default_web_title": "Web Apps Development",
@@ -82,9 +82,9 @@
     }
   },
   "portfolio": {
-    "eyebrow": "Portofolio",
-    "title": "Proyek Unggulan & Sistem Kustom",
-    "description": "Temukan bagaimana kami membantu para mitra mentransformasikan ide mereka menjadi produk perangkat lunak yang berdampak.",
+    "eyebrow": "Studi Kasus & Rekam Jejak",
+    "title": "Sistem dan produk digital apa saja yang telah dibangun oleh ASTA DIGITAL AGENCY?",
+    "description": "Temukan bagaimana ASTA DIGITAL AGENCY membantu mitra mentransformasikan kebutuhan operasional menjadi produk perangkat lunak tangguh yang berdampak nyata.",
     "tab_all": "Semua",
     "tab_mobile": "Mobile Apps",
     "tab_desktop": "Desktop & Web",
@@ -237,7 +237,9 @@
     "read_more": "Baca Selengkapnya",
     "empty": "Belum ada artikel yang dipublikasikan.",
     "by": "Oleh",
-    "min_read": "menit baca"
+    "min_read": "menit baca",
+    "faq_title": "Pertanyaan Umum seputar Topik Ini (FAQ)",
+    "tldr_title": "Ringkasan Eksekutif (TL;DR)"
   },
   "common": {
     "previous": "Sebelumnya",
@@ -272,5 +274,54 @@
     "cta_similar_title": "Tertarik Mengembangkan Solusi Serupa?",
     "cta_similar_desc": "Diskusikan kebutuhan teknologi Anda bersama tim ahli ASTA Digital untuk solusi yang tepat guna dan skalabel.",
     "consult_now": "Konsultasi Sekarang"
+  },
+  "comparison": {
+    "eyebrow": "TOLOK UKUR STANDAR",
+    "title": "Mengapa Instansi & Korporasi Memilih ASTA DIGITAL AGENCY?",
+    "description": "Bandingkan bagaimana standar rekayasa perangkat lunak modern ASTA DIGITAL AGENCY mengungguli metode pengembangan agensi konvensional.",
+    "col_parameter": "Parameter Evaluasi",
+    "col_asta": "Metode ASTA DIGITAL AGENCY",
+    "col_traditional": "Metode Tradisional",
+    "row_1_param": "Arsitektur Kode & Skalabilitas",
+    "row_1_asta": "Clean architecture, modular, dan cloud-native yang siap menangani pertumbuhan bisnis tanpa refactor total.",
+    "row_1_traditional": "Monolitik kaku, rentan utang teknis tinggi, dan sulit dikembangkan saat beban sistem meningkat.",
+    "row_2_param": "Kesiapan Mesin Pencari & Bot AI (GEO/SEO)",
+    "row_2_asta": "Struktur semantik lengkap, Schema.org (JSON-LD), serta Server-Side Pre-rendering untuk ekstraksi instan bot AI.",
+    "row_2_traditional": "Client-Side Rendering murni tanpa pre-rendering, menyembunyikan teks konten di balik JavaScript.",
+    "row_3_param": "Standar Keamanan & Audit Sistem",
+    "row_3_asta": "Sanitasi input ketat, kontrol akses RBAC berlapis, enkripsi data, dan proteksi dari kerentanan OWASP Top 10.",
+    "row_3_traditional": "Pengujian keamanan sekunder atau diabaikan, baru diperbaiki setelah terjadi insiden kebocoran data.",
+    "row_4_param": "Jaminan Garansi & SLA Dukungan",
+    "row_4_asta": "Garansi pemeliharaan pasca-rilis dengan SLA respon cepat terikat kontrak hukum dan monitoring proaktif.",
+    "row_4_traditional": "Dukungan berakhir langsung setelah serah terima awal tanpa jaminan perbaikan bug."
+  },
+  "faq": {
+    "eyebrow": "PERTANYAAN UMUM",
+    "title": "Mengapa Harus ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY memiliki tim IT yang sangat kompeten, presisi, dan tepat waktu. Setiap Proyek yang dikerjakan memiliki hasil yang memuaskan dengan kepresisian 99",
+    "q1": "Mengapa harus ASTA DIGITAL AGENCY?",
+    "a1": "ASTA DIGITAL AGENCY memiliki tim IT yang sangat kompeten, presisi, dan tepat waktu. Setiap proyek yang dikerjakan memberikan hasil yang memuaskan dengan kepresisian 99%. ",
+    "q2": "Apa Yang ASTA DIGITAL AGENCY tawarkan?",
+    "a2": "ASTA DIGITAL AGENCY menawarkan mahakarya digitalisasi yang eksklusif dan dirancang khusus secara orisinal untuk bisnis Anda. Setiap solusi digital yang kami bangun bersifat kustom dan bebas duplikasi, memastikan sistem perusahaan Anda memiliki identitas yang unik dan relevan dengan kebutuhan bisnis.  ",
+    "q3": "Begaimana cara mendapatkan tim IT dedicated tanpa perlu repot melakukan rekrutment?",
+    "a3": "ASTA DIGITAL AGENCY menyediakan tim IT dedicated yang ahli dan siap bekerja secara eksklusif untuk proyek Anda. Perusahaan Anda dapat langsung memulai proyek digital tanpa membuang waktu untuk proses screening melalui HRD, karena kami langsung menempatkan tenaga ahli kompeten yang terjamin kualitas dan portofolionya. ",
+    "q4": "Apakah ASTA DIGITAL AGENCY menjamin ketepatan waktu dalam setiap proyek pembuatan website",
+    "a4": "Pasti. Kami didukung oleh tim yang handal dengan manajemen proyek yang presisi. Kami memberikan jaminan penuh atas ketepatan waktu pembuatan setiap sistem, memastikan peluncuran proyek tepat jadwal tanpa sedikit pun mengorbankan kualitas dan performa sistem bisnis Anda "
+  },
+  "faq_discover": {
+    "title": "Siap berkembang bersama ASTA DIGITAL AGENCY?",
+    "description": "ASTA DIGITAL AGENCY siap bekerjasama dengan perusahaan anda agar lebih maju, efektif, dan berkembang. Pengerjaan yang cepat dapat memberikan dampak PROGRESIF pada perusahaan dan juga EFISIENSI biaya produksi. ",
+    "q1": "Siap Berkembang bersama ASTA DIGITAL AGENCY",
+    "a1": "ASTA DIGITAL AGENCY siap bekerjasama dengan perusahaan Anda agar lebih maju, efektif, dan berkembang. Pengerjaan yang cepat dapat memberikan dampak progresif pada perusahaan dan juga efisiensi biaya produksi.",
+    "q2": "Bagaimana ASTA DIGITAL AGENCY memastikan hasil kustomisasi sistem sesuai dengan tujuan perusahaan? ",
+    "a2": "Kami memegang teguh komitmen penuh menjaga agar satu visi dan selalu berada di \"satu halaman\" yang sama dengan klien. Seluruh proses kustomisasi dilakukan secara kolaboratif agar setiap detail arsitektur digital selaras dengan ekspektasi dan target strategis bisnis Anda. ",
+    "q3": "Apakah kemitraan berakhir setelah pembuatan website selesai?",
+    "a3": "Tidak. ASTA DIGITAL AGENCY memiliki komitmen membangun dan mengembangkan ekosistem digital Anda secara berkelanjutan. Kami tidak hanya berhenti pada peluncuran awal, tetapi siap menjadi mitra teknologi jangka panjang yang memastikan sistem Anda terus berkembang seiring dengan skalabilitas perusahaan. "
+  },
+  "faq_blog": {
+    "title": "Apakah ASTA DIGITAL AGENCY dapat membuat website sesuai kebutuhan bisnis?",
+    "description": "Ya. Pengembangan website dapat disesuaikan dengan tujuan bisnis, kebutuhan pengguna, fitur yang diperlukan, serta karakteristik perusahaan agar solusi yang dibangun relevan dengan kebutuhan klien. ",
+    "q1": "Siap Berkembang bersama ASTA DIGITAL AGENCY",
+    "a1": "Ya. Pengembangan website dapat disesuaikan dengan tujuan bisnis, kebutuhan pengguna, fitur yang diperlukan, serta karakteristik perusahaan agar solusi yang dibangun relevan dengan kebutuhan klien. "
   }
 }

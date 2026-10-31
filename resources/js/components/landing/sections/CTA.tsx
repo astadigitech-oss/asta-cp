@@ -4,7 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/useTranslation";
 
 export function CTA() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const elem = document.getElementById("kontak");
+    if (elem) {
+      e.preventDefault();
+      elem.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section className="relative py-6 sm:py-6">
@@ -29,7 +37,7 @@ export function CTA() {
                 size="lg"
                 className="h-12 rounded-full bg-white px-6 text-primary shadow-glass hover:bg-white/90"
               >
-                <a href="#kontak">
+                <a href={`/${language}/#kontak`} onClick={handleContactClick}>
                   {t("cta.button")} <ArrowRight className="ml-1.5 h-4 w-4" />
                 </a>
               </Button>

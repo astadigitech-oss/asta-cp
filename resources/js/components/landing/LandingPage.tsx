@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
@@ -7,6 +7,7 @@ import { Hero } from "./sections/Hero";
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
 const Services = lazy(() => import("./sections/Services").then((m) => ({ default: m.Services })));
+const ComparisonTable = lazy(() => import("./sections/ComparisonTable").then((m) => ({ default: m.ComparisonTable })));
 const Portfolio = lazy(() => import("./sections/Portfolio").then((m) => ({ default: m.Portfolio })));
 const DiscoverSection = lazy(() => import("./sections/DiscoverSection").then((m) => ({ default: m.DiscoverSection })));
 const WhyUs = lazy(() => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs })));
@@ -14,6 +15,7 @@ const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.St
 const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
 const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
 const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
+const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
 const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
 const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
@@ -24,6 +26,25 @@ function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }
 
 export function LandingPage() {
   const { data: landingData } = useLandingData();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const targetId = hash.replace("#", "");
+
+    let attempts = 0;
+    const interval = setInterval(() => {
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+        clearInterval(interval);
+      } else if (++attempts > 25) {
+        clearInterval(interval);
+      }
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-accent/30 selection:text-accent font-sans">
@@ -40,6 +61,10 @@ export function LandingPage() {
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
           <Services />
+        </Suspense>
+
+        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+          <ComparisonTable />
         </Suspense>
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
@@ -68,6 +93,10 @@ export function LandingPage() {
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[350px]" />}>
           <Testimonials />
+        </Suspense>
+
+        <Suspense fallback={<SectionFallback minHeight="min-h-[300px]" />}>
+          <HomeFAQ />
         </Suspense>
 
         <Suspense fallback={<SectionFallback minHeight="min-h-[250px]" />}>
