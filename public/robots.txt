@@ -1,8 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /dapur-belakang/
-Disallow: /admin/
-Disallow: /api/
-
-Sitemap: https://astadigitalagency.com/sitemap.xml
-
+Disallow: /
