@@ -471,6 +471,13 @@
         {{-- Semantic Server-Side Pre-rendered Content untuk Mesin Pencari & Bot AI --}}
         @if ($article)
             <article class="max-w-4xl mx-auto px-4 py-12">
+                <nav class="flex items-center gap-2 text-xs text-gray-500 mb-6 pb-3 border-b border-gray-200 dark:border-gray-800">
+                    <a href="{{ url("/{$currentLocale}") }}" class="hover:text-blue-600">{{ $currentLocale === 'en' ? 'Home' : 'Beranda' }}</a>
+                    <span>/</span>
+                    <a href="{{ url("/{$currentLocale}/blog") }}" class="hover:text-blue-600">{{ $currentLocale === 'en' ? 'Articles & Insights' : 'Artikel & Wawasan' }}</a>
+                    <span>/</span>
+                    <span class="font-semibold text-gray-800 dark:text-gray-200 truncate max-w-xs">{{ localizeTextPhp($article->title, $currentLocale) }}</span>
+                </nav>
                 <header class="mb-8">
                     @if (!empty($article->category))
                         <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">{{ $article->category }}</span>
@@ -559,6 +566,54 @@
                                         {!! localizeTextPhp($faq['answer'] ?? '', $currentLocale) !!}
                                     </div>
                                 </div>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
+
+                {{-- Rekomendasi Artikel Terkait (Khusus Blog - SSR) --}}
+                @if (isset($recommendedArticles) && $recommendedArticles->count() > 0)
+                    <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                            <div>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                                    {{ $currentLocale === 'en' ? 'Related Articles & Insights' : 'Artikel & Rekomendasi Terkait' }}
+                                </h2>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    {{ $currentLocale === 'en' ? 'Explore more tips, strategies, and digital technology insights from ASTA Digital.' : 'Jelajahi panduan, tips, dan wawasan teknologi terbaru dari tim ahli ASTA Digital.' }}
+                                </p>
+                            </div>
+                            <a href="{{ url("/{$currentLocale}/blog") }}" class="text-sm font-semibold text-blue-600 hover:underline">
+                                {{ $currentLocale === 'en' ? 'View All Articles' : 'Lihat Semua Artikel' }} &rarr;
+                            </a>
+                        </div>
+                        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($recommendedArticles as $rec)
+                                @php
+                                    $recSlug = method_exists($rec, 'getLocalizedSlug') ? $rec->getLocalizedSlug($currentLocale) : $rec->slug;
+                                    $recThumbnail = $rec->thumbnail ? ((str_starts_with($rec->thumbnail, 'http') ? $rec->thumbnail : asset('storage/' . ltrim($rec->thumbnail, '/')))) : null;
+                                @endphp
+                                <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
+                                    @if ($recThumbnail)
+                                        <div class="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
+                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" class="h-full w-full object-cover" />
+                                        </div>
+                                    @endif
+                                    <div class="text-xs text-gray-400 mb-1">
+                                        {{ $rec->published_at?->format('d M Y') ?? date('d M Y') }}
+                                        @if ($rec->category)
+                                            • <span class="font-semibold text-blue-600">{{ $rec->category }}</span>
+                                        @endif
+                                    </div>
+                                    <h3 class="font-bold text-base text-gray-900 dark:text-white line-clamp-2 mb-2">
+                                        {{ localizeTextPhp($rec->title, $currentLocale) }}
+                                    </h3>
+                                    @if ($rec->excerpt)
+                                        <p class="text-xs text-gray-500 line-clamp-2">
+                                            {{ strip_tags(localizeTextPhp($rec->excerpt, $currentLocale)) }}
+                                        </p>
+                                    @endif
+                                </a>
                             @endforeach
                         </div>
                     </section>

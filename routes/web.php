@@ -415,6 +415,16 @@ Route::get('/{any?}', function () {
                         'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
+
+                $recommendedArticles = Article::where('is_published', true)
+                    ->where('id', '!=', $article->id)
+                    ->where(function ($q) {
+                        $q->whereNull('published_at')
+                          ->orWhere('published_at', '<=', now());
+                    })
+                    ->latest('published_at')
+                    ->limit(3)
+                    ->get();
             }
         }
     }
@@ -425,6 +435,7 @@ Route::get('/{any?}', function () {
     return response()->view('layouts.app', [
         'locale' => $locale,
         'article' => $article,
+        'recommendedArticles' => $recommendedArticles ?? collect(),
         'discover' => $discover,
         'blogArticles' => $blogArticles,
         'isBlogPage' => $isBlogPage,
