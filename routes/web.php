@@ -16,7 +16,7 @@ use App\Models\Portfolio;
 // XML Sitemap — dibangun dengan spatie/laravel-sitemap, cache 24 jam
 // Mendukung hreflang multilingual (id/en) untuk semua konten dinamis
 Route::get('/sitemap.xml', function () {
-    $xml = Cache::remember('sitemap_xml_content', 86400, function () {
+    $xml = Cache::remember('sitemap_xml_content', 3600, function () {
         $baseUrl = rtrim(config('app.url', url('/')), '/');
         $locales = ['id', 'en'];
 
@@ -48,7 +48,12 @@ Route::get('/sitemap.xml', function () {
         }
 
         // --- Articles (published only) ---
-        Article::where('is_published', true)->each(function ($article) use ($sitemap, $baseUrl, $locales) {
+        Article::where('is_published', true)
+            ->where(function ($query) {
+                $query->whereNull('published_at')
+                    ->orWhere('published_at', '<=', now());
+            })
+            ->each(function ($article) use ($sitemap, $baseUrl, $locales) {
             foreach ($locales as $locale) {
                 $slug   = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($locale) : $article->slug;
                 $locUrl = "{$baseUrl}/{$locale}/{$slug}";
@@ -451,4 +456,3 @@ Route::get('/{any?}', function () {
         'initialData' => $initialData,
     ], $statusCode);
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml|livewire).*');
-

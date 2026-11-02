@@ -145,6 +145,8 @@ export function Portfolio() {
                   <img
                     src={p.img}
                     alt={p.title}
+                    width={800}
+                    height={1000}
                     loading="lazy"
                     decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -188,6 +190,8 @@ export function Portfolio() {
                   <img
                     src={selectedProject.img}
                     alt={selectedProject.title}
+                    width={960}
+                    height={540}
                     loading="lazy"
                     decoding="async"
                     className="h-full w-full object-cover"
@@ -275,4 +279,3 @@ export function Portfolio() {
     </section>
   );
 }
-

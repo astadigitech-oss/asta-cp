@@ -345,6 +345,8 @@ export function DiscoverDetailPage() {
                   <img
                     src={currentCover}
                     alt={discover.name}
+                    width={1200}
+                    height={675}
                     fetchPriority="high"
                     decoding="async"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
@@ -447,6 +449,8 @@ export function DiscoverDetailPage() {
                             <img
                               src={section.image}
                               alt={sectionTitle}
+                              width={1200}
+                              height={800}
                               loading="lazy"
                               decoding="async"
                               className="w-full h-auto max-h-[520px] object-cover mx-auto transition-transform duration-500 group-hover/simg:scale-[1.02]"
@@ -627,6 +631,8 @@ export function DiscoverDetailPage() {
                           <img
                             src={itemImgs[0] || p1}
                             alt={item.name}
+                            width={640}
+                            height={400}
                             loading="lazy"
                             decoding="async"
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -711,6 +717,8 @@ export function DiscoverDetailPage() {
                 <img
                   src={previewImage.src}
                   alt={previewImage.title || "Full Screen Image"}
+                  width={1200}
+                  height={800}
                   loading="lazy"
                   decoding="async"
                   className="max-h-[82vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl shadow-2xl transition-transform duration-300"

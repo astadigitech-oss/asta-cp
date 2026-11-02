@@ -59,6 +59,18 @@ class Article extends Model implements HasSEOContract
                 $article->slug = \Illuminate\Support\Str::slug($clean);
             }
         });
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+        });
+
+        static::restored(function () {
+            \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+        });
     }
 
     protected $fillable = [

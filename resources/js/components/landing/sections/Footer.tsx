@@ -31,7 +31,7 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5">
-              <img src={logo} alt="Asta Digital Agency" loading="lazy" decoding="async" className="mb-4 h-auto w-[135px] p-1" />
+              <img src={logo} alt="Asta Digital Agency" width={1955} height={1191} loading="lazy" decoding="async" className="mb-4 h-auto w-[135px] p-1" />
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
               {t("footer.description")}
@@ -137,5 +137,3 @@ export function Footer() {
     </footer>
   );
 }
-
-

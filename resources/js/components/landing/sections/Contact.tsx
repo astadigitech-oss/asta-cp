@@ -95,9 +95,9 @@ export function Contact() {
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
                         {t("contact.info_phone")}
                       </div>
-                      <div className="mt-0.5 text-sm font-semibold text-white">
+                      <a href="tel:+6281578223564" className="mt-0.5 block text-sm font-semibold text-white">
                         +62 815 7822 3564
-                      </div>
+                      </a>
                     </div>
                   </li>
                   <li className="flex items-center gap-4">
@@ -227,4 +227,3 @@ export function Contact() {
     </section>
   );
 }
-

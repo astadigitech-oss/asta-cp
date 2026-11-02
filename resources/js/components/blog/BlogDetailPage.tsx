@@ -364,6 +364,8 @@ export function BlogDetailPage() {
                     <img
                       src={currentCover}
                       alt={localizedTitle}
+                      width={1200}
+                      height={675}
                       fetchPriority="high"
                       decoding="async"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
@@ -470,6 +472,8 @@ export function BlogDetailPage() {
                               <img
                                 src={section.image}
                                 alt={`Bagian ${sectionIndex}`}
+                                width={1200}
+                                height={800}
                                 loading="lazy"
                                 decoding="async"
                                 className="w-full h-auto max-h-[540px] object-cover mx-auto transition-transform duration-500 group-hover/simg:scale-[1.02]"
@@ -615,6 +619,8 @@ export function BlogDetailPage() {
                             <img
                               src={rec.thumbnail}
                               alt={recTitle}
+                              width={640}
+                              height={400}
                               loading="lazy"
                               decoding="async"
                               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -705,6 +711,9 @@ export function BlogDetailPage() {
                 <img
                   src={previewImage.src}
                   alt={previewImage.title || "Image Preview"}
+                  width={1200}
+                  height={800}
+                  decoding="async"
                   className="max-h-[80vh] w-auto max-w-full rounded-lg object-contain mt-4"
                 />
                 {previewImage.title && (

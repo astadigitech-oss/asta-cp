@@ -47,6 +47,8 @@ function TestimonialAvatar({ avatar, name, colorClass }: { avatar?: string; name
       <img
         src={avatar}
         alt={name}
+        width={52}
+        height={52}
         loading="lazy"
         decoding="async"
         className="h-[52px] w-[52px] shrink-0 rounded-2xl object-cover shadow-soft border border-white/40"
@@ -217,4 +219,3 @@ export function Testimonials() {
     </section>
   );
 }
-

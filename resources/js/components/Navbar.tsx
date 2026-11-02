@@ -189,7 +189,7 @@ export function Navbar() {
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <img src={logo} alt="Asta Digital Agency" decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
+            <img src={logo} alt="Asta Digital Agency" width={500} height={500} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
           </a>
@@ -282,11 +282,11 @@ export function Navbar() {
                           className="p-4 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 group/item cursor-pointer"
                         >
                           {service.logo && (
-                            <img src={service.logo} alt={service.name} loading="lazy" decoding="async" className="w-10 h-10 mb-2 object-contain" />
+                            <img src={service.logo} alt={service.name} width={48} height={48} loading="lazy" decoding="async" className="w-10 h-10 mb-2 object-contain" />
                           )}
-                          <h4 className="font-bold text-gray-900 group-hover/item:text-[#004AAD] text-base">
+                          <p className="font-bold text-gray-900 group-hover/item:text-[#004AAD] text-base">
                             {service.name}
-                          </h4>
+                          </p>
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                             {stripHtml(service.short_description) || t("services.default_web_desc")}
                           </p>
@@ -304,9 +304,9 @@ export function Navbar() {
                           onClick={(e) => scrollToSection(e, "layanan")}
                           className="p-4 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 group/item cursor-pointer"
                         >
-                          <h4 className="font-bold text-gray-900 group-hover/item:text-[#004AAD] text-base">
+                          <p className="font-bold text-gray-900 group-hover/item:text-[#004AAD] text-base">
                             {s.title}
-                          </h4>
+                          </p>
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.desc}</p>
                         </a>
                       ))
@@ -460,14 +460,14 @@ export function Navbar() {
                             className="flex gap-3 items-center p-2 rounded-lg hover:bg-blue-50 transition-colors group/item border border-transparent hover:border-blue-100 cursor-pointer"
                           >
                             {p.image ? (
-                              <img src={p.image} alt={p.name} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                              <img src={p.image} alt={p.name} width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover shrink-0" />
                             ) : (
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#004AAD] to-[#38B6FF] flex items-center justify-center shrink-0">
                                 <span className="text-white text-xs font-bold">{p.name.charAt(0)}</span>
                               </div>
                             )}
                             <div className="min-w-0">
-                              <h5 className="font-bold text-sm text-gray-900 group-hover/item:text-[#004AAD] truncate">{p.name}</h5>
+                              <p className="font-bold text-sm text-gray-900 group-hover/item:text-[#004AAD] truncate">{p.name}</p>
                               <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{stripHtml(p.description) || t("portfolio.view_project")}</p>
                             </div>
                           </a>
@@ -595,17 +595,17 @@ export function Navbar() {
                           paginatedDiscovers.map((disc) => (
                             <a key={disc.id} href={`/${language}/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
                               {disc.logo ? (
-                                <img src={disc.logo} alt={disc.name} loading="lazy" decoding="async" className="w-8 h-8 object-contain shrink-0 mt-0.5" />
+                                <img src={disc.logo} alt={disc.name} width={32} height={32} loading="lazy" decoding="async" className="w-8 h-8 object-contain shrink-0 mt-0.5" />
                               ) : (
                                 <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-[#004AAD] font-bold text-xs">
                                   {disc.name?.charAt(0) || "D"}
                                 </div>
                               )}
                               <div className="min-w-0 flex-1">
-                                <h5 className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
+                                <p className="flex items-start gap-1 font-bold text-gray-900 text-sm group-hover/disc:text-[#004AAD] transition-colors">
                                   {disc.is_pinned && <Pin className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />}
                                   <span className="line-clamp-1">{disc.name}</span>
-                                </h5>
+                                </p>
                                 {disc.short_description && (
                                   <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{stripHtml(disc.short_description)}</p>
                                 )}
@@ -615,11 +615,11 @@ export function Navbar() {
                         ) : (
                           <>
                             <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                              <h5 className="font-bold text-gray-900 text-sm">{t("nav.about")}</h5>
+                              <p className="font-bold text-gray-900 text-sm">{t("nav.about")}</p>
                               <p className="text-xs text-gray-500 mt-0.5">{t("about.vision_desc")}</p>
                             </a>
                             <a href="/#discover" className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100">
-                              <h5 className="font-bold text-gray-900 text-sm">{t("about.company_story")}</h5>
+                              <p className="font-bold text-gray-900 text-sm">{t("about.company_story")}</p>
                               <p className="text-xs text-gray-500 mt-0.5">{t("about.description")}</p>
                             </a>
                           </>
@@ -667,9 +667,9 @@ export function Navbar() {
                   >
                     <div>
                       <div className="flex items-center justify-between">
-                        <h4 className="text-lg font-bold text-[#004AAD]">
+                        <p className="text-lg font-bold text-[#004AAD]">
                           {t("nav.asta_story")}
-                        </h4>
+                        </p>
                         {/* Slide dots indicator */}
                         <div className="flex items-center gap-1.5">
                           {Array.from({ length: totalSlides }).map((_, idx) => (
@@ -713,6 +713,8 @@ export function Navbar() {
                                 <img
                                   src={Array.isArray(item.image) ? item.image[0] : item.image}
                                   alt={item.name}
+                                  width={640}
+                                  height={400}
                                   loading="lazy"
                                   decoding="async"
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
@@ -729,9 +731,9 @@ export function Navbar() {
                                       </span>
                                     )}
                                   </div>
-                                  <h5 className="font-bold text-xs line-clamp-1 text-white group-hover/slide:text-[#38B6FF] transition-colors mt-0.5">
+                                  <p className="font-bold text-xs line-clamp-1 text-white group-hover/slide:text-[#38B6FF] transition-colors mt-0.5">
                                     {item.name}
-                                  </h5>
+                                  </p>
                                   {item.short_description && (
                                     <p className="text-[11px] text-gray-200 line-clamp-1 mt-0.5 opacity-90">
                                       {stripHtml(item.short_description)}

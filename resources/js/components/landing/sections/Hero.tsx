@@ -121,6 +121,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
+                      width={952}
+                      height={714}
                       fetchPriority="high"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
@@ -138,6 +140,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
+                      width={954}
+                      height={715}
                       fetchPriority="high"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[1.2] sm:scale-[1.1] lg:scale-[1.2] translate-x-[-7.9%] translate-y-[-20.5%]"
@@ -209,6 +213,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                             <img
                               src={client.image}
                               alt={client.name}
+                              width={130}
+                              height={44}
                               loading="lazy"
                               decoding="async"
                               className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
@@ -247,6 +253,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                         <img
                           src={client.image}
                           alt={client.name}
+                          width={130}
+                          height={44}
                           loading="lazy"
                           decoding="async"
                           className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
@@ -277,4 +285,3 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
     </section>
   );
 }
-
