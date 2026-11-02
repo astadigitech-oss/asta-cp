@@ -82,8 +82,9 @@ export const Route = createFileRoute("/$lang/$slug")({
       headline: metaTitle,
       description: metaDesc,
       image: ogImage,
-      datePublished: loaderData.published_at_iso || new Date().toISOString(),
-      dateModified: loaderData.updated_at_iso || loaderData.published_at_iso || new Date().toISOString(),
+      datePublished: loaderData.published_at_iso || undefined,
+      dateModified: loaderData.updated_at_iso || undefined,
+      inLanguage: lang,
       author: {
         "@type": "Organization",
         name: loaderData.author || "ASTA DIGITAL AGENCY Team",
@@ -96,10 +97,10 @@ export const Route = createFileRoute("/$lang/$slug")({
           url: "/images/logo-dark.png",
         },
       },
-      mainEntityOfPage: {
+      ...(canonical ? { mainEntityOfPage: {
         "@type": "WebPage",
         "@id": canonical,
-      },
+      } } : {}),
     };
 
     scripts.push({
@@ -149,4 +150,3 @@ export const Route = createFileRoute("/$lang/$slug")({
   },
   component: BlogDetailPage,
 });
-

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/$lang/discover/$id")({
       return null;
     }
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     if (!loaderData) {
       return {
         meta: [
@@ -70,7 +70,9 @@ export const Route = createFileRoute("/$lang/discover/$id")({
       headline: metaTitle,
       description: typeof metaDesc === "string" ? metaDesc.replace(/<[^>]*>?/gm, "") : name,
       image: ogImg,
-      datePublished: loaderData.created_at || new Date().toISOString(),
+      datePublished: loaderData.created_at || undefined,
+      dateModified: loaderData.updated_at || undefined,
+      inLanguage: params?.lang || "id",
       author: {
         "@type": "Organization",
         name: "ASTA DIGITAL AGENCY Team",
@@ -83,10 +85,10 @@ export const Route = createFileRoute("/$lang/discover/$id")({
           url: "/images/logo-dark.png",
         },
       },
-      mainEntityOfPage: {
+      ...(seo?.canonical_url ? { mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": seo?.canonical_url || (typeof window !== "undefined" ? window.location.href : ""),
-      },
+        "@id": seo.canonical_url,
+      } } : {}),
     };
 
     scripts.push({

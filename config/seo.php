@@ -877,7 +877,7 @@ return [
          * purpose left out is allowed.
          */
         'policy' => [
-            'ai_training' => 'disallow',
+            'ai_training' => 'allow',
             'ai_search' => 'allow',
             'ai_assistant' => 'allow',
             'search_engine' => 'allow',
@@ -909,7 +909,7 @@ return [
          * are ADVISORY — distinct from the Allow/Disallow crawl-access rules.
          * OFF by default: the file stays byte-identical until you opt in.
          */
-        'content_signals' => env('SEO_AI_CONTENT_SIGNALS', false),
+        'content_signals' => env('SEO_AI_CONTENT_SIGNALS', true),
 
         /*
          * The general `User-agent: *` section. true emits a permissive default;
@@ -917,14 +917,14 @@ return [
          * it. Keep a value when serving robots.txt dynamically so the file is a
          * complete, valid robots.txt.
          */
-        'general' => true,
+        'general' => "User-agent: *\nAllow: /\nDisallow: /dapur-belakang/\nDisallow: /admin/\nDisallow: /api/",
 
         /*
          * Append a `Sitemap:` line. Leave sitemap_url null to derive it from the
          * package sitemap route; set it to point elsewhere.
          */
         'include_sitemap' => true,
-        'sitemap_url' => env('SEO_AI_CRAWLERS_SITEMAP_URL'),
+        'sitemap_url' => env('SEO_AI_CRAWLERS_SITEMAP_URL', 'https://astadigitalagency.com/sitemap.xml'),
 
         /*
          * Append a comment pointing AI crawlers at the llms.txt content index.

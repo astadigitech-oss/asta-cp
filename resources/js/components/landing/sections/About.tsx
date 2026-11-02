@@ -259,6 +259,8 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
               <img
                 src={getDiscoverImages(activeItem.image)[0] || p3}
                 alt={activeItem.name}
+                width={1200}
+                height={900}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
                 decoding="async"
@@ -353,6 +355,8 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                     ref={imgRef}
                     src={currentImg}
                     alt={selectedTimelineImage.name}
+                    width={1200}
+                    height={900}
                     draggable={false}
                     loading="lazy"
                     decoding="async"
@@ -431,7 +435,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                               : "border-white/30 opacity-60 hover:opacity-100"
                           }`}
                         >
-                          <img src={img} alt={`Thumb ${i + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                          <img src={img} alt={`Thumb ${i + 1}`} width={100} height={75} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                         </button>
                       ))}
                     </div>
@@ -445,4 +449,3 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
     </section>
   );
 }
-

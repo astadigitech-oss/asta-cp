@@ -26,6 +26,9 @@ class PortfolioForm
                                 FileUpload::make('image')
                                     ->label('Portfolio Image')
                                     ->image()
+                                    ->imageResizeMode('contain')
+                                    ->imageResizeTargetWidth('1600')
+                                    ->imageResizeTargetHeight('1200')
                                     ->disk('public')
                                     ->directory('images/portfolios')
                                     ->required(),

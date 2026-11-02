@@ -18,7 +18,10 @@ class ClientForm
                     ->required()
                     ->disk('public')
                     ->directory('images/clients')
-                    ->image(),
+                    ->image()
+                    ->imageResizeMode('contain')
+                    ->imageResizeTargetWidth('600')
+                    ->imageResizeTargetHeight('600'),
                 TextInput::make('name')
                     ->label('Client / Company Name')
                     ->required(),

@@ -167,10 +167,11 @@
     <link rel="alternate" hreflang="id" href="{{ $idUrl }}" />
     <link rel="alternate" hreflang="en" href="{{ $enUrl }}" />
     <link rel="alternate" hreflang="x-default" href="{{ $idUrl }}" />
+    <link rel="alternate" type="text/plain" href="{{ asset('llms.txt') }}" title="LLM information">
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="{{ $ogType }}">
-    <meta property="og:url" content="{{ $currentUrl }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="Asta Digital Agency">
     <meta property="og:title" content="{{ $ogTitle }}">
     <meta property="og:description" content="{{ $ogDesc }}">
@@ -180,7 +181,7 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ $currentUrl }}">
+    <meta name="twitter:url" content="{{ $canonicalUrl }}">
     <meta name="twitter:title" content="{{ $twitterTitle }}">
     <meta name="twitter:description" content="{{ $twitterDesc }}">
     <meta name="twitter:image" content="{{ $twitterImage }}">
@@ -224,8 +225,9 @@
             'headline' => $metaTitle,
             'description' => $metaDesc,
             'image' => $ogImage,
-            'datePublished' => $article->published_at?->toIso8601String() ?? now()->toIso8601String(),
-            'dateModified' => $article->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+            'datePublished' => $article->published_at?->toIso8601String(),
+            'dateModified' => $article->updated_at?->toIso8601String(),
+            'inLanguage' => $currentLocale,
             'author' => [
                 '@type' => 'Organization',
                 'name' => $article->author ?: 'ASTA DIGITAL AGENCY Team',
@@ -243,6 +245,7 @@
                 '@id' => $canonicalUrl,
             ],
         ];
+        $blogPostingSchema = array_filter($blogPostingSchema, fn ($value) => $value !== null);
     @endphp
     <script type="application/ld+json">
     {!! json_encode($blogPostingSchema, $jsonFlags) !!}
@@ -279,8 +282,9 @@
             'headline' => $metaTitle,
             'description' => $metaDesc,
             'image' => $ogImage,
-            'datePublished' => $discover->created_at?->toIso8601String() ?? now()->toIso8601String(),
-            'dateModified' => $discover->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+            'datePublished' => $discover->created_at?->toIso8601String(),
+            'dateModified' => $discover->updated_at?->toIso8601String(),
+            'inLanguage' => $currentLocale,
             'author' => [
                 '@type' => 'Organization',
                 'name' => 'ASTA DIGITAL AGENCY Team',
@@ -298,6 +302,7 @@
                 '@id' => $canonicalUrl,
             ],
         ];
+        $discoverSchema = array_filter($discoverSchema, fn ($value) => $value !== null);
     @endphp
     <script type="application/ld+json">
     {!! json_encode($discoverSchema, $jsonFlags) !!}
@@ -458,7 +463,8 @@
     {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
     <script>
         window.__INITIAL_DATA__ = @json($initialData ?? ['locale' => $currentLocale]);
@@ -498,6 +504,10 @@
                     <div class="my-6">
                         <img src="{{ str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')) }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
+                             width="1200"
+                             height="675"
+                             fetchpriority="high"
+                             decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
                     </div>
                 @endif
@@ -537,7 +547,11 @@
                             <div class="border-t pt-6">
                                 @if (!empty($sec['image']))
                                     <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
-                                         alt="Content media"
+                                         alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
+                                         width="1200"
+                                         height="800"
+                                         loading="lazy"
+                                         decoding="async"
                                          class="w-full rounded-xl object-cover my-4" />
                                 @endif
                                 @if (!empty($sec['description']))
@@ -596,7 +610,7 @@
                                 <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
                                     @if ($recThumbnail)
                                         <div class="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
-                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" class="h-full w-full object-cover" />
+                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" width="640" height="360" loading="lazy" decoding="async" class="h-full w-full object-cover" />
                                         </div>
                                     @endif
                                     <div class="text-xs text-gray-400 mb-1">
@@ -634,6 +648,10 @@
                     <div class="my-6">
                         <img src="{{ $discoverImg }}"
                              alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
+                             width="1200"
+                             height="675"
+                             fetchpriority="high"
+                             decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
                     </div>
                 @endif
@@ -667,7 +685,11 @@
                                 </span>
                                 @if (!empty($sec['image']))
                                     <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
-                                         alt="Section media"
+                                         alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
+                                         width="1200"
+                                         height="800"
+                                         loading="lazy"
+                                         decoding="async"
                                          class="w-full rounded-2xl object-cover max-h-[500px]" />
                                 @endif
                                 @if (!empty($sec['description']))
@@ -720,7 +742,7 @@
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if (!empty($art['thumbnail']))
                                     <a href="/{{ $currentLocale }}/{{ $art['slug'] }}" class="block aspect-video overflow-hidden">
-                                        <img src="{{ $art['thumbnail'] }}" alt="{{ localizeTextPhp($art['title'], $currentLocale) }}" class="w-full h-full object-cover" loading="lazy" />
+                                        <img src="{{ $art['thumbnail'] }}" alt="{{ localizeTextPhp($art['title'], $currentLocale) }}" width="640" height="360" class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
                                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -825,7 +847,7 @@
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if ($dImg)
                                     <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" class="w-full h-full object-cover" loading="lazy" />
+                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" width="640" height="400" class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
                                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -1200,7 +1222,7 @@
                                 <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                     @if ($dImg)
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" class="w-full h-full object-cover" loading="lazy" />
+                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" width="640" height="400" class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                         </a>
                                     @endif
                                     <div class="p-6 flex-1 flex flex-col justify-between">
@@ -1451,8 +1473,8 @@
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
-                            <p class="text-xs">Email: <a href="mailto:{{ transKey($transDict, 'contact.info_email', 'halo@astadigital.id') }}" class="text-blue-600 hover:underline">halo@astadigital.id</a></p>
-                            <p class="text-xs">Phone: +62 812-3456-7890</p>
+                            <p class="text-xs">Email: <a href="mailto:astadigitech@gmail.com" class="text-blue-600 hover:underline">astadigitech@gmail.com</a></p>
+                            <p class="text-xs">Phone: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.hours_title', 'Jam Kerja') }}</span>

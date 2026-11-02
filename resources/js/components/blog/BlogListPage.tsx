@@ -291,6 +291,8 @@ export function BlogListPage() {
                         <img
                           src={article.thumbnail}
                           alt={localize(article.title)}
+                          width={640}
+                          height={360}
                           loading="lazy"
                           decoding="async"
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -415,4 +417,3 @@ export function BlogListPage() {
     </div>
   );
 }
-

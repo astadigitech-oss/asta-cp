@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/components/landing/LandingPage";
 import { useTranslation } from "@/i18n/useTranslation";
+import enTranslations from "@/locales/en.json";
+import idTranslations from "@/locales/id.json";
 
 export const Route = createFileRoute("/$lang/")({
   head: ({ params }) => {
@@ -18,6 +20,10 @@ export const Route = createFileRoute("/$lang/")({
         : "ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, dan perusahaan.",
       telephone: "+6281578223564",
       email: "astadigitech@gmail.com",
+      sameAs: [
+        "https://www.instagram.com/astadigitalagency/",
+        "https://www.linkedin.com/in/asta-digital-agency-b9441637a/",
+      ],
       priceRange: "$$",
       address: {
         "@type": "PostalAddress",
@@ -29,35 +35,18 @@ export const Route = createFileRoute("/$lang/")({
       },
     };
 
+    const faq = isEn ? enTranslations.faq : idTranslations.faq;
     const faqSchema = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: isEn
-            ? "What services does ASTA DIGITAL AGENCY provide?"
-            : "Apa saja layanan utama yang ditawarkan oleh ASTA DIGITAL AGENCY?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: isEn
-              ? "ASTA DIGITAL AGENCY provides enterprise software development services including mobile app development (iOS and Android), custom modern web applications, and enterprise information systems."
-              : "ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak mencakup pembuatan aplikasi mobile (Android & iOS), pengembangan web aplikasi modern, serta sistem informasi enterprise kustom.",
-          },
+      mainEntity: [1, 2, 3, 4].map((number) => ({
+        "@type": "Question",
+        name: faq[`q${number}` as keyof typeof faq],
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq[`a${number}` as keyof typeof faq].replace(/<[^>]*>?/gm, "").trim(),
         },
-        {
-          "@type": "Question",
-          name: isEn
-            ? "How does ASTA DIGITAL AGENCY approach system security and performance?"
-            : "Bagaimana pendekatan ASTA DIGITAL AGENCY terhadap keamanan dan performa sistem?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: isEn
-              ? "ASTA DIGITAL AGENCY implements layered security standards, strict input sanitization, automated test coverage, and high-performance clean architecture to ensure system resilience and fast response times."
-              : "ASTA DIGITAL AGENCY menerapkan standar keamanan berlapis, sanitasi input ketat, pengujian otomatis, serta arsitektur clean code performa tinggi untuk menjamin ketahanan dan kecepatan respons sistem.",
-          },
-        },
-      ],
+      })),
     };
 
     return {
@@ -98,4 +87,3 @@ export const Route = createFileRoute("/$lang/")({
 function Index() {
   return <LandingPage />;
 }
-

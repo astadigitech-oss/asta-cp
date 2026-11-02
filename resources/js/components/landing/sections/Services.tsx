@@ -306,6 +306,8 @@ export function Services() {
             <img
               src={hoverBg}
               alt={s.name}
+              width={1200}
+              height={900}
               draggable={false}
               loading="lazy"
               decoding="async"
@@ -325,7 +327,7 @@ export function Services() {
             <div className="flex items-start justify-between gap-4">
               {s.logo ? (
                 <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-2xl bg-white/90 p-2 sm:p-2.5 shadow-sm backdrop-blur-sm transition-all duration-300 sm:group-hover:scale-105 sm:group-hover:bg-white">
-                  <img src={s.logo} alt={s.name} draggable={false} loading="lazy" decoding="async" className="h-full w-full object-contain" />
+                  <img src={s.logo} alt={s.name} width={56} height={56} draggable={false} loading="lazy" decoding="async" className="h-full w-full object-contain" />
                 </div>
               ) : (
                 <span className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-glass transition-all duration-300 sm:group-hover:scale-105">
@@ -455,6 +457,8 @@ export function Services() {
                       key={serviceImageIndex}
                       src={serviceImages[serviceImageIndex]}
                       alt={selectedService.name}
+                      width={1200}
+                      height={900}
                       loading="lazy"
                       decoding="async"
                       className="h-full w-full object-cover transition-opacity duration-300"
@@ -462,7 +466,7 @@ export function Services() {
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex flex-col justify-end">
                       {selectedService.logo && (
-                        <img src={selectedService.logo} alt={selectedService.name} loading="lazy" decoding="async" className="w-16 h-16 object-contain mb-4" />
+                        <img src={selectedService.logo} alt={selectedService.name} width={64} height={64} loading="lazy" decoding="async" className="w-16 h-16 object-contain mb-4" />
                       )}
                     </div>
                   )}
