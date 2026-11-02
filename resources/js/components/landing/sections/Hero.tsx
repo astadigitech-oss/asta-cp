@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { ArrowRight, Shield, Award, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -97,13 +96,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
           </div>
 
           {/* Right visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative lg:col-span-5"
-          >
+          <div className="relative lg:col-span-5">
             <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px] 4xl:max-w-[840px]">
               <div className="absolute inset-0 rounded-[42%_58%_45%_55%/55%_40%_60%_45%] gradient-mesh opacity-90 blur-[2px]" />
               <div className="absolute inset-6 rounded-[52%_48%_40%_60%/45%_55%_45%_55%] gradient-hero shadow-glass" />
@@ -113,30 +106,18 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
 
               <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-2">
                 <div className="relative w-full h-full flex items-center justify-center overflow-visible">
-                  <motion.div
-                    animate={{ y: [0, -3, 0] }}
-                    transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 flex items-center justify-center z-10 will-change-transform"
-                  >
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
                     <img
                       src={laptopImg}
                       alt="Laptop ASTA Digital Agency"
                       width={952}
                       height={714}
-                      fetchPriority="high"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
                     />
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    animate={{
-                      y: [0, -6, 0],
-                      rotate: [-0.8, 0.8, -0.8]
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 flex items-center justify-center z-20 will-change-transform"
-                  >
+                  <div className="absolute inset-0 flex items-center justify-center z-20">
                     <img
                       src={robotImg}
                       alt="3D Robot ASTA Digital Agency"
@@ -146,7 +127,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[1.2] sm:scale-[1.1] lg:scale-[1.2] translate-x-[-7.9%] translate-y-[-20.5%]"
                     />
-                  </motion.div>
+                  </div>
                 </div>
               </div>
 
@@ -158,12 +139,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                   "bottom-6 right-4",
                 ];
                 return (
-                  <motion.div
+                  <div
                     key={s.label}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.45, delay: 0.3 + i * 0.08 }}
                     className={`absolute ${positions[i]} z-20 hidden rounded-2xl glass p-3.5 shadow-glass backdrop-blur-md sm:block`}
                   >
                     <div className="font-display text-xl font-bold leading-none text-primary">
@@ -172,11 +149,11 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                       {s.label}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Trusted by Clients Bar */}

@@ -11,6 +11,7 @@ use App\Models\Article;
 use App\Models\Mail;
 use App\Models\Testimonial;
 use App\Mail\ContactMessage;
+use App\Support\OptimizedImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail as Mailer;
 use Illuminate\Support\Facades\Storage;
@@ -20,11 +21,14 @@ class LandingController extends Controller
     /**
      * Helper to get full storage URL for Filament uploaded files
      */
-    private function formatImageUrl($path)
+    private function formatImageUrl($path, ?string $preset = null)
     {
         if (!$path) return null;
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             return $path;
+        }
+        if ($preset) {
+            return OptimizedImage::url($path, $preset);
         }
         return asset(Storage::url($path));
     }
@@ -44,10 +48,10 @@ class LandingController extends Controller
                 'header' => $service->header,
                 'description' => $service->description,
                 'short_description' => $service->short_description,
-                'logo' => $this->formatImageUrl($service->logo),
-                'cover_image' => $this->formatImageUrl($service->cover_image),
+                'logo' => $this->formatImageUrl($service->logo, 'service-logo'),
+                'cover_image' => $this->formatImageUrl($service->cover_image, 'service-cover'),
                 'image' => collect($service->image ?? [])
-                    ->map(fn (string $image) => $this->formatImageUrl($image))
+                    ->map(fn (string $image) => $this->formatImageUrl($image, 'service-detail'))
                     ->filter()
                     ->values()
                     ->all(),
@@ -62,7 +66,8 @@ class LandingController extends Controller
                 'description' => $portfolio->description,
                 'type' => $portfolio->type,
                 'category' => $portfolio->type, // Alias for React category filter
-                'image' => $this->formatImageUrl($portfolio->image),
+                'image' => $this->formatImageUrl($portfolio->image, 'portfolio-card'),
+                'image_small' => $this->formatImageUrl($portfolio->image, 'portfolio-thumb'),
                 'demo_url' => $portfolio->demo_url,
             ];
         });
@@ -71,7 +76,7 @@ class LandingController extends Controller
             return [
                 'id' => $client->id,
                 'name' => $client->name,
-                'image' => $this->formatImageUrl($client->image),
+                'image' => $this->formatImageUrl($client->image, 'client-logo'),
             ];
         });
 
@@ -85,7 +90,7 @@ class LandingController extends Controller
                     : []);
 
             $formattedImages = collect($discoverImages)
-                ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img) : null)
+                ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img, 'discover-card') : null)
                 ->filter()
                 ->values()
                 ->all();
@@ -99,7 +104,7 @@ class LandingController extends Controller
             $formattedSections = collect($rawSections)->map(function ($section) {
                 return [
                     'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
-                    'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                    'image' => !empty($section['image']) ? $this->formatImageUrl($section['image'], 'discover-card') : null,
                     'video_url' => $section['video_url'] ?? null,
                     'description' => $section['description'] ?? '',
                 ];
@@ -116,7 +121,7 @@ class LandingController extends Controller
                 'show_name' => $discover->show_name,
                 'is_pinned' => $discover->is_pinned,
                 'is_highlight' => (bool) $discover->is_highlight,
-                'logo' => $this->formatImageUrl($discover->logo),
+                'logo' => $this->formatImageUrl($discover->logo, 'discover-logo'),
                 'image' => $formattedImages,
                 'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
                 'DiscoverLists' => $discover->DiscoverLists,
@@ -133,7 +138,7 @@ class LandingController extends Controller
                     'role' => $testimonial->role,
                     'org' => $testimonial->org,
                     'quote' => $testimonial->quote,
-                    'avatar' => $this->formatImageUrl($testimonial->avatar),
+                    'avatar' => $this->formatImageUrl($testimonial->avatar, 'testimonial-avatar'),
                     'tag' => $testimonial->tag,
                     'rating' => $testimonial->rating,
                 ];
@@ -153,7 +158,7 @@ class LandingController extends Controller
                     'id' => $article->id,
                     'title' => $article->title,
                     'slug' => $article->slug,
-                    'thumbnail' => $this->formatImageUrl($article->thumbnail),
+                    'thumbnail' => $this->formatImageUrl($article->thumbnail, 'article-thumb'),
                     'excerpt' => $article->excerpt,
                     'author' => $article->author ?? 'ASTA Digital Team',
                     'category' => $article->category ?? 'Technology',

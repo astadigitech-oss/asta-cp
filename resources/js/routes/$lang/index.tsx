@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LandingPage } from "@/components/landing/LandingPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { useTranslation } from "@/i18n/useTranslation";
 import enTranslations from "@/locales/en.json";
 import idTranslations from "@/locales/id.json";
+
+const LandingPage = lazyRouteComponent(
+  () => import("@/components/landing/LandingPage"),
+  "LandingPage",
+);
 
 export const Route = createFileRoute("/$lang/")({
   head: ({ params }) => {

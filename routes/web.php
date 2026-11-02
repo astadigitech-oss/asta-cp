@@ -6,6 +6,7 @@ use App\Models\Service;
 use App\Models\Article;
 use App\Models\Discover;
 use App\Models\Portfolio;
+use App\Http\Controllers\OptimizedImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,6 +107,9 @@ Route::get('/sitemap.xml', function () {
     return response($xml, 200)->header('Content-Type', 'text/xml');
 })->middleware('throttle:60,1');
 
+Route::get('/media/{preset}/{path}', OptimizedImageController::class)
+    ->where('path', '.+')
+    ->name('media.optimized');
 
 // Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article & Discover SEO Server-side Rendering
 // NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).

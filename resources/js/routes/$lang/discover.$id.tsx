@@ -1,6 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { DiscoverDetailPage } from "@/components/discover/DiscoverDetailPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import axios from "axios";
+
+const DiscoverDetailPage = lazyRouteComponent(
+  () => import("@/components/discover/DiscoverDetailPage"),
+  "DiscoverDetailPage",
+);
 
 export const Route = createFileRoute("/$lang/discover/$id")({
   loader: async ({ params: { id } }) => {

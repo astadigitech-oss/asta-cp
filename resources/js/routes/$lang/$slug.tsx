@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { BlogDetailPage } from "@/components/blog/BlogDetailPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { localizeText } from "@/i18n/localize";
 import { Language } from "@/i18n/LanguageContext";
 import axios from "axios";
+
+const BlogDetailPage = lazyRouteComponent(
+  () => import("@/components/blog/BlogDetailPage"),
+  "BlogDetailPage",
+);
 
 export const Route = createFileRoute("/$lang/$slug")({
   loader: async ({ params: { slug } }) => {

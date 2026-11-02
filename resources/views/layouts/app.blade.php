@@ -447,6 +447,9 @@
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+    @if ($isHomePage ?? false)
+        <link rel="preload" as="image" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot.webp') }}" fetchpriority="high">
+    @endif
     @php
         $gaId = config('services.google.analytics_id');
     @endphp

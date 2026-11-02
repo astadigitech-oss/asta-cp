@@ -21,6 +21,7 @@ interface PortfolioItem {
   name: string;
   description?: string;
   image?: string;
+  image_small?: string;
   category?: "Mobile" | "Desktop" | string;
 }
 
@@ -460,7 +461,7 @@ export function Navbar() {
                             className="flex gap-3 items-center p-2 rounded-lg hover:bg-blue-50 transition-colors group/item border border-transparent hover:border-blue-100 cursor-pointer"
                           >
                             {p.image ? (
-                              <img src={p.image} alt={p.name} width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                              <img src={p.image_small || p.image} alt={p.name} width={48} height={48} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover shrink-0" />
                             ) : (
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#004AAD] to-[#38B6FF] flex items-center justify-center shrink-0">
                                 <span className="text-white text-xs font-bold">{p.name.charAt(0)}</span>
