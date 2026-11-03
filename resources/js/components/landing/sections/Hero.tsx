@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData, ClientItem } from "@/hooks/useLandingData";
 import { Eyebrow, Counter, OceanBackdrop } from "../common";
-
-import laptopImg from "@/assets/Hero/Laptop.webp";
-import robotImg from "@/assets/Hero/Robot.webp";
-import laptopSmallImg from "@/assets/Hero/Laptop-small.webp";
-import robotSmallImg from "@/assets/Hero/Robot-small.webp";
+import { ResponsiveImage } from "../common/ResponsiveImage";
 
 const defaultClientNames = [
   "Telkom Indonesia",
@@ -109,27 +105,27 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
               <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-2">
                 <div className="relative w-full h-full flex items-center justify-center overflow-visible">
                   <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <img
-                      src={laptopImg}
-                      srcSet={`${laptopSmallImg} 480w, ${laptopImg} 952w`}
+                    <ResponsiveImage
+                      source="Hero/Laptop.webp"
                       sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
                       alt="Laptop ASTA Digital Agency"
                       width={952}
                       height={714}
+                      loading="eager"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
                     />
                   </div>
 
                   <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <img
-                      src={robotImg}
-                      srcSet={`${robotSmallImg} 480w, ${robotImg} 954w`}
+                    <ResponsiveImage
+                      source="Hero/Robot.webp"
                       sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
                       alt="3D Robot ASTA Digital Agency"
                       width={954}
                       height={715}
                       fetchPriority="high"
+                      loading="eager"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.45)] select-none scale-[1.2] sm:scale-[1.1] lg:scale-[1.2] translate-x-[-7.9%] translate-y-[-20.5%]"
                     />

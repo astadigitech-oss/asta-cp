@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
-import logo from "../assets/logo/Logo Hitam 2.png";
-import logoSmall from "../assets/logo/Logo-Hitam-230.webp";
-import p1 from "../assets/portfolio-1.jpg";
-import p2 from "../assets/portfolio-2.jpg";
-import p3 from "../assets/portfolio-3.jpg";
 import { useLandingData } from "../hooks/useLandingData";
 import { useTranslation } from "../i18n/useTranslation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ResponsiveImage } from "./landing/common/ResponsiveImage";
 
 interface ServiceItem {
   id: number;
@@ -48,19 +44,19 @@ const defaultNewsItems: DiscoverItem[] = [
     id: "mock-1",
     name: "Why Your Business Needs an Integrated Digital System",
     short_description: "Learn how integrated digital systems improve efficiency.",
-    image: p1,
+    image: "portfolio-1.jpg",
   },
   {
     id: "mock-2",
     name: "ERP: The Solution to Manage Business in One System",
     short_description: "Integrating various financial & operational processes.",
-    image: p2,
+    image: "portfolio-2.jpg",
   },
   {
     id: "mock-3",
     name: "A Website is Not Enough: Time for a Custom System",
     short_description: "Discover when your business needs a custom system.",
-    image: p3,
+    image: "portfolio-3.jpg",
   },
 ];
 
@@ -191,7 +187,7 @@ export function Navbar() {
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <img src={logoSmall} srcSet={`${logoSmall} 230w, ${logo} 500w`} sizes="115px" alt="Asta Digital Agency" width={230} height={230} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
+            <ResponsiveImage source="logo/Logo-Hitam-230.webp" sizes="115px" alt="Asta Digital Agency" width={230} height={230} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
           </a>
@@ -712,12 +708,13 @@ export function Navbar() {
                                 href={itemHref}
                                 className="relative w-full shrink-0 h-full group/slide overflow-hidden block"
                               >
-                                <img
-                                  src={Array.isArray(item.image) ? item.image[0] : item.image}
+                                <ResponsiveImage
+                                    source={Array.isArray(item.image) ? item.image[0] : item.image || "portfolio-1.jpg"}
                                   alt={item.name}
                                   width={640}
                                   height={400}
-                                  loading="lazy"
+                                    sizes="(min-width: 1280px) 25vw, 100vw"
+                                    loading="lazy"
                                   decoding="async"
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover/slide:scale-105"
                                 />

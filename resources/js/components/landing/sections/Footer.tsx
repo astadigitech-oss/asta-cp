@@ -1,13 +1,18 @@
-import { Instagram, Mail, LinkedinIcon, MapPin, Clock, FileText } from "lucide-react";
+import { Instagram, Mail, LinkedinIcon, MapPin, Clock, FileText, Facebook, Youtube } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useParams } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/logo/LOGO PUTIH.png";
+import { ResponsiveImage } from "../common/ResponsiveImage";
 
 export function Footer() {
   const { t } = useTranslation();
   const params = useParams({ strict: false }) as Record<string, string>;
   const lang = params?.lang || "id";
+  const socialLinks = typeof window !== "undefined"
+    ? (window as Window & {
+      __INITIAL_DATA__?: { socialLinks?: Record<string, string | null> };
+    }).__INITIAL_DATA__?.socialLinks ?? {}
+    : {};
 
   return (
     <footer className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -31,7 +36,7 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5">
-              <img src={logo} alt="Asta Digital Agency" width={1955} height={1191} loading="lazy" decoding="async" className="mb-4 h-auto w-[135px] p-1" />
+              <ResponsiveImage source="logo/LOGO PUTIH.png" alt="Asta Digital Agency" loading="lazy" decoding="async" className="mb-4 h-auto w-[135px] p-1" />
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
               {t("footer.description")}
@@ -62,6 +67,21 @@ export function Footer() {
               >
                 <LinkedinIcon className="h-4 w-4" />
               </a>
+              {socialLinks.facebook && (
+                <a href={socialLinks.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:bg-white/20 hover:scale-110">
+                  <Facebook className="h-4 w-4" />
+                </a>
+              )}
+              {socialLinks.x && (
+                <a href={socialLinks.x} target="_blank" rel="noreferrer" aria-label="X" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:bg-white/20 hover:scale-110">
+                  <span className="text-sm font-bold">X</span>
+                </a>
+              )}
+              {socialLinks.youtube && (
+                <a href={socialLinks.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:bg-white/20 hover:scale-110">
+                  <Youtube className="h-4 w-4" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -71,9 +91,15 @@ export function Footer() {
                 <MapPin className="h-3.5 w-3.5" />
                 {t("footer.office_title")}
               </div>
-              <p className="mt-4 text-xs leading-relaxed text-white/80">
+              <address className="mt-4 text-xs leading-relaxed text-white/80 not-italic">
                 {t("contact.info_office_address")}
-              </p>
+              </address>
+              <a href="tel:+6281578223564" className="mt-2 block text-xs text-white/80 hover:text-white">
+                +62 815 7822 3564
+              </a>
+              <a href="mailto:astadigitech@gmail.com" className="mt-1 block text-xs text-white/80 hover:text-white">
+                astadigitech@gmail.com
+              </a>
             </div>
 
             <div>
@@ -123,7 +149,6 @@ export function Footer() {
               </div>
               <ul className="mt-4 space-y-2 text-xs text-white/80">
                 <li>{t("footer.hours_weekdays")}</li>
-                <li>{t("footer.hours_saturday")}</li>
                 <li>{t("footer.hours_sunday")}</li>
               </ul>
             </div>

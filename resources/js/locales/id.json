@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Jasa Pembuatan Website & Aplikasi",
-    "description": "ASTA Digital Agency menyediakan jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan di Yogyakarta.",
-    "og_title": "ASTA Digital Agency — Jasa Pembuatan Website & Aplikasi",
-    "og_description": "Jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk bisnis dan perusahaan di Yogyakarta."
+    "title": "ASTA Digital Agency — Jasa Pembuatan Website Yogyakarta",
+    "description": "ASTA Digital Agency melayani jasa pembuatan website Yogyakarta, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan.",
+    "og_title": "ASTA Digital Agency — Jasa Pembuatan Website Yogyakarta & Aplikasi",
+    "og_description": "Jasa website Yogyakarta, aplikasi mobile, dan sistem informasi custom dari ASTA Digital Agency untuk UMKM dan perusahaan."
   },
   "nav": {
     "home": "Beranda",
@@ -27,11 +27,11 @@
     "menu_aria": "Buka/Tutup Navigasi"
   },
   "hero": {
-    "eyebrow": "Agensi Digital Premium · Est. 2022",
-    "title_1": "Jasa Pembuatan ",
-    "title_highlight": "Website & Aplikasi",
-    "title_2": " untuk Bisnis di Yogyakarta.",
-    "description": "ASTA Digital Agency menyediakan jasa pembuatan website, pengembangan aplikasi mobile, dan sistem informasi custom. Solusi dikembangkan sesuai kebutuhan operasional bisnis, instansi, dan perusahaan.",
+    "eyebrow": "ASTA Digital Agency · Agensi Digital Yogyakarta · Est. 2022",
+    "title_1": "Website & Aplikasi sebagai",
+    "title_highlight": "Solusi Digital",
+    "title_2": " untuk bisnis anda",
+    "description": "ASTA Digital Agency menyediakan jasa pembuatan website dan aplikasi mobile yang membantu bisnis dan instansi merencanakan serta membangun website, aplikasi mobile, dan sistem informasi custom. Setiap proyek dimulai dengan memahami tujuan, pengguna, proses kerja, dan batasan teknis agar solusi yang dibuat benar-benar berguna setelah diluncurkan.",
     "cta_start": "Mulai Proyek",
     "cta_portfolio": "Lihat Portofolio",
     "trust_security": "Keamanan Siap terjamin",
@@ -44,23 +44,23 @@
     "trusted_by": "DIPERCAYA OLEH INSTANSI & PERUSAHAAN TERKEMUKA"
   },
   "home_seo": {
-    "title": "Jasa Pembuatan Website, Aplikasi Mobile, dan Sistem Informasi",
-    "website_title": "Website dan aplikasi web untuk bisnis",
-    "website_description": "ASTA Digital Agency melayani jasa pembuatan website company profile, portal, dan aplikasi web responsif. Struktur halaman, navigasi, dan fitur disesuaikan dengan tujuan bisnis agar informasi mudah dipahami calon pelanggan.",
-    "mobile_title": "Pengembangan aplikasi mobile",
-    "mobile_description": "Kami merancang dan mengembangkan aplikasi Android dan iOS berdasarkan kebutuhan pengguna dan alur kerja. Cakupan fitur, integrasi, dan antarmuka ditentukan bersama sebelum pengembangan dimulai.",
-    "systems_title": "Sistem informasi dan software custom",
-    "systems_description": "Untuk proses operasional dengan alur khusus, tim kami membangun sistem informasi dan software custom. Solusi dapat mencakup pengelolaan data, otomasi proses, dashboard, dan integrasi sesuai kebutuhan organisasi.",
+    "title": "Jasa pembuatan aplikasi mobile dan sistem informasi custom | ASTA Digital Agency",
+    "website_title": "Jasa pembuatan website Yogyakarta",
+    "website_description": "ASTA Digital Agency mengerjakan jasa pembuatan website Yogyakarta, mulai dari company profile dan portal informasi hingga aplikasi web responsif. Kami menyusun struktur halaman, navigasi, dan kebutuhan teknis bersama pemilik proyek. Hasilnya membantu pengunjung memahami layanan, menemukan informasi, dan menghubungi bisnis dengan lebih mudah.",
+    "mobile_title": "Jasa pembuatan aplikasi mobile",
+    "mobile_description": "Kami merancang aplikasi Android dan iOS berdasarkan kebutuhan pengguna serta alur kerja organisasi. Sebelum pengembangan dimulai, tim menyepakati cakupan fitur, integrasi, keamanan, dan rancangan antarmuka. Pengujian dilakukan pada alur utama agar aplikasi siap dipakai dalam kegiatan sehari-hari.",
+    "systems_title": "Sistem informasi custom",
+    "systems_description": "Untuk kebutuhan yang tidak dapat dipenuhi aplikasi umum, ASTA Digital Agency membangun sistem informasi custom. Sistem dapat membantu mengelola data, mengotomatisasi proses, menampilkan laporan, serta menghubungkan layanan yang sudah digunakan. Hak akses dan alur persetujuan disesuaikan dengan peran setiap pengguna.",
     "process_title": "Proses pengembangan yang terarah",
-    "process_description": "Setiap proyek dimulai dengan memahami tujuan, pengguna, dan kendala operasional. Setelah ruang lingkup disepakati, tim menyusun rancangan, mengembangkan fitur, lalu menguji hasilnya sebelum serah terima. Pemilik proyek dapat meninjau prioritas dan progres di setiap tahap.",
-    "location": "Berbasis di Bantul, Yogyakarta, ASTA Digital Agency bekerja dengan UMKM, instansi, dan perusahaan untuk menerjemahkan kebutuhan menjadi solusi digital. Diskusi awal membantu menentukan jenis website, aplikasi mobile, atau sistem informasi yang paling sesuai dengan alur kerja dan anggaran proyek.",
+    "process_description": "Setiap proyek dimulai dengan diskusi tentang tujuan, pengguna, alur kerja, anggaran, dan kendala operasional. Setelah prioritas serta ruang lingkup disepakati, tim menyusun rancangan dan rencana pengerjaan yang dapat ditinjau klien. Pengembangan dilakukan bertahap, dengan uji fungsi dan perbaikan sebelum serah terima. Dokumentasi dan arahan penggunaan membantu tim klien mengelola solusi setelah peluncuran.",
+    "location": "Berbasis di Bantul, Yogyakarta, ASTA Digital Agency melayani UMKM, instansi, dan perusahaan di Yogyakarta maupun wilayah lain di Indonesia. Kami membantu membandingkan pilihan website, aplikasi mobile, atau sistem informasi custom berdasarkan kebutuhan pengguna, proses kerja, dan anggaran. Diskusi awal digunakan untuk memahami konteks proyek, bukan untuk menawarkan fitur yang tidak diperlukan.",
     "services_link": "Lihat layanan",
     "contact_link": "Diskusikan kebutuhan proyek"
   },
   "about": {
-    "eyebrow": "Profil Entitas & Rekayasa",
-    "title": "Siapa ASTA DIGITAL AGENCY dan bagaimana keahlian rekayasa sistemnya?",
-    "description": "ASTA DIGITAL AGENCY memadukan keahlian rekayasa perangkat lunak enterprise, arsitektur data aman, dan desain antarmuka intuitif untuk menghasilkan produk digital yang terbukti memangkas waktu operasional bisnis.",
+    "eyebrow": "Profil Entitas & Keahlian Teknis",
+    "title": "Siapa ASTA DIGITAL AGENCY dan bagaimana keahlian teknis sistemnya",
+    "description": "ASTA DIGITAL AGENCY memadukan kapabilitas perangkat lunak, perancangan data, dan desain antarmuka yang mudah digunakan. Tim membangun solusi digital berdasarkan kebutuhan pengguna dan konteks operasional, lalu menguji alur penting sebelum peluncuran. Pendekatan ini membantu klien memahami ruang lingkup, risiko, dan keputusan teknis sepanjang proyek.",
     "vision_title": "Visi ASTA DIGITAL AGENCY",
     "vision_desc": "Menjadi agensi teknologi terdepan yang memajukan pertumbuhan bisnis dan pelayanan publik melalui solusi perangkat lunak inovatif.",
     "mission_title": "Misi ASTA DIGITAL AGENCY",
@@ -79,7 +79,7 @@
   "services": {
     "eyebrow": "Solusi & Layanan Teknologi",
     "title": "Apa saja solusi dan layanan teknologi dari ASTA DIGITAL AGENCY?",
-    "description": "ASTA DIGITAL AGENCY menyediakan layanan rekayasa perangkat lunak menyeluruh: aplikasi mobile (Android & iOS) performa tinggi, sistem informasi enterprise kustom, dan portal web modern yang aman dan teruji.",
+    "description": "ASTA DIGITAL AGENCY menyediakan layanan kapabilitas perangkat lunak menyeluruh: aplikasi mobile (Android & iOS) performa tinggi, sistem informasi enterprise kustom, dan portal web modern yang aman dan teruji.",
     "view_detail": "Lihat Detail",
     "empty": "Belum ada layanan yang tersedia saat ini.",
     "default_web_title": "Web Apps Development",
@@ -234,9 +234,8 @@
     "solutions_title": "Solusi",
     "hours_title": "Jam Kerja Kantor",
     "contact_title": "Hubungi Kami",
-    "hours_weekdays": "Senin - Jumat: 08:00 - 17:00",
-    "hours_saturday": "Sabtu: On Call",
-    "hours_sunday": "Minggu: On Call",
+    "hours_weekdays": "Senin - Sabtu: 08:00 - 17:00",
+    "hours_sunday": "Minggu: Tutup",
     "sol_consultant": "Konsultan IT",
     "sol_services": "Layanan IT",
     "sol_web": "Web Apps Development",
@@ -292,7 +291,7 @@
   "comparison": {
     "eyebrow": "TOLOK UKUR STANDAR",
     "title": "Mengapa Instansi & Korporasi Memilih ASTA DIGITAL AGENCY?",
-    "description": "Bandingkan bagaimana standar rekayasa perangkat lunak modern ASTA DIGITAL AGENCY mengungguli metode pengembangan agensi konvensional.",
+    "description": "Bandingkan bagaimana standar kapabilitas perangkat lunak modern ASTA DIGITAL AGENCY mengungguli metode pengembangan agensi konvensional.",
     "col_parameter": "Parameter Evaluasi",
     "col_asta": "Metode ASTA DIGITAL AGENCY",
     "col_traditional": "Metode Tradisional",

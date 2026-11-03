@@ -26,7 +26,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootElement = document.getElementById('react-app');
-if (rootElement) {
+if (rootElement && rootElement.dataset.preserveSsr !== 'true') {
   const initialData = (window as any).__INITIAL_DATA__;
   if (initialData?.article && initialData.slug) {
     queryClient.setQueryData(['article', String(initialData.slug)], initialData.article);

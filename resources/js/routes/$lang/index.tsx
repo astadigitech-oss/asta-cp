@@ -12,6 +12,17 @@ export const Route = createFileRoute("/$lang/")({
   head: ({ params }) => {
     const lang = params?.lang || "id";
     const isEn = lang === "en";
+    const initialData = typeof window !== "undefined"
+      ? (window as Window & {
+        __INITIAL_DATA__?: {
+          socialLinks?: Record<string, string | null>;
+          agencyGeo?: { latitude: number; longitude: number } | null;
+        };
+      }).__INITIAL_DATA__
+      : undefined;
+    const socialLinks = Object.values(initialData?.socialLinks ?? {}).filter(
+      (url): url is string => typeof url === "string" && url !== "",
+    );
 
     const professionalServiceSchema = {
       "@context": "https://schema.org",
@@ -25,7 +36,25 @@ export const Route = createFileRoute("/$lang/")({
       sameAs: [
         "https://www.instagram.com/astadigitalagency/",
         "https://www.linkedin.com/in/asta-digital-agency-b9441637a/",
+        ...socialLinks,
       ],
+      foundingDate: "2022",
+      areaServed: [
+        { "@type": "City", name: "Yogyakarta" },
+        { "@type": "Country", name: "Indonesia" },
+      ],
+      openingHoursSpecification: [{
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "08:00",
+        closes: "17:00",
+      }],
+      ...(initialData?.agencyGeo ? {
+        geo: {
+          "@type": "GeoCoordinates",
+          ...initialData.agencyGeo,
+        },
+      } : {}),
       priceRange: "$$",
       address: {
         "@type": "PostalAddress",

@@ -26,6 +26,21 @@ class OptimizedImage
         return self::PRESETS;
     }
 
+    public static function htmlAttributes(string $preset): string
+    {
+        $configuration = self::PRESETS[$preset] ?? null;
+
+        if (! $configuration) {
+            throw new \InvalidArgumentException("Unknown image preset [{$preset}].");
+        }
+
+        return sprintf(
+            'width="%d" height="%d"',
+            $configuration['width'],
+            $configuration['height'],
+        );
+    }
+
     public static function url(?string $path, string $preset): ?string
     {
         if (! $path) {

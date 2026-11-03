@@ -55,6 +55,7 @@ COPY . .
 
 # Copy compiled frontend assets dari stage 1
 COPY --from=frontend /app/public/build ./public/build
+COPY --from=frontend /app/public/images/optimized ./public/images/optimized
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction

@@ -91,6 +91,9 @@
         $rawDesc = $currentLocale === 'en'
             ? 'Explore industry insights, digital transformation case studies, and software engineering solutions from ASTA Digital Agency.'
             : 'Jelajahi kumpulan wawasan industri, studi kasus transformasi digital, dan panduan rekayasa perangkat lunak dari para ahli di ASTA Digital Agency.';
+    } elseif ($isHomePage ?? false) {
+        $rawTitle = transKey($transDict, 'meta.title', 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
+        $rawDesc = transKey($transDict, 'meta.description', 'ASTA Digital Agency membangun website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan.');
     } else {
         $rawTitle = $seo?->title ?? ($itemTitle ? $itemTitle . ' — ASTA Digital Agency' : transKey($transDict, 'meta.title', 'ASTA Digital Agency — Solusi Teknologi & Digital Agency'));
         $rawDesc = $seo?->description ?? ($itemDesc ?: transKey($transDict, 'meta.description', 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.'));
@@ -99,6 +102,25 @@
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
     $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
+
+    $homepageSourceFiles = [
+        resource_path('views/layouts/app.blade.php'),
+        $localesPath,
+    ];
+    $homepageSourceModifiedAt = collect($homepageSourceFiles)
+        ->filter(fn ($file) => is_file($file))
+        ->map(fn ($file) => filemtime($file))
+        ->max() ?? time();
+    $homepageDataModifiedAt = collect([$homeServices, $homeArticles, $homePortfolios, $homeDiscovers])
+        ->filter()
+        ->flatMap(fn ($items) => collect($items))
+        ->pluck('updated_at')
+        ->filter()
+        ->max();
+    $homepageModifiedAt = \Illuminate\Support\Carbon::createFromTimestamp(max(
+        $homepageSourceModifiedAt,
+        $homepageDataModifiedAt?->timestamp ?? 0,
+    ));
 
     $keywords = 'asta digital agency, jasa pembuatan website, pengembangan aplikasi mobile, sistem informasi custom, software house indonesia, digital agency indonesia';
     if ($seo && !empty($seo->focusKeywords)) {
@@ -109,7 +131,7 @@
     }
 
     $robots = $isNotFound ? 'noindex, follow' : ($seo?->robots ?? 'index, follow');
-    $canonicalUrl = $seo?->canonical ?: $currentUrl;
+    $canonicalUrl = $seo?->canonical ?: (($isHomePage ?? false) ? ($currentLocale === 'en' ? $enUrl : $idUrl) : $currentUrl);
 
     // Resolve OG default image via Vite manifest (supaya dapat URL dengan hash yang benar)
     $ogDefaultImage = \Illuminate\Support\Facades\Vite::asset('resources/js/assets/og-image.png');
@@ -188,6 +210,11 @@
 
     <!-- Structured Data (JSON-LD) -->
     @php
+        $agencySocialLinks = collect(config('services.agency.social_links', []))
+            ->filter(fn ($url) => is_string($url) && $url !== '')
+            ->all();
+        $agencyLatitude = config('services.agency.latitude');
+        $agencyLongitude = config('services.agency.longitude');
         $professionalServiceSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'ProfessionalService',
@@ -202,6 +229,19 @@
             'telephone' => '+6281578223564',
             'email' => 'astadigitech@gmail.com',
             'priceRange' => '$$',
+            'foundingDate' => '2022',
+            'areaServed' => [
+                ['@type' => 'City', 'name' => 'Yogyakarta'],
+                ['@type' => 'Country', 'name' => 'Indonesia'],
+            ],
+            'openingHoursSpecification' => [
+                [
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                    'opens' => '08:00',
+                    'closes' => '17:00',
+                ],
+            ],
             'address' => [
                 '@type' => 'PostalAddress',
                 'streetAddress' => 'Jl. Imogiri Timur, Gng. Tobanan V, dsn. Jati Rt 008, Wonokromo, Kec. Pleret',
@@ -210,11 +250,18 @@
                 'postalCode' => '55791',
                 'addressCountry' => 'ID',
             ],
-            'sameAs' => [
+            'sameAs' => array_values(array_filter(array_merge([
                 'https://www.instagram.com/astadigitalagency/',
                 'https://www.linkedin.com/in/asta-digital-agency-b9441637a/',
-            ],
+            ], $agencySocialLinks))),
         ];
+        if (is_numeric($agencyLatitude) && is_numeric($agencyLongitude)) {
+            $professionalServiceSchema['geo'] = [
+                '@type' => 'GeoCoordinates',
+                'latitude' => (float) $agencyLatitude,
+                'longitude' => (float) $agencyLongitude,
+            ];
+        }
     @endphp
     <script type="application/ld+json">
     {!! json_encode($professionalServiceSchema, $jsonFlags) !!}
@@ -359,6 +406,30 @@
     <script type="application/ld+json">
     {!! json_encode($homeFaqSchema, $jsonFlags) !!}
     </script>
+    @php
+        $homepageSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'ASTA Digital Agency',
+            'url' => rtrim(config('app.url', url('/')), '/'),
+            'dateModified' => $homepageModifiedAt->toIso8601String(),
+            'inLanguage' => $currentLocale,
+        ];
+        $homepagePageSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $metaTitle,
+            'url' => $canonicalUrl,
+            'dateModified' => $homepageModifiedAt->toIso8601String(),
+            'inLanguage' => $currentLocale,
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($homepageSchema, $jsonFlags) !!}
+    </script>
+    <script type="application/ld+json">
+    {!! json_encode($homepagePageSchema, $jsonFlags) !!}
+    </script>
     @endif
     @if ($isBlogPage && !empty($blogArticles['data']))
     @php
@@ -451,9 +522,10 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
         <link rel="preload" as="image"
-              href="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }}"
-              imagesrcset="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }} 480w, {{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot.webp') }} 954w"
+              href="/images/optimized/Hero/Robot-webp-640.avif"
+              imagesrcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w"
               imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+              type="image/avif"
               fetchpriority="high">
     @endif
     @php
@@ -461,7 +533,7 @@
     @endphp
     @if (!empty($gaId))
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+    <script defer src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
@@ -472,12 +544,31 @@
     {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
+    @php
+        $clientInitialData = array_merge($initialData ?? ['locale' => $currentLocale], [
+            'socialLinks' => $agencySocialLinks ?? [],
+            'agencyGeo' => isset($agencyLatitude, $agencyLongitude) && is_numeric($agencyLatitude) && is_numeric($agencyLongitude)
+                ? ['latitude' => (float) $agencyLatitude, 'longitude' => (float) $agencyLongitude]
+                : null,
+        ]);
+    @endphp
     <script>
-        window.__INITIAL_DATA__ = @json($initialData ?? ['locale' => $currentLocale]);
+        window.__INITIAL_DATA__ = @json($clientInitialData);
     </script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box}
+        html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+        body{margin:0;min-width:320px;min-height:100vh;overflow-x:hidden;background:#f7fbff;color:#0b1f33;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+        #react-app{min-height:100vh;overflow-x:hidden}
+        h1,h2,h3,p{margin-top:0}
+    </style>
+    <link rel="preload" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}" as="style">
+    <noscript>
+        <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
+    </noscript>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
@@ -513,8 +604,7 @@
                     <div class="my-6">
                         <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
-                             width="1200"
-                             height="675"
+                             {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!}
                              fetchpriority="high"
                              decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
@@ -557,8 +647,7 @@
                                 @if (!empty($sec['image']))
                                     <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'article-image') }}"
                                          alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
-                                         width="1200"
-                                         height="800"
+                                         {!! \App\Support\OptimizedImage::htmlAttributes('article-image') !!}
                                          loading="lazy"
                                          decoding="async"
                                          class="w-full rounded-xl object-cover my-4" />
@@ -619,7 +708,7 @@
                                 <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
                                     @if ($recThumbnail)
                                         <div class="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
-                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" width="640" height="360" loading="lazy" decoding="async" class="h-full w-full object-cover" />
+                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!} loading="lazy" decoding="async" class="h-full w-full object-cover" />
                                         </div>
                                     @endif
                                     <div class="text-xs text-gray-400 mb-1">
@@ -657,8 +746,7 @@
                     <div class="my-6">
                         <img src="{{ \App\Support\OptimizedImage::url(is_array($discover->image) ? ($discover->image[0] ?? null) : $discover->image, 'discover-card') }}"
                              alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
-                             width="1200"
-                             height="675"
+                             {!! \App\Support\OptimizedImage::htmlAttributes('discover-card') !!}
                              fetchpriority="high"
                              decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
@@ -695,8 +783,7 @@
                                 @if (!empty($sec['image']))
                                     <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'discover-section') }}"
                                          alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
-                                         width="1200"
-                                         height="800"
+                                         {!! \App\Support\OptimizedImage::htmlAttributes('discover-section') !!}
                                          loading="lazy"
                                          decoding="async"
                                          class="w-full rounded-2xl object-cover max-h-[500px]" />
@@ -856,7 +943,7 @@
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if ($dImg)
                                     <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" width="640" height="400" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-card') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
                                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -939,7 +1026,22 @@
                 </a>
             </main>
         @else
-            {{-- Semantic Server-Side Pre-rendered Content untuk Homepage & Bot AI (100% Sinkron CSR) --}}
+            {{-- Homepage SSR uses the locale dictionary directly; React does not replace this markup. --}}
+            <header class="border-b border-gray-200 bg-white/95 dark:border-gray-800 dark:bg-gray-950">
+                <nav aria-label="{{ $currentLocale === 'en' ? 'Main navigation' : 'Navigasi utama' }}" class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+                    <a href="/{{ $currentLocale }}" class="font-bold text-gray-900 dark:text-white">ASTA Digital Agency</a>
+                    <div class="flex flex-wrap items-center gap-4 text-sm">
+                        <a href="#tentang" class="hover:text-blue-600">{{ transKey($transDict, 'nav.about') }}</a>
+                        <a href="#layanan" class="hover:text-blue-600">{{ transKey($transDict, 'nav.services') }}</a>
+                        <a href="#portofolio" class="hover:text-blue-600">{{ transKey($transDict, 'nav.portfolio') }}</a>
+                        <a href="#faq" class="hover:text-blue-600">FAQ</a>
+                        <a href="/{{ $currentLocale }}/blog" class="hover:text-blue-600">{{ transKey($transDict, 'nav.blog') }}</a>
+                        <a href="/{{ $currentLocale }}/discover" class="hover:text-blue-600">{{ transKey($transDict, 'nav.discover') }}</a>
+                        <a href="#kontak" class="hover:text-blue-600">{{ transKey($transDict, 'nav.contact') }}</a>
+                        <a href="{{ $currentLocale === 'en' ? $idUrl : $enUrl }}" lang="{{ $currentLocale === 'en' ? 'id' : 'en' }}" class="font-semibold">{{ $currentLocale === 'en' ? 'ID' : 'EN' }}</a>
+                    </div>
+                </nav>
+            </header>
             <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
                 {{-- 1. Hero Section (#top) --}}
                 <header id="top" class="border-b border-gray-100 dark:border-gray-800 pb-12 space-y-6">
@@ -955,6 +1057,11 @@
                         </span>
                         {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
                     </h1>
+                    <picture class="block max-w-xl">
+                        <source type="image/avif" srcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <source type="image/webp" srcset="/images/optimized/Hero/Robot-webp-320.webp 320w, /images/optimized/Hero/Robot-webp-480.webp 480w, /images/optimized/Hero/Robot-webp-640.webp 640w, /images/optimized/Hero/Robot-webp-954.webp 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <img src="/images/optimized/Hero/Robot-webp-954.webp" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
+                    </picture>
 
                     <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-normal max-w-4xl">
                         {{ transKey($transDict, 'hero.description') }}
@@ -1260,7 +1367,7 @@
                                 <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                     @if ($dImg)
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" width="640" height="400" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-card') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                         </a>
                                     @endif
                                     <div class="p-6 flex-1 flex flex-col justify-between">
@@ -1495,7 +1602,72 @@
                 </section>
 
                 {{-- 13. Section Kontak & Footer (#kontak) --}}
-                <footer id="kontak" class="pt-4 space-y-8 text-sm text-gray-600 dark:text-gray-400">
+                <section id="kontak" class="rounded-3xl border border-gray-200 bg-white p-8 text-gray-700 shadow-xs dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'contact.title') }}</h2>
+                    <p class="mt-2 max-w-3xl leading-relaxed">{{ transKey($transDict, 'contact.description') }}</p>
+                    <div class="mt-6 grid gap-8 lg:grid-cols-2">
+                        <div>
+                            <address class="grid gap-4 not-italic sm:grid-cols-2 lg:grid-cols-1">
+                                <div>
+                                    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ transKey($transDict, 'contact.info_office') }}</span>
+                                    <span class="mt-1 block">{{ transKey($transDict, 'contact.info_office_address') }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ transKey($transDict, 'contact.info_phone') }}</span>
+                                    <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="tel:+6281578223564">+62 815 7822 3564</a>
+                                    <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="mailto:astadigitech@gmail.com">astadigitech@gmail.com</a>
+                                </div>
+                            </address>
+                        </div>
+                        <form data-contact-form action="/api/contact" method="post"
+                            data-success="{{ transKey($transDict, 'contact.form.success_desc') }}"
+                            data-error="{{ transKey($transDict, 'contact.form.error_desc') }}"
+                            data-submitting="{{ transKey($transDict, 'contact.form.submitting') }}"
+                            class="grid gap-4">
+                            <input type="text" name="website_hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden opacity-0 absolute -z-10 pointer-events-none h-0 w-0" />
+                            <input type="hidden" name="_timer" value="" />
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'contact.form_title') }}</h3>
+                            <div>
+                                <label for="contact-name" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.full_name') }}</label>
+                                <input id="contact-name" name="name" type="text" required maxlength="255" autocomplete="name"
+                                    placeholder="{{ transKey($transDict, 'contact.form.placeholder_first_name') }}"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white" />
+                            </div>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label for="contact-email" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.email') }}</label>
+                                    <input id="contact-email" name="email" type="email" required maxlength="255" autocomplete="email"
+                                        placeholder="{{ transKey($transDict, 'contact.form.placeholder_email') }}"
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white" />
+                                </div>
+                                <div>
+                                    <label for="contact-phone" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.phone') }}</label>
+                                    <input id="contact-phone" name="phone" type="tel" maxlength="20" autocomplete="tel"
+                                        placeholder="{{ transKey($transDict, 'contact.form.placeholder_phone') }}"
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white" />
+                                </div>
+                            </div>
+                            <div>
+                                <label for="contact-organization" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.organization') }}</label>
+                                <input id="contact-organization" name="organization" type="text" maxlength="255" autocomplete="organization"
+                                    placeholder="{{ transKey($transDict, 'contact.form.placeholder_organization') }}"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white" />
+                            </div>
+                            <div>
+                                <label for="contact-message" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.message') }}</label>
+                                <textarea id="contact-message" name="message" rows="5" required maxlength="5000"
+                                    placeholder="{{ transKey($transDict, 'contact.form.placeholder_message') }}"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white"></textarea>
+                            </div>
+                            <button type="submit" class="justify-self-start rounded-full bg-[#004AAD] px-6 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">
+                                {{ transKey($transDict, 'contact.form.submit') }}
+                            </button>
+                            <p data-contact-status role="status" aria-live="polite" class="text-sm"></p>
+                        </form>
+                    </div>
+                </section>
+
+                <footer id="footer" class="pt-4 space-y-8 text-sm text-gray-600 dark:text-gray-400">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div class="space-y-3">
                             <span class="text-lg font-bold text-gray-900 dark:text-white">ASTA DIGITAL AGENCY</span>
@@ -1505,27 +1677,82 @@
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.office_title', 'Alamat Kantor') }}</span>
-                            <p class="text-xs leading-relaxed">
+                            <address class="text-xs leading-relaxed not-italic">
                                 {{ transKey($transDict, 'contact.info_office_address') }}
-                            </p>
+                            </address>
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
                             <p class="text-xs">Email: <a href="mailto:astadigitech@gmail.com" class="text-blue-600 hover:underline">astadigitech@gmail.com</a></p>
-                            <p class="text-xs">Phone: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
+                            <p class="text-xs">{{ transKey($transDict, 'contact.info_phone', 'Telepon') }}: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.hours_title', 'Jam Kerja') }}</span>
                             <p class="text-xs">{{ transKey($transDict, 'footer.hours_weekdays', 'Senin - Jumat: 08:00 - 17:00') }}</p>
                         </div>
                     </div>
+                    @if (!empty($agencySocialLinks))
+                        <nav aria-label="{{ $currentLocale === 'en' ? 'Social media' : 'Media sosial' }}" class="flex flex-wrap gap-4 border-t border-gray-100 pt-4 dark:border-gray-800">
+                            @foreach ($agencySocialLinks as $network => $url)
+                                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline dark:text-blue-300">{{ ucfirst($network) }}</a>
+                            @endforeach
+                        </nav>
+                    @endif
                     <div class="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between text-xs gap-3">
                         <p>{{ transKey($transDict, 'footer.copyright', '© Copyright 2025 PT Asta Digital Agency') }}</p>
                         <p class="text-gray-400">Software House & IT Consultant Indonesia</p>
+                        <p>
+                            {{ $currentLocale === 'en' ? 'Last updated' : 'Terakhir diperbarui' }}:
+                            <time datetime="{{ $homepageModifiedAt->toDateString() }}">
+                                {{ $currentLocale === 'en' ? $homepageModifiedAt->format('F j, Y') : $homepageModifiedAt->format('d/m/Y') }}
+                            </time>
+                        </p>
                     </div>
                 </footer>
             </main>
         @endif
     </div>
+    @if ($isHomePage ?? false)
+        <script>
+            (() => {
+                const form = document.querySelector("[data-contact-form]");
+                if (!form) return;
+
+                const timer = form.querySelector('input[name="_timer"]');
+                const button = form.querySelector('button[type="submit"]');
+                const status = form.querySelector("[data-contact-status]");
+                const defaultLabel = button.textContent;
+                timer.value = String(Date.now());
+
+                form.addEventListener("submit", async (event) => {
+                    event.preventDefault();
+                    button.disabled = true;
+                    button.textContent = form.dataset.submitting;
+                    status.textContent = "";
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: "POST",
+                            headers: { Accept: "application/json" },
+                            body: new FormData(form),
+                        });
+                        const result = await response.json();
+                        if (!response.ok) {
+                            throw new Error(result.message || form.dataset.error);
+                        }
+
+                        form.reset();
+                        timer.value = String(Date.now());
+                        status.textContent = form.dataset.success;
+                    } catch (error) {
+                        status.textContent = error instanceof Error ? error.message : form.dataset.error;
+                    } finally {
+                        button.disabled = false;
+                        button.textContent = defaultLabel;
+                    }
+                });
+            })();
+        </script>
+    @endif
 </body>
 </html>
