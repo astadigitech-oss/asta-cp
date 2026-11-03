@@ -697,12 +697,13 @@ export function BlogDetailPage() {
 
       {/* ── 3. Lightbox Fullscreen Preview Dialog ───────────────── */}
       <Dialog open={Boolean(previewImage)} onOpenChange={(open) => !open && setPreviewImage(null)}>
-        <DialogContent className="max-w-5xl bg-black/95 p-0 border-0 overflow-hidden text-white rounded-2xl">
+        <DialogContent showClose={false} className="max-w-5xl bg-black/95 p-0 border-0 overflow-hidden text-white rounded-2xl">
           <div className="relative flex flex-col items-center justify-center p-4">
             <button
               type="button"
               onClick={() => setPreviewImage(null)}
               className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              aria-label={lang === "en" ? "Close image preview" : "Tutup pratinjau gambar"}
             >
               <X className="h-6 w-6" />
             </button>

@@ -27,8 +27,9 @@ class PortfolioForm
                                     ->label('Portfolio Image')
                                     ->image()
                                     ->imageResizeMode('contain')
-                                    ->imageResizeTargetWidth('1600')
-                                    ->imageResizeTargetHeight('1200')
+                                    ->imageResizeTargetWidth('1200')
+                                    ->imageResizeTargetHeight('1500')
+                                    ->maxSize(5120)
                                     ->disk('public')
                                     ->directory('images/portfolios')
                                     ->required(),

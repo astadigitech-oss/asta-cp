@@ -6,6 +6,8 @@ use App\Models\Service;
 use App\Models\Article;
 use App\Models\Discover;
 use App\Models\Portfolio;
+use App\Http\Controllers\OptimizedImageController;
+use App\Support\OptimizedImage;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,6 +108,9 @@ Route::get('/sitemap.xml', function () {
     return response($xml, 200)->header('Content-Type', 'text/xml');
 })->middleware('throttle:60,1');
 
+Route::get('/media/{preset}/{path}', OptimizedImageController::class)
+    ->where('path', '.+')
+    ->name('media.optimized');
 
 // Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article & Discover SEO Server-side Rendering
 // NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).
@@ -205,8 +210,8 @@ Route::get('/{any?}', function () {
                 ->latest('published_at');
 
             $paginated = $query->paginate(9);
-            $paginated->getCollection()->transform(function ($item) {
-                $thumbnailUrl = $item->thumbnail ? ((str_starts_with($item->thumbnail, 'http') ? $item->thumbnail : asset('storage/' . ltrim($item->thumbnail, '/')))) : null;
+            $paginated->getCollection()->transform(function ($item) use ($locale) {
+                $thumbnailUrl = OptimizedImage::url($item->thumbnail, 'article-thumb');
                 return [
                     'id' => $item->id,
                     'title' => $item->title,
@@ -277,15 +282,18 @@ Route::get('/{any?}', function () {
                 $rawImages = is_array($discover->image) ? $discover->image : (is_string($discover->image) ? [$discover->image] : []);
                 $formattedImages = collect($rawImages)->map(function ($img) {
                     if (!$img) return null;
-                    return (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) ? $img : asset('storage/' . ltrim($img, '/'));
+                    return OptimizedImage::url($img, 'discover-card');
                 })->filter()->values()->all();
+                $discoverOgImage = isset($rawImages[0]) && $rawImages[0]
+                    ? ((str_starts_with($rawImages[0], 'http') ? $rawImages[0] : asset('storage/' . ltrim($rawImages[0], '/'))))
+                    : null;
 
                 $rawSections = is_array($discover->content_sections)
                     ? $discover->content_sections
                     : (is_string($discover->content_sections) && !empty($discover->content_sections) ? (json_decode($discover->content_sections, true) ?: []) : []);
 
                 $formattedSections = collect($rawSections)->map(function ($section) {
-                    $img = !empty($section['image']) ? ((str_starts_with($section['image'], 'http://') || str_starts_with($section['image'], 'https://')) ? $section['image'] : asset('storage/' . ltrim($section['image'], '/'))) : null;
+                    $img = !empty($section['image']) ? OptimizedImage::url($section['image'], 'discover-section') : null;
                     return [
                         'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
                         'image' => $img,
@@ -306,7 +314,7 @@ Route::get('/{any?}', function () {
                     'show_name' => $discover->show_name,
                     'is_pinned' => $discover->is_pinned,
                     'is_highlight' => (bool) $discover->is_highlight,
-                    'logo' => $discover->logo ? ((str_starts_with($discover->logo, 'http') ? $discover->logo : asset('storage/' . ltrim($discover->logo, '/')))) : null,
+                    'logo' => OptimizedImage::url($discover->logo, 'discover-logo'),
                     'image' => $formattedImages,
                     'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
                     'DiscoverLists' => $discover->DiscoverLists,
@@ -317,12 +325,12 @@ Route::get('/{any?}', function () {
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
                         'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
-                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_image' => $seo?->ogImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'og_type' => $seo?->ogType ?? 'article',
                         'twitter_card' => 'summary_large_image',
                         'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
                         'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
-                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'twitter_image' => $seo?->twitterImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'schema_jsonld' => $seo?->schemaJsonld,
                     ],
                 ];
@@ -355,11 +363,17 @@ Route::get('/{any?}', function () {
                     // Fallback
                 }
 
-                $thumbnailUrl = $article->thumbnail ? ((str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')))) : null;
+                $thumbnailUrl = OptimizedImage::url($article->thumbnail, 'article-thumb');
+                $thumbnailOgUrl = $article->thumbnail
+                    ? ((str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/'))))
+                    : null;
                 $rawImages = is_array($article->images) ? $article->images : [];
-                $formattedImages = collect($rawImages)->map(function ($img) {
+                $formattedImages = collect($rawImages)->map(function ($img) use ($article) {
                     if (!$img) return null;
-                    return (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) ? $img : asset('storage/' . ltrim($img, '/'));
+                    return OptimizedImage::url(
+                        $img,
+                        $img === $article->thumbnail ? 'article-thumb' : 'article-image',
+                    );
                 })->filter()->values()->all();
 
                 if ($thumbnailUrl && !in_array($thumbnailUrl, $formattedImages)) {
@@ -368,7 +382,7 @@ Route::get('/{any?}', function () {
 
                 $rawSections = is_array($article->content_sections) ? $article->content_sections : [];
                 $formattedSections = collect($rawSections)->map(function ($section) {
-                    $img = !empty($section['image']) ? ((str_starts_with($section['image'], 'http://') || str_starts_with($section['image'], 'https://')) ? $section['image'] : asset('storage/' . ltrim($section['image'], '/'))) : null;
+                    $img = !empty($section['image']) ? OptimizedImage::url($section['image'], 'article-image') : null;
                     return [
                         'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : (!empty($section['image']) ? 'image' : 'none')),
                         'image' => $img,
@@ -410,12 +424,12 @@ Route::get('/{any?}', function () {
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $article->title),
                         'og_description' => $seo?->ogDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
-                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'og_image' => $seo?->ogImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                         'og_type' => $seo?->ogType ?? 'article',
                         'twitter_card' => 'summary_large_image',
                         'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $article->title),
                         'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
-                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? $thumbnailUrl),
+                        'twitter_image' => $seo?->twitterImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                         'keywords' => $keywords,
                         'schema_jsonld' => $seo?->schemaJsonld,
                     ],

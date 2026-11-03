@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
-    "description": "PT Asta Digital Agency builds modern applications, websites, and information systems for government institutions, SMEs, schools, and enterprises.",
-    "og_title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
-    "og_description": "Reliable and trusted digital transformation for institutions and businesses."
+    "title": "ASTA Digital Agency — Website & App Development Services",
+    "description": "ASTA Digital Agency provides website development, mobile apps, and custom information systems for SMEs and organizations in Yogyakarta, Indonesia.",
+    "og_title": "ASTA Digital Agency — Website & App Development Services",
+    "og_description": "Custom website, mobile app, and information system development for organizations and growing businesses in Indonesia."
   },
   "nav": {
     "home": "Home",
@@ -28,10 +28,10 @@
   },
   "hero": {
     "eyebrow": "Premium Digital Agency · Est. 2022",
-    "title_1": "Building the best ",
-    "title_highlight": "digital experience",
-    "title_2": " for modern business.",
-    "description": "Asta Digital Agency is a technology studio that builds the best websites, applications, and information systems — designed with enterprise standards and Dedicated Tech Team & Enterprise Software Solutions for Scaling Businesses.",
+    "title_1": "Website & App ",
+    "title_highlight": "Development",
+    "title_2": " for Yogyakarta Businesses.",
+    "description": "ASTA Digital Agency develops custom websites, mobile applications, and information systems. Each solution is designed around the operational needs of organizations, SMEs, and growing businesses.",
     "cta_start": "Start Project",
     "cta_portfolio": "View Portfolio",
     "trust_security": "Enterprise Security",
@@ -42,6 +42,20 @@
     "stat_years": "YEARS",
     "stat_satisfaction": "SATISFACTION",
     "trusted_by": "TRUSTED BY LEADING INSTITUTIONS & COMPANIES"
+  },
+  "home_seo": {
+    "title": "Website Development, Mobile Apps, and Information Systems",
+    "website_title": "Business websites and web applications",
+    "website_description": "ASTA Digital Agency develops company websites, portals, and responsive web applications. Page structure, navigation, and features are planned around business goals so visitors can understand services and take the next step.",
+    "mobile_title": "Mobile application development",
+    "mobile_description": "We plan and build Android and iOS applications around user needs and business workflows. Features, integrations, and interface requirements are agreed upon before development begins.",
+    "systems_title": "Custom information systems and software",
+    "systems_description": "For workflows that need a tailored approach, our team develops custom information systems and software. Solutions can include data management, process automation, dashboards, and integrations based on organizational requirements.",
+    "process_title": "A structured development process",
+    "process_description": "Each project starts by understanding its goals, users, and operational constraints. Once the scope is agreed, the team plans the solution, develops its features, and tests the result before handover. Project owners can review priorities and progress at each stage.",
+    "location": "Based in Bantul, Yogyakarta, ASTA Digital Agency works with SMEs, institutions, and companies to turn operational needs into practical digital solutions. An initial discussion helps identify whether a website, mobile app, or information system best fits the workflow and project budget.",
+    "services_link": "Explore our services",
+    "contact_link": "Discuss a project"
   },
   "about": {
     "eyebrow": "Entity Profile & Engineering",

@@ -1,7 +1,8 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
+import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
@@ -24,26 +25,98 @@ function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }
   return <div className={`w-full ${minHeight}`} aria-hidden="true" />;
 }
 
-export function LandingPage() {
-  const { data: landingData } = useLandingData();
+function DeferredSection({
+  children,
+  minHeight,
+  hashTarget,
+}: {
+  children: ReactNode;
+  minHeight: string;
+  hashTarget?: string;
+}) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (!hash) return;
-    const targetId = hash.replace("#", "");
+    let observer: IntersectionObserver | undefined;
 
-    let attempts = 0;
-    const interval = setInterval(() => {
-      const elem = document.getElementById(targetId);
-      if (elem) {
-        elem.scrollIntoView({ behavior: "smooth" });
-        clearInterval(interval);
-      } else if (++attempts > 25) {
-        clearInterval(interval);
-      }
-    }, 150);
+    const activate = () => {
+      observer?.disconnect();
+      setShouldLoad(true);
+    };
 
-    return () => clearInterval(interval);
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) activate();
+        },
+        { rootMargin: "400px 0px" },
+      );
+      if (sectionRef.current) observer.observe(sectionRef.current);
+    } else {
+      activate();
+    }
+
+    const loadForHash = () => {
+      if (hashTarget && window.location.hash === `#${hashTarget}`) activate();
+    };
+
+    loadForHash();
+    window.addEventListener("hashchange", loadForHash);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("hashchange", loadForHash);
+    };
+  }, [hashTarget]);
+
+  return (
+    <div
+      ref={sectionRef}
+      className={shouldLoad ? "contents" : `w-full ${minHeight}`}
+    >
+      {shouldLoad ? (
+        <Suspense fallback={<SectionFallback minHeight={minHeight} />}>
+          {children}
+        </Suspense>
+      ) : (
+        <SectionFallback minHeight={minHeight} />
+      )}
+    </div>
+  );
+}
+
+export function LandingPage() {
+  const { data: landingData } = useLandingData();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    let interval: number | undefined;
+
+    const scrollToHash = () => {
+      const targetId = window.location.hash.slice(1);
+      if (!targetId) return;
+
+      if (interval !== undefined) window.clearInterval(interval);
+      let attempts = 0;
+      interval = window.setInterval(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+          window.clearInterval(interval);
+          interval = undefined;
+        } else if (++attempts > 25) {
+          window.clearInterval(interval);
+          interval = undefined;
+        }
+      }, 150);
+    };
+
+    scrollToHash();
+    window.addEventListener("hashchange", scrollToHash);
+    return () => {
+      window.removeEventListener("hashchange", scrollToHash);
+      if (interval !== undefined) window.clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -54,62 +127,91 @@ export function LandingPage() {
         {/* Above-the-fold critical content (loaded immediately) */}
         <Hero clientsList={landingData?.clients} />
 
+        <section className="mx-auto max-w-6xl space-y-6 px-4 py-12 sm:px-6 lg:px-10">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            {t("home_seo.title")}
+          </h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.website_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.website_description")}</p>
+            </article>
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.mobile_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.mobile_description")}</p>
+            </article>
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.systems_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.systems_description")}</p>
+            </article>
+          </div>
+          <div className="max-w-4xl">
+            <h3 className="font-semibold text-gray-900">{t("home_seo.process_title")}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.process_description")}</p>
+          </div>
+          <p className="max-w-4xl text-sm leading-relaxed text-gray-600">{t("home_seo.location")}</p>
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-primary">
+            <a href="#layanan" className="underline underline-offset-4">{t("home_seo.services_link")}</a>
+            <a href="#kontak" className="underline underline-offset-4">{t("home_seo.contact_link")}</a>
+          </div>
+        </section>
+
         {/* Below-the-fold deferred content (lazy loaded chunks) */}
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="tentang" minHeight="min-h-[400px]">
           <About discoversList={landingData?.discovers} />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="layanan" minHeight="min-h-[400px]">
           <Services />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="komparasi" minHeight="min-h-[400px]">
           <ComparisonTable />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="portofolio" minHeight="min-h-[400px]">
           <Portfolio />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="discover" minHeight="min-h-[400px]">
           <DiscoverSection discoversList={landingData?.discovers} />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[300px]" />}>
+        <DeferredSection hashTarget="keunggulan" minHeight="min-h-[300px]">
           <WhyUs />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[250px]" />}>
+        <DeferredSection minHeight="min-h-[250px]">
           <Stats />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[350px]" />}>
+        <DeferredSection hashTarget="proses" minHeight="min-h-[350px]">
           <Process />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="blog" minHeight="min-h-[400px]">
           <BlogSection articlesList={landingData?.articles} />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[350px]" />}>
+        <DeferredSection hashTarget="testimoni" minHeight="min-h-[350px]">
           <Testimonials />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[300px]" />}>
+        <DeferredSection hashTarget="faq" minHeight="min-h-[300px]">
           <HomeFAQ />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[250px]" />}>
+        <DeferredSection minHeight="min-h-[250px]">
           <CTA />
-        </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<SectionFallback minHeight="min-h-[400px]" />}>
+        <DeferredSection hashTarget="kontak" minHeight="min-h-[400px]">
           <Contact />
-        </Suspense>
+        </DeferredSection>
       </main>
-      <Suspense fallback={<SectionFallback minHeight="min-h-[250px]" />}>
+      <DeferredSection minHeight="min-h-[250px]">
         <Footer />
-      </Suspense>
+      </DeferredSection>
     </div>
   );
 }

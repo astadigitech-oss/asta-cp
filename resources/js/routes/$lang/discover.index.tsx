@@ -1,5 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { DiscoverListPage } from "@/components/discover/DiscoverListPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
+
+const DiscoverListPage = lazyRouteComponent(
+  () => import("@/components/discover/DiscoverListPage"),
+  "DiscoverListPage",
+);
 
 export const Route = createFileRoute("/$lang/discover/")({
   head: () => ({
@@ -23,4 +27,3 @@ export const Route = createFileRoute("/$lang/discover/")({
   }),
   component: DiscoverListPage,
 });
-

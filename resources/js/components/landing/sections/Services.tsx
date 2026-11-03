@@ -30,6 +30,7 @@ export function Services() {
   const [isHovered, setIsHovered] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const loopWidthRef = useRef(0);
 
   // Drag & Touch interaction references
   const isDownRef = useRef(false);
@@ -72,24 +73,27 @@ export function Services() {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const timer = setTimeout(() => {
+    const updateLoopWidth = () => {
       const oneThird = slider.scrollWidth / 3;
+      loopWidthRef.current = oneThird;
       if (oneThird > 0 && slider.scrollLeft === 0) {
         slider.scrollLeft = oneThird;
         scrollPosRef.current = oneThird;
       } else {
         scrollPosRef.current = slider.scrollLeft;
       }
-    }, 120);
+    };
 
-    return () => clearTimeout(timer);
+    updateLoopWidth();
+    window.addEventListener("resize", updateLoopWidth);
+    return () => window.removeEventListener("resize", updateLoopWidth);
   }, [servicesList.length]);
 
   // Seamless looping check when scrolling (works for native touch, drag, and auto-scroll)
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
-    const oneThird = slider.scrollWidth / 3;
+    const oneThird = loopWidthRef.current;
     if (oneThird > 0) {
       if (slider.scrollLeft >= oneThird * 2) {
         slider.scrollLeft -= oneThird;
@@ -122,7 +126,7 @@ export function Services() {
       if (!isHovered && !isDownRef.current && !selectedService && slider) {
         scrollPosRef.current += speed;
 
-        const oneThird = slider.scrollWidth / 3;
+        const oneThird = loopWidthRef.current;
         if (oneThird > 0) {
           if (scrollPosRef.current >= oneThird * 2) {
             scrollPosRef.current -= oneThird;
@@ -145,7 +149,7 @@ export function Services() {
     if (!slider) return;
     isDownRef.current = true;
     isDraggingRef.current = false;
-    startXRef.current = e.pageX - slider.offsetLeft;
+    startXRef.current = e.pageX;
     scrollLeftRef.current = slider.scrollLeft;
     scrollPosRef.current = slider.scrollLeft;
   };
@@ -156,8 +160,7 @@ export function Services() {
     if (!slider) return;
     e.preventDefault();
 
-    const x = e.pageX - slider.offsetLeft;
-    const walk = x - startXRef.current;
+    const walk = e.pageX - startXRef.current;
 
     if (Math.abs(walk) > 5) {
       isDraggingRef.current = true;

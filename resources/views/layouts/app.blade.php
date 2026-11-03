@@ -100,7 +100,7 @@
     $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
 
-    $keywords = 'asta digital, digital agency, software house, jasa pembuatan website, pembuatan aplikasi mobile, sistem informasi, IT consultant, web developer indonesia';
+    $keywords = 'asta digital agency, jasa pembuatan website, pengembangan aplikasi mobile, sistem informasi custom, software house indonesia, digital agency indonesia';
     if ($seo && !empty($seo->focusKeywords)) {
         $kwList = collect($seo->focusKeywords)->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))->filter()->implode(', ');
         if ($kwList) {
@@ -196,7 +196,9 @@
             'url' => rtrim(config('app.url', url('/')), '/'),
             'logo' => asset('images/logo-dark.png'),
             'image' => $ogDefaultImage,
-            'description' => 'ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, sekolah, dan perusahaan skala menengah hingga besar.',
+            'description' => $currentLocale === 'en'
+                ? 'ASTA Digital Agency provides website development, mobile apps, and custom information systems for SMEs and organizations in Yogyakarta, Indonesia.'
+                : 'ASTA Digital Agency menyediakan jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan di Yogyakarta.',
             'telephone' => '+6281578223564',
             'email' => 'astadigitech@gmail.com',
             'priceRange' => '$$',
@@ -447,6 +449,13 @@
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+    @if ($isHomePage ?? false)
+        <link rel="preload" as="image"
+              href="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }}"
+              imagesrcset="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }} 480w, {{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot.webp') }} 954w"
+              imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+              fetchpriority="high">
+    @endif
     @php
         $gaId = config('services.google.analytics_id');
     @endphp
@@ -502,7 +511,7 @@
 
                 @if ($article->thumbnail)
                     <div class="my-6">
-                        <img src="{{ str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')) }}"
+                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
                              width="1200"
                              height="675"
@@ -546,7 +555,7 @@
                         @foreach ($article->content_sections as $sec)
                             <div class="border-t pt-6">
                                 @if (!empty($sec['image']))
-                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                    <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'article-image') }}"
                                          alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
                                          width="1200"
                                          height="800"
@@ -605,7 +614,7 @@
                             @foreach ($recommendedArticles as $rec)
                                 @php
                                     $recSlug = method_exists($rec, 'getLocalizedSlug') ? $rec->getLocalizedSlug($currentLocale) : $rec->slug;
-                                    $recThumbnail = $rec->thumbnail ? ((str_starts_with($rec->thumbnail, 'http') ? $rec->thumbnail : asset('storage/' . ltrim($rec->thumbnail, '/')))) : null;
+                                    $recThumbnail = \App\Support\OptimizedImage::url($rec->thumbnail, 'article-thumb');
                                 @endphp
                                 <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
                                     @if ($recThumbnail)
@@ -646,7 +655,7 @@
 
                 @if ($discoverImg)
                     <div class="my-6">
-                        <img src="{{ $discoverImg }}"
+                        <img src="{{ \App\Support\OptimizedImage::url(is_array($discover->image) ? ($discover->image[0] ?? null) : $discover->image, 'discover-card') }}"
                              alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
                              width="1200"
                              height="675"
@@ -684,7 +693,7 @@
                                     {{ $currentLocale === 'en' ? 'Part ' . ($sIdx + 1) : 'Bagian ' . ($sIdx + 1) }}
                                 </span>
                                 @if (!empty($sec['image']))
-                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                    <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'discover-section') }}"
                                          alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
                                          width="1200"
                                          height="800"
@@ -840,7 +849,7 @@
                                 if (!empty($item->image)) {
                                     $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                     if ($first) {
-                                        $dImg = str_starts_with($first, 'http') ? $first : asset('storage/' . ltrim($first, '/'));
+                                        $dImg = \App\Support\OptimizedImage::url($first, 'discover-card');
                                     }
                                 }
                             @endphp
@@ -992,6 +1001,35 @@
                         </div>
                     </div>
                 </header>
+
+                <section class="space-y-6 border-b border-gray-100 pb-12 dark:border-gray-800">
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+                        {{ transKey($transDict, 'home_seo.title') }}
+                    </h2>
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.website_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.website_description') }}</p>
+                        </article>
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.mobile_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.mobile_description') }}</p>
+                        </article>
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.systems_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.systems_description') }}</p>
+                        </article>
+                    </div>
+                    <div class="max-w-4xl">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.process_title') }}</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.process_description') }}</p>
+                    </div>
+                    <p class="max-w-4xl text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.location') }}</p>
+                    <div class="flex flex-wrap gap-4 text-sm font-semibold text-blue-700 dark:text-blue-300">
+                        <a href="#layanan" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.services_link') }}</a>
+                        <a href="#kontak" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.contact_link') }}</a>
+                    </div>
+                </section>
 
                 {{-- 2. Section Tentang ASTA (#tentang) --}}
                 <section id="tentang" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
@@ -1215,7 +1253,7 @@
                                     if (!empty($item->image)) {
                                         $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                         if ($first) {
-                                            $dImg = str_starts_with($first, 'http') ? $first : asset('storage/' . ltrim($first, '/'));
+                                            $dImg = \App\Support\OptimizedImage::url($first, 'discover-card');
                                         }
                                     }
                                 @endphp

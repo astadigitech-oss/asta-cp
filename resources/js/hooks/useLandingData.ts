@@ -44,6 +44,7 @@ export interface PortfolioItem {
   name: string;
   description?: string;
   image?: string;
+  image_small?: string;
   category?: string;
   type?: string;
   demo_url?: string;

@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LandingPage } from "@/components/landing/LandingPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { useTranslation } from "@/i18n/useTranslation";
 import enTranslations from "@/locales/en.json";
 import idTranslations from "@/locales/id.json";
+
+const LandingPage = lazyRouteComponent(
+  () => import("@/components/landing/LandingPage"),
+  "LandingPage",
+);
 
 export const Route = createFileRoute("/$lang/")({
   head: ({ params }) => {
@@ -15,9 +19,7 @@ export const Route = createFileRoute("/$lang/")({
       name: "PT Asta Digital Agency",
       alternateName: "ASTA DIGITAL AGENCY",
       url: typeof window !== "undefined" ? window.location.origin : "https://astadigitalagency.com",
-      description: isEn
-        ? "ASTA DIGITAL AGENCY engineers high-performance mobile applications, modern web platforms, and scalable enterprise systems."
-        : "ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, dan perusahaan.",
+      description: isEn ? enTranslations.meta.description : idTranslations.meta.description,
       telephone: "+6281578223564",
       email: "astadigitech@gmail.com",
       sameAs: [
@@ -51,22 +53,18 @@ export const Route = createFileRoute("/$lang/")({
 
     return {
       meta: [
-        { title: "ASTA Digital Agency — Solusi Teknologi & Digital Agency" },
+        { title: isEn ? enTranslations.meta.title : idTranslations.meta.title },
         {
           name: "description",
-          content: isEn
-            ? "PT Asta Digital Agency builds modern applications, websites, and enterprise information systems for institutions, SMEs, schools, and corporations."
-            : "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
+          content: isEn ? enTranslations.meta.description : idTranslations.meta.description,
         },
         {
           property: "og:title",
-          content: "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
+          content: isEn ? enTranslations.meta.og_title : idTranslations.meta.og_title,
         },
         {
           property: "og:description",
-          content: isEn
-            ? "Reliable and trusted digital transformation for enterprises and growing businesses."
-            : "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis.",
+          content: isEn ? enTranslations.meta.og_description : idTranslations.meta.og_description,
         },
       ],
       scripts: [

@@ -29,7 +29,8 @@ RUN apk update && apk upgrade && apk add --no-cache \
     libxml2-dev \
     libzip-dev \
     icu-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    libwebp-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
         pdo \
         pdo_mysql \
@@ -41,7 +42,8 @@ RUN apk update && apk upgrade && apk add --no-cache \
         xml \
         zip \
         intl \
-        opcache
+        opcache \
+    && php -r 'if (! extension_loaded("gd") || ! function_exists("imagewebp")) { fwrite(STDERR, "PHP GD WebP support is required\n"); exit(1); }'
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -60,6 +62,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Setup Nginx & Entrypoint
 RUN mkdir -p /run/nginx
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/php-fpm-pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
@@ -71,4 +74,3 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 EXPOSE 80 8000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
