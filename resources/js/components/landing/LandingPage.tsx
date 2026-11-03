@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from "rea
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
+import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
@@ -86,6 +87,7 @@ function DeferredSection({
 
 export function LandingPage() {
   const { data: landingData } = useLandingData();
+  const { t } = useTranslation();
 
   useEffect(() => {
     let interval: number | undefined;
