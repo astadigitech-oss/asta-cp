@@ -40,15 +40,16 @@ class OptimizedImageController extends Controller
                 ->header('Cache-Control', 'public, max-age=86400');
         }
 
-        if (! function_exists('imagewebp')) {
-            throw new RuntimeException('WebP support is required to optimize uploaded images.');
-        }
-
         $sourceWidth = $imageInfo[0];
         $sourceHeight = $imageInfo[1];
 
         if ($sourceWidth * $sourceHeight > 12_000_000) {
-            abort(413, 'The requested image exceeds the processing size limit.');
+            return redirect($disk->url($path), 302)
+                ->header('Cache-Control', 'public, max-age=86400');
+        }
+
+        if (! function_exists('imagewebp')) {
+            throw new RuntimeException('WebP support is required to optimize uploaded images.');
         }
 
         $presetHash = sha1(implode('|', [
@@ -200,6 +201,10 @@ class OptimizedImageController extends Controller
         }
 
         try {
+            if (! chmod($temporaryPath, 0644)) {
+                throw new RuntimeException('Unable to set permissions on the optimized image.');
+            }
+
             if (! imagewebp($destination, $temporaryPath, 78)) {
                 throw new RuntimeException('Unable to encode the optimized image as WebP.');
             }
