@@ -4,6 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
+import { HomeFAQ } from "./sections/HomeFAQ";
+import { Contact } from "./sections/Contact";
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
@@ -16,9 +18,7 @@ const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.St
 const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
 const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
 const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
-const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
 const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
-const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
 
 function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }) {
@@ -197,17 +197,13 @@ export function LandingPage() {
           <Testimonials />
         </DeferredSection>
 
-        <DeferredSection hashTarget="faq" minHeight="min-h-[300px]">
-          <HomeFAQ />
-        </DeferredSection>
+        <HomeFAQ />
 
         <DeferredSection minHeight="min-h-[250px]">
           <CTA />
         </DeferredSection>
 
-        <DeferredSection hashTarget="kontak" minHeight="min-h-[400px]">
-          <Contact />
-        </DeferredSection>
+        <Contact />
       </main>
       <DeferredSection minHeight="min-h-[250px]">
         <Footer />

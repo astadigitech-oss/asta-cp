@@ -51,11 +51,7 @@ export function Contact() {
   return (
     <section id="kontak" className="relative py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        <div
           className="overflow-hidden rounded-[36px] border border-white/60 bg-white/80 shadow-glass backdrop-blur-md"
         >
           <div className="grid lg:grid-cols-12">
@@ -212,7 +208,7 @@ export function Contact() {
               </Button>
             </form>
           </div>
-        </motion.div>
+        </div>
 
         {/* Office Map */}
         <motion.div
