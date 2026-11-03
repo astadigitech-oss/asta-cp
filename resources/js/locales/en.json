@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Website Development in Yogyakarta",
-    "description": "ASTA Digital Agency builds websites, mobile apps, and custom information systems for businesses and organizations in Yogyakarta, Indonesia.",
-    "og_title": "ASTA Digital Agency — Website Development in Yogyakarta",
-    "og_description": "Website, mobile app, and custom information system development by ASTA Digital Agency for teams in Yogyakarta, Indonesia."
+    "title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
+    "description": "PT ASTA Digital Agency build modern applications, websites, and information systems for goverment intitutions, SME, school, and enterprises.",
+    "og_title": "ASTA Digital Agency — Technology digital transformation for institutions and businesses",
+    "og_description": "Reliable and trusted digital transformation for institutions and businesses."
   },
   "nav": {
     "home": "Home",
@@ -28,9 +28,9 @@
   },
   "hero": {
     "eyebrow": "ASTA Digital Agency · Yogyakarta · Est. 2022",
-    "title_1": "Website development ",
-    "title_highlight": "in Yogyakarta",
-    "title_2": " for practical business needs.",
+    "title_1": "Website & App Developed as",
+    "title_highlight": "Digital Solutions",
+    "title_2": " for modern businesses",
     "description": "ASTA Digital Agency helps businesses and institutions plan and build websites, mobile apps, and custom information systems. Each project starts by understanding its goals, users, workflows, and technical constraints so the finished solution is useful after launch.",
     "cta_start": "Start Project",
     "cta_portfolio": "View Portfolio",
@@ -234,9 +234,8 @@
     "solutions_title": "Solutions",
     "hours_title": "Office Working Hours",
     "contact_title": "Contact Us",
-    "hours_weekdays": "Monday - Friday: 08:00 - 17:00",
-    "hours_saturday": "Saturday: On Call",
-    "hours_sunday": "Sunday: On Call",
+    "hours_weekdays": "Monday - Saturday: 08:00 - 17:00",
+    "hours_sunday": "Sunday: Closed",
     "sol_consultant": "IT Consulting",
     "sol_services": "IT Services",
     "sol_web": "Web Apps Development",

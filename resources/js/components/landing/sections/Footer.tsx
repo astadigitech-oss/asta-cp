@@ -149,7 +149,6 @@ export function Footer() {
               </div>
               <ul className="mt-4 space-y-2 text-xs text-white/80">
                 <li>{t("footer.hours_weekdays")}</li>
-                <li>{t("footer.hours_saturday")}</li>
                 <li>{t("footer.hours_sunday")}</li>
               </ul>
             </div>
