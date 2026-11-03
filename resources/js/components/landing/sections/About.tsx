@@ -19,8 +19,8 @@ import {
 import { useTranslation } from "@/i18n/useTranslation";
 import { Dialog, DialogContentFullscreen } from "@/components/ui/dialog";
 import { SectionHeading } from "../common";
+import { ResponsiveImage } from "../common/ResponsiveImage";
 import { DiscoverData, getDiscoverImages } from "../types";
-import p3 from "@/assets/portfolio-3.jpg";
 
 const defaultDiscovers: DiscoverData[] = [
   { id: 1, year: "2022", name: "Inisiasi & Pendirian ASTA Digital", short_description: "Asta Digital didirikan untuk menghadirkan solusi software berkualitas tinggi." },
@@ -256,8 +256,8 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
               }}
               className="group relative mt-6 flex-1 min-h-[260px] overflow-hidden rounded-[32px] border border-white/60 shadow-glass cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
             >
-              <img
-                src={getDiscoverImages(activeItem.image)[0] || p3}
+              <ResponsiveImage
+                source={getDiscoverImages(activeItem.image)[0] || "portfolio-3.jpg"}
                 alt={activeItem.name}
                 width={1200}
                 height={900}
@@ -297,7 +297,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
         <DialogContentFullscreen>
           {selectedTimelineImage && (() => {
             const timelineImages = getDiscoverImages(selectedTimelineImage.image);
-            const currentImg = timelineImages[timelineImgIndex] || p3;
+            const currentImg = timelineImages[timelineImgIndex] || "portfolio-3.jpg";
             const hasMultiple = timelineImages.length > 1;
 
             return (
@@ -351,9 +351,9 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                 >
-                  <img
+                  <ResponsiveImage
                     ref={imgRef}
-                    src={currentImg}
+                    source={currentImg}
                     alt={selectedTimelineImage.name}
                     width={1200}
                     height={900}

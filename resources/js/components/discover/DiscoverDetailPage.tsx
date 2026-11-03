@@ -30,7 +30,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { getYoutubeEmbedUrl, stripHtml } from "@/components/lib/utils";
 import { DiscoverData, getDiscoverImages } from "@/components/landing/types";
-import p1 from "@/assets/portfolio-1.jpg";
+import { ResponsiveImage } from "@/components/landing/common/ResponsiveImage";
 
 const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer })));
 
@@ -168,7 +168,7 @@ export function DiscoverDetailPage() {
   if (!discover) return null;
 
   const images = getDiscoverImages(discover.image);
-  const currentCover = images[activeImgIndex] || p1;
+  const currentCover = images[activeImgIndex] || "portfolio-1.jpg";
   const hasMultipleImages = images.length > 1;
 
   // Sections pagination
@@ -342,11 +342,12 @@ export function DiscoverDetailPage() {
                   onClick={() => currentCover && setPreviewImage({ src: currentCover, title: discover.name })}
                   className="group/cimg relative w-full aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-900 border border-gray-100 shadow-md cursor-zoom-in"
                 >
-                  <img
-                    src={currentCover}
+                  <ResponsiveImage
+                    source={currentCover}
                     alt={discover.name}
                     width={1200}
                     height={675}
+                    sizes="(min-width: 1280px) 1100px, 100vw"
                     fetchPriority="high"
                     decoding="async"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
@@ -446,11 +447,12 @@ export function DiscoverDetailPage() {
                             onClick={() => section.image && setPreviewImage({ src: section.image, title: String(discover.name) + " — " + String(sectionTitle) })}
                             className="group/simg relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200/70 shadow-sm cursor-zoom-in"
                           >
-                            <img
-                              src={section.image}
+                            <ResponsiveImage
+                              source={section.image}
                               alt={sectionTitle}
                               width={1200}
                               height={800}
+                              sizes="(min-width: 1280px) 1100px, 100vw"
                               loading="lazy"
                               decoding="async"
                               className="w-full h-auto max-h-[520px] object-cover mx-auto transition-transform duration-500 group-hover/simg:scale-[1.02]"
@@ -628,11 +630,12 @@ export function DiscoverDetailPage() {
                     >
                       <div>
                         <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
-                          <img
-                            src={itemImgs[0] || p1}
+                          <ResponsiveImage
+                            source={itemImgs[0] || "portfolio-1.jpg"}
                             alt={item.name}
                             width={640}
                             height={400}
+                            sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
                             loading="lazy"
                             decoding="async"
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -714,11 +717,12 @@ export function DiscoverDetailPage() {
                 onClick={() => setPreviewImage(null)}
                 className="flex-1 w-full flex items-center justify-center p-4 sm:p-8 cursor-zoom-out"
               >
-                <img
-                  src={previewImage.src}
+                <ResponsiveImage
+                  source={previewImage.src}
                   alt={previewImage.title || "Full Screen Image"}
                   width={1200}
                   height={800}
+                  sizes="92vw"
                   loading="lazy"
                   decoding="async"
                   className="max-h-[82vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl shadow-2xl transition-transform duration-300"

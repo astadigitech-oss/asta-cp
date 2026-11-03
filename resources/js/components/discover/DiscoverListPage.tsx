@@ -20,7 +20,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { DiscoverData, getDiscoverImages } from "@/components/landing/types";
-import p1 from "@/assets/portfolio-1.jpg";
+import { ResponsiveImage } from "@/components/landing/common/ResponsiveImage";
 import FAQDiscover from "../common/FAQDiscover";
 
 const Footer = lazy(() =>
@@ -296,11 +296,12 @@ export function DiscoverListPage() {
                       className="block cursor-pointer"
                     >
                       <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gray-100 relative">
-                        <img
-                          src={images[0] || p1}
+                        <ResponsiveImage
+                          source={images[0] || "portfolio-1.jpg"}
                           alt={item.name}
                           width={640}
                           height={400}
+                          sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
                           loading="lazy"
                           decoding="async"
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

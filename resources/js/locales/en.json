@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Website & App Development Services",
-    "description": "ASTA Digital Agency provides website development, mobile apps, and custom information systems for SMEs and organizations in Yogyakarta, Indonesia.",
-    "og_title": "ASTA Digital Agency — Website & App Development Services",
-    "og_description": "Custom website, mobile app, and information system development for organizations and growing businesses in Indonesia."
+    "title": "ASTA Digital Agency — Website Development in Yogyakarta",
+    "description": "ASTA Digital Agency builds websites, mobile apps, and custom information systems for businesses and organizations in Yogyakarta, Indonesia.",
+    "og_title": "ASTA Digital Agency — Website Development in Yogyakarta",
+    "og_description": "Website, mobile app, and custom information system development by ASTA Digital Agency for teams in Yogyakarta, Indonesia."
   },
   "nav": {
     "home": "Home",
@@ -27,11 +27,11 @@
     "menu_aria": "Toggle Navigation"
   },
   "hero": {
-    "eyebrow": "Premium Digital Agency · Est. 2022",
-    "title_1": "Website & App ",
-    "title_highlight": "Development",
-    "title_2": " for Yogyakarta Businesses.",
-    "description": "ASTA Digital Agency develops custom websites, mobile applications, and information systems. Each solution is designed around the operational needs of organizations, SMEs, and growing businesses.",
+    "eyebrow": "ASTA Digital Agency · Yogyakarta · Est. 2022",
+    "title_1": "Website development ",
+    "title_highlight": "in Yogyakarta",
+    "title_2": " for practical business needs.",
+    "description": "ASTA Digital Agency helps businesses and institutions plan and build websites, mobile apps, and custom information systems. Each project starts by understanding its goals, users, workflows, and technical constraints so the finished solution is useful after launch.",
     "cta_start": "Start Project",
     "cta_portfolio": "View Portfolio",
     "trust_security": "Enterprise Security",
@@ -44,23 +44,23 @@
     "trusted_by": "TRUSTED BY LEADING INSTITUTIONS & COMPANIES"
   },
   "home_seo": {
-    "title": "Website Development, Mobile Apps, and Information Systems",
-    "website_title": "Business websites and web applications",
-    "website_description": "ASTA Digital Agency develops company websites, portals, and responsive web applications. Page structure, navigation, and features are planned around business goals so visitors can understand services and take the next step.",
-    "mobile_title": "Mobile application development",
-    "mobile_description": "We plan and build Android and iOS applications around user needs and business workflows. Features, integrations, and interface requirements are agreed upon before development begins.",
-    "systems_title": "Custom information systems and software",
-    "systems_description": "For workflows that need a tailored approach, our team develops custom information systems and software. Solutions can include data management, process automation, dashboards, and integrations based on organizational requirements.",
+    "title": "Mobile app development and custom information systems | ASTA Digital Agency",
+    "website_title": "Website development in Yogyakarta",
+    "website_description": "ASTA Digital Agency builds company websites, information portals, and responsive web applications for organizations in Yogyakarta. We plan page structure, navigation, and technical requirements with project owners. The result helps visitors understand services, find useful information, and contact the organization.",
+    "mobile_title": "Mobile app development services",
+    "mobile_description": "We design Android and iOS apps around user needs and organizational workflows. Before development, the team agrees on features, integrations, security requirements, and interface direction. Key user journeys are tested so the app is ready for everyday use.",
+    "systems_title": "Custom information systems",
+    "systems_description": "When off-the-shelf applications do not fit a workflow, ASTA Digital Agency builds custom information systems. A solution can manage data, automate processes, present reports, and connect existing services. Access rules and approval flows can reflect the roles of the people using the system.",
     "process_title": "A structured development process",
-    "process_description": "Each project starts by understanding its goals, users, and operational constraints. Once the scope is agreed, the team plans the solution, develops its features, and tests the result before handover. Project owners can review priorities and progress at each stage.",
-    "location": "Based in Bantul, Yogyakarta, ASTA Digital Agency works with SMEs, institutions, and companies to turn operational needs into practical digital solutions. An initial discussion helps identify whether a website, mobile app, or information system best fits the workflow and project budget.",
+    "process_description": "Each project begins with a discussion about goals, users, workflows, budget, and operational constraints. Once priorities and scope are agreed, the team prepares a plan and design that clients can review. Development proceeds in stages, followed by functional testing and revisions before handover. Documentation and usage guidance help the client's team manage the solution after launch.",
+    "location": "Based in Bantul, Yogyakarta, ASTA Digital Agency works with SMEs, institutions, and companies in the region and elsewhere in Indonesia. We help compare website, mobile app, and custom information system options against user needs, workflows, and budget. An initial discussion is used to understand the project context, not to propose features that are unnecessary.",
     "services_link": "Explore our services",
     "contact_link": "Discuss a project"
   },
   "about": {
     "eyebrow": "Entity Profile & Engineering",
     "title": "Who is ASTA DIGITAL AGENCY and what are its core software engineering capabilities?",
-    "description": "ASTA DIGITAL AGENCY combines enterprise software engineering, robust system architecture, and human-centric design to create high-performance digital products that demonstrably reduce business operational overhead.",
+    "description": "ASTA DIGITAL AGENCY combines software engineering, data planning, and accessible interface design. Our team builds digital solutions around user needs and operational context, then tests important workflows before launch. This approach helps clients understand project scope, risks, and technical decisions throughout delivery.",
     "vision_title": "ASTA DIGITAL AGENCY Vision",
     "vision_desc": "To become a premier technology agency advancing business growth and public operations through innovative software solutions.",
     "mission_title": "ASTA DIGITAL AGENCY Mission",

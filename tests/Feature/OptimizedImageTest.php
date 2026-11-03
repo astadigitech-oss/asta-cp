@@ -8,6 +8,11 @@ use Tests\TestCase;
 
 class OptimizedImageTest extends TestCase
 {
+    public function test_image_html_attributes_include_preset_dimensions(): void
+    {
+        $this->assertSame('width="960" height="720"', OptimizedImage::htmlAttributes('service-cover'));
+    }
+
     public function test_image_urls_use_an_optimized_variant_for_allowed_public_uploads(): void
     {
         Storage::fake('public');

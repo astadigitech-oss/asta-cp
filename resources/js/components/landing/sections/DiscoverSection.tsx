@@ -15,8 +15,8 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useParams } from "@tanstack/react-router";
 import { stripHtml } from "@/components/lib/utils";
 import { SectionPagination } from "../common";
+import { ResponsiveImage } from "../common/ResponsiveImage";
 import { DiscoverData, getDiscoverImages } from "../types";
-import p1 from "@/assets/portfolio-1.jpg";
 
 const defaultDiscovers: DiscoverData[] = [
   { id: 1, year: "2022", name: "Inisiasi & Pendirian ASTA Digital", short_description: "Asta Digital didirikan untuk menghadirkan solusi software berkualitas tinggi." },
@@ -167,8 +167,8 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
                     className="block cursor-pointer"
                   >
                     <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
-                      <img
-                        src={images[0] || p1}
+                      <ResponsiveImage
+                        source={images[0] || "portfolio-1.jpg"}
                         alt={item.name}
                         width={640}
                         height={400}

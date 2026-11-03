@@ -39,4 +39,14 @@ return [
         'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
     ],
 
+    'agency' => [
+        'latitude' => env('AGENCY_LATITUDE'),
+        'longitude' => env('AGENCY_LONGITUDE'),
+        'social_links' => [
+            'facebook' => env('AGENCY_FACEBOOK_URL'),
+            'x' => env('AGENCY_X_URL'),
+            'youtube' => env('AGENCY_YOUTUBE_URL'),
+        ],
+    ],
+
 ];

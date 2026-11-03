@@ -10,14 +10,12 @@ import {
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { SectionHeading, SectionPagination } from "../common";
+import { ResponsiveImage } from "../common/ResponsiveImage";
 import { PortfolioProject } from "../types";
 
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-
 const defaultProjects: PortfolioProject[] = [
-  { id: "p1", img: p1, title: "Portal Kominfo", category: "Institutional", type: "desktop", description: "Development of official government information portal with enterprise standards.", span: "lg:col-span-2 lg:row-span-2" },
-  { id: "p2", img: p2, title: "Public Service App", category: "Mobile", type: "mobile", description: "Integrated public service mobile app.", span: "lg:col-span-2" },
+  { id: "p1", img: "portfolio-1.jpg", title: "Portal Kominfo", category: "Institutional", type: "desktop", description: "Development of official government information portal with enterprise standards.", span: "lg:col-span-2 lg:row-span-2" },
+  { id: "p2", img: "portfolio-2.jpg", title: "Public Service App", category: "Mobile", type: "mobile", description: "Integrated public service mobile app.", span: "lg:col-span-2" },
 ];
 
 const PORTFOLIOS_PER_PAGE = 6;
@@ -44,7 +42,7 @@ export function Portfolio() {
       const catLabel = item.type === "mobile" ? "Mobile" : "Desktop";
       return {
         id: item.id,
-        img: item.image || p1,
+        img: item.image || "portfolio-1.jpg",
         title: localize(item.name) || "Portfolio Item",
         category: catLabel,
         type: item.type || "desktop",
@@ -142,8 +140,8 @@ export function Portfolio() {
                   onClick={() => setSelectedProject(p)}
                   className={`group relative aspect-[4/5] w-[85%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-primary shadow-glass sm:aspect-auto sm:w-auto sm:shrink cursor-pointer transition-all duration-300 hover:shadow-2xl ${p.span}`}
                 >
-                  <img
-                    src={p.img}
+                  <ResponsiveImage
+                    source={p.img}
                     alt={p.title}
                     width={800}
                     height={1000}
@@ -187,8 +185,8 @@ export function Portfolio() {
             {selectedProject && (
               <div className="flex flex-col max-h-[88dvh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <div className="relative h-48 sm:h-72 w-full overflow-hidden bg-gray-900 shrink-0 select-none">
-                  <img
-                    src={selectedProject.img}
+                  <ResponsiveImage
+                    source={selectedProject.img}
                     alt={selectedProject.title}
                     width={960}
                     height={540}

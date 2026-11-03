@@ -82,9 +82,9 @@ export function Contact() {
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
                         {t("contact.info_email")}
                       </div>
-                      <div className="mt-0.5 text-sm font-semibold text-white">
+                      <a href="mailto:astadigitech@gmail.com" className="mt-0.5 block text-sm font-semibold text-white">
                         astadigitech@gmail.com
-                      </div>
+                      </a>
                     </div>
                   </li>
                   <li className="flex items-center gap-4">
@@ -108,9 +108,9 @@ export function Contact() {
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
                         {t("contact.info_office")}
                       </div>
-                      <div className="mt-0.5 text-sm font-semibold leading-snug text-white">
+                      <address className="mt-0.5 text-sm font-semibold leading-snug text-white not-italic">
                         {t("contact.info_office_address")}
-                      </div>
+                      </address>
                     </div>
                   </li>
                 </ul>
