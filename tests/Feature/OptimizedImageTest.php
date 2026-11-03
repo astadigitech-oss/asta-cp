@@ -65,6 +65,18 @@ class OptimizedImageTest extends TestCase
             ->assertRedirect(Storage::disk('public')->url('images/service/logo.svg'));
     }
 
+    public function test_image_endpoint_redirects_oversized_images_to_the_original_file(): void
+    {
+        Storage::fake('public');
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/bS8AAAAASUVORK5CYII=', true);
+        $png = substr_replace($png, pack('N', 4000) . pack('N', 4000), 16, 8);
+        Storage::disk('public')->put('images/clients/large-logo.png', $png);
+
+        $this->get('/media/client-logo/images/clients/large-logo.png')
+            ->assertRedirect(Storage::disk('public')->url('images/clients/large-logo.png'))
+            ->assertHeader('Cache-Control', 'max-age=86400, public');
+    }
+
     public function test_image_endpoint_creates_a_cached_webp_variant(): void
     {
         if (! function_exists('imagewebp')) {
@@ -84,5 +96,9 @@ class OptimizedImageTest extends TestCase
         $this->assertStringEndsWith('.webp', $response->headers->get('Location'));
         $this->assertSame('public, max-age=3600', $response->headers->get('Cache-Control'));
         $this->assertCount(1, Storage::disk('public')->allFiles('optimized/service-logo'));
+        $this->assertSame(
+            0644,
+            fileperms(Storage::disk('public')->path(Storage::disk('public')->allFiles('optimized/service-logo')[0])) & 0777,
+        );
     }
 }
