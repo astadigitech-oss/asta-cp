@@ -94,7 +94,6 @@ class LandingController extends Controller
                 ->filter()
                 ->values()
                 ->all();
-
             $rawSections = is_array($discover->content_sections)
                 ? $discover->content_sections
                 : (is_string($discover->content_sections) && !empty($discover->content_sections)
@@ -104,7 +103,7 @@ class LandingController extends Controller
             $formattedSections = collect($rawSections)->map(function ($section) {
                 return [
                     'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
-                    'image' => !empty($section['image']) ? $this->formatImageUrl($section['image'], 'discover-card') : null,
+                    'image' => !empty($section['image']) ? $this->formatImageUrl($section['image'], 'discover-section') : null,
                     'video_url' => $section['video_url'] ?? null,
                     'description' => $section['description'] ?? '',
                 ];
@@ -196,7 +195,8 @@ class LandingController extends Controller
             'description' => $portfolio->description,
             'type' => $portfolio->type,
             'category' => $portfolio->type,
-            'image' => $this->formatImageUrl($portfolio->image),
+            'image' => $this->formatImageUrl($portfolio->image, 'portfolio-card'),
+            'image_small' => $this->formatImageUrl($portfolio->image, 'portfolio-thumb'),
             'demo_url' => $portfolio->demo_url,
             'created_at' => $portfolio->created_at ? $portfolio->created_at->format('d M Y') : null,
         ]);
@@ -223,9 +223,10 @@ class LandingController extends Controller
             'header' => $service->header,
             'description' => $service->description,
             'short_description' => $service->short_description,
-            'logo' => $this->formatImageUrl($service->logo),
+            'logo' => $this->formatImageUrl($service->logo, 'service-logo'),
+            'cover_image' => $this->formatImageUrl($service->cover_image, 'service-cover'),
             'image' => collect($service->image ?? [])
-                ->map(fn (string $image) => $this->formatImageUrl($image))
+                ->map(fn (string $image) => $this->formatImageUrl($image, 'service-detail'))
                 ->filter()
                 ->values()
                 ->all(),
@@ -270,10 +271,13 @@ class LandingController extends Controller
                 : []);
 
         $formattedImages = collect($discoverImages)
-            ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img) : null)
+            ->map(fn ($img) => is_string($img) ? $this->formatImageUrl($img, 'discover-card') : null)
             ->filter()
             ->values()
             ->all();
+        $discoverOgImage = isset($discoverImages[0]) && is_string($discoverImages[0])
+            ? $this->formatImageUrl($discoverImages[0])
+            : null;
 
         $rawSections = is_array($discover->content_sections)
             ? $discover->content_sections
@@ -284,7 +288,7 @@ class LandingController extends Controller
         $formattedSections = collect($rawSections)->map(function ($section) {
             return [
                 'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : 'image'),
-                'image' => !empty($section['image']) ? $this->formatImageUrl($section['image']) : null,
+                'image' => !empty($section['image']) ? $this->formatImageUrl($section['image'], 'discover-section') : null,
                 'video_url' => $section['video_url'] ?? null,
                 'description' => $section['description'] ?? '',
             ];
@@ -301,11 +305,11 @@ class LandingController extends Controller
             'show_name' => $discover->show_name,
             'is_pinned' => $discover->is_pinned,
             'is_highlight' => (bool) $discover->is_highlight,
-            'logo' => $this->formatImageUrl($discover->logo),
+            'logo' => $this->formatImageUrl($discover->logo, 'discover-logo'),
             'image' => $formattedImages,
             'created_at' => $discover->created_at ? $discover->created_at->toISOString() : null,
             'DiscoverLists' => $discover->DiscoverLists,
-            'seo' => (function () use ($discover, $formattedImages) {
+            'seo' => (function () use ($discover, $formattedImages, $discoverOgImage) {
                 try {
                     $seo = $discover->seoData();
                     $keywords = '';
@@ -323,11 +327,11 @@ class LandingController extends Controller
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
                         'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
-                        'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? null),
+                        'og_image' => $seo?->ogImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'og_type' => $seo?->ogType ?? 'article',
                         'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
                         'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
-                        'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+                        'twitter_image' => $seo?->twitterImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'keywords' => $keywords,
                         'schema_jsonld' => $seo?->schemaJsonld,
                     ];

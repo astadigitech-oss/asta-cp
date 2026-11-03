@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
-    "description": "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
-    "og_title": "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
-    "og_description": "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis."
+    "title": "ASTA Digital Agency — Jasa Website & Aplikasi Bisnis",
+    "description": "ASTA Digital Agency menyediakan jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk UMKM, instansi, dan perusahaan di Indonesia.",
+    "og_title": "ASTA Digital Agency — Jasa Website & Aplikasi Bisnis",
+    "og_description": "Jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk bisnis, instansi, dan perusahaan di Indonesia."
   },
   "nav": {
     "home": "Beranda",
@@ -28,10 +28,10 @@
   },
   "hero": {
     "eyebrow": "Agensi Digital Premium · Est. 2022",
-    "title_1": "Membangun ",
-    "title_highlight": "pengalaman digital",
-    "title_2": " terbaik untuk bisnis modern.",
-    "description": "Asta Digital Agency adalah studio teknologi yang membangun website, aplikasi, dan sistem informasi terbaik — dirancang dengan standar enterprise dan Dedicated Tech Team & Enterprise Software Solutions for Scaling Businesses.",
+    "title_1": "ASTA Digital Agency membangun ",
+    "title_highlight": "website & aplikasi",
+    "title_2": " untuk kebutuhan bisnis.",
+    "description": "ASTA Digital Agency menyediakan jasa pembuatan website, pengembangan aplikasi mobile, dan sistem informasi custom. Solusi dikembangkan sesuai kebutuhan operasional bisnis, instansi, dan perusahaan.",
     "cta_start": "Mulai Proyek",
     "cta_portfolio": "Lihat Portofolio",
     "trust_security": "Keamanan Siap terjamin",

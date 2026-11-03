@@ -55,22 +55,18 @@ export const Route = createFileRoute("/$lang/")({
 
     return {
       meta: [
-        { title: "ASTA Digital Agency — Solusi Teknologi & Digital Agency" },
+        { title: isEn ? enTranslations.meta.title : idTranslations.meta.title },
         {
           name: "description",
-          content: isEn
-            ? "PT Asta Digital Agency builds modern applications, websites, and enterprise information systems for institutions, SMEs, schools, and corporations."
-            : "PT Asta Digital Agency membangun aplikasi, website, dan sistem informasi modern untuk instansi, UMKM, sekolah, dan perusahaan.",
+          content: isEn ? enTranslations.meta.description : idTranslations.meta.description,
         },
         {
           property: "og:title",
-          content: "ASTA Digital Agency — Solusi Teknologi & Digital Agency",
+          content: isEn ? enTranslations.meta.og_title : idTranslations.meta.og_title,
         },
         {
           property: "og:description",
-          content: isEn
-            ? "Reliable and trusted digital transformation for enterprises and growing businesses."
-            : "Transformasi digital yang andal dan terpercaya untuk instansi dan bisnis.",
+          content: isEn ? enTranslations.meta.og_description : idTranslations.meta.og_description,
         },
       ],
       scripts: [

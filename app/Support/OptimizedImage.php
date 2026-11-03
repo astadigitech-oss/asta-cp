@@ -15,8 +15,10 @@ class OptimizedImage
         'client-logo' => ['directories' => ['images/clients'], 'width' => 260, 'height' => 100],
         'discover-logo' => ['directories' => ['images/logos'], 'width' => 128, 'height' => 128],
         'discover-card' => ['directories' => ['images/discovers'], 'width' => 960, 'height' => 600],
+        'discover-section' => ['directories' => ['images/elearning'], 'width' => 1200, 'height' => 900],
         'testimonial-avatar' => ['directories' => ['images/testimonials'], 'width' => 160, 'height' => 160],
         'article-thumb' => ['directories' => ['articles/covers'], 'width' => 960, 'height' => 600],
+        'article-image' => ['directories' => ['articles/covers', 'articles/gallery', 'articles/sections'], 'width' => 1200, 'height' => 900],
     ];
 
     public static function presets(): array

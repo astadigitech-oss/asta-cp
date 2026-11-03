@@ -100,7 +100,7 @@
     $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
 
-    $keywords = 'asta digital, digital agency, software house, jasa pembuatan website, pembuatan aplikasi mobile, sistem informasi, IT consultant, web developer indonesia';
+    $keywords = 'asta digital agency, jasa pembuatan website, pengembangan aplikasi mobile, sistem informasi custom, software house indonesia, digital agency indonesia';
     if ($seo && !empty($seo->focusKeywords)) {
         $kwList = collect($seo->focusKeywords)->map(fn ($k) => is_array($k) ? ($k['keyword'] ?? '') : (is_object($k) ? ($k->keyword ?? '') : (string) $k))->filter()->implode(', ');
         if ($kwList) {
@@ -509,7 +509,7 @@
 
                 @if ($article->thumbnail)
                     <div class="my-6">
-                        <img src="{{ str_starts_with($article->thumbnail, 'http') ? $article->thumbnail : asset('storage/' . ltrim($article->thumbnail, '/')) }}"
+                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
                              width="1200"
                              height="675"
@@ -553,7 +553,7 @@
                         @foreach ($article->content_sections as $sec)
                             <div class="border-t pt-6">
                                 @if (!empty($sec['image']))
-                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                    <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'article-image') }}"
                                          alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
                                          width="1200"
                                          height="800"
@@ -612,7 +612,7 @@
                             @foreach ($recommendedArticles as $rec)
                                 @php
                                     $recSlug = method_exists($rec, 'getLocalizedSlug') ? $rec->getLocalizedSlug($currentLocale) : $rec->slug;
-                                    $recThumbnail = $rec->thumbnail ? ((str_starts_with($rec->thumbnail, 'http') ? $rec->thumbnail : asset('storage/' . ltrim($rec->thumbnail, '/')))) : null;
+                                    $recThumbnail = \App\Support\OptimizedImage::url($rec->thumbnail, 'article-thumb');
                                 @endphp
                                 <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
                                     @if ($recThumbnail)
@@ -653,7 +653,7 @@
 
                 @if ($discoverImg)
                     <div class="my-6">
-                        <img src="{{ $discoverImg }}"
+                        <img src="{{ \App\Support\OptimizedImage::url(is_array($discover->image) ? ($discover->image[0] ?? null) : $discover->image, 'discover-card') }}"
                              alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
                              width="1200"
                              height="675"
@@ -691,7 +691,7 @@
                                     {{ $currentLocale === 'en' ? 'Part ' . ($sIdx + 1) : 'Bagian ' . ($sIdx + 1) }}
                                 </span>
                                 @if (!empty($sec['image']))
-                                    <img src="{{ str_starts_with($sec['image'], 'http') ? $sec['image'] : asset('storage/' . ltrim($sec['image'], '/')) }}"
+                                    <img src="{{ \App\Support\OptimizedImage::url($sec['image'], 'discover-section') }}"
                                          alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
                                          width="1200"
                                          height="800"
@@ -847,7 +847,7 @@
                                 if (!empty($item->image)) {
                                     $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                     if ($first) {
-                                        $dImg = str_starts_with($first, 'http') ? $first : asset('storage/' . ltrim($first, '/'));
+                                        $dImg = \App\Support\OptimizedImage::url($first, 'discover-card');
                                     }
                                 }
                             @endphp
@@ -1222,7 +1222,7 @@
                                     if (!empty($item->image)) {
                                         $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                         if ($first) {
-                                            $dImg = str_starts_with($first, 'http') ? $first : asset('storage/' . ltrim($first, '/'));
+                                            $dImg = \App\Support\OptimizedImage::url($first, 'discover-card');
                                         }
                                     }
                                 @endphp

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
-    "description": "PT Asta Digital Agency builds modern applications, websites, and information systems for government institutions, SMEs, schools, and enterprises.",
-    "og_title": "ASTA Digital Agency — Technology Solutions & Digital Agency",
-    "og_description": "Reliable and trusted digital transformation for institutions and businesses."
+    "title": "ASTA Digital Agency — Website & App Development Solutions",
+    "description": "ASTA Digital Agency builds custom websites, mobile apps, and information systems for organizations, SMEs, and growing businesses in Indonesia.",
+    "og_title": "ASTA Digital Agency — Website & App Development Solutions",
+    "og_description": "Custom website, mobile app, and information system development for organizations and growing businesses in Indonesia."
   },
   "nav": {
     "home": "Home",
@@ -28,10 +28,10 @@
   },
   "hero": {
     "eyebrow": "Premium Digital Agency · Est. 2022",
-    "title_1": "Building the best ",
-    "title_highlight": "digital experience",
-    "title_2": " for modern business.",
-    "description": "Asta Digital Agency is a technology studio that builds the best websites, applications, and information systems — designed with enterprise standards and Dedicated Tech Team & Enterprise Software Solutions for Scaling Businesses.",
+    "title_1": "ASTA Digital Agency builds ",
+    "title_highlight": "websites & apps",
+    "title_2": " for growing businesses.",
+    "description": "ASTA Digital Agency develops custom websites, mobile applications, and information systems. Each solution is designed around the operational needs of organizations, SMEs, and growing businesses.",
     "cta_start": "Start Project",
     "cta_portfolio": "View Portfolio",
     "trust_security": "Enterprise Security",

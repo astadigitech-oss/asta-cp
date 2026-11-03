@@ -4,13 +4,26 @@
 
 ASTA Digital Agency publishes its website in Indonesian and English. Use the language-specific URL when available.
 
+## Services
+
+- Custom website and web application development
+- Android and iOS mobile application development
+- Custom enterprise information systems and software
+- Digital transformation and software engineering for organizations, SMEs, and growing businesses
+
 ## Main pages
 
 - [Indonesian homepage](https://astadigitalagency.com/id)
 - [English homepage](https://astadigitalagency.com/en)
 - [Articles and insights](https://astadigitalagency.com/id/blog)
+- [Articles and insights in English](https://astadigitalagency.com/en/blog)
 - [Discover and case studies](https://astadigitalagency.com/id/discover)
+- [Discover and case studies in English](https://astadigitalagency.com/en/discover)
 - [Sitemap](https://astadigitalagency.com/sitemap.xml)
+
+## Company
+
+PT Asta Digital Agency is a software engineering and digital agency based in Bantul, D.I. Yogyakarta, Indonesia. It builds custom digital products around each client's operational needs.
 
 ## Contact
 

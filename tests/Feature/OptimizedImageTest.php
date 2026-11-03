@@ -21,6 +21,28 @@ class OptimizedImageTest extends TestCase
         );
     }
 
+    public function test_article_section_images_use_the_article_image_preset(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('articles/sections/inline.png', 'image');
+
+        $this->assertSame(
+            route('media.optimized', ['preset' => 'article-image', 'path' => 'articles/sections/inline.png']),
+            OptimizedImage::url('articles/sections/inline.png', 'article-image'),
+        );
+    }
+
+    public function test_discover_section_images_use_the_discover_section_preset(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('images/elearning/section.png', 'image');
+
+        $this->assertSame(
+            route('media.optimized', ['preset' => 'discover-section', 'path' => 'images/elearning/section.png']),
+            OptimizedImage::url('images/elearning/section.png', 'discover-section'),
+        );
+    }
+
     public function test_external_images_keep_their_original_url(): void
     {
         $url = 'https://images.example.com/logo.png';
@@ -60,6 +82,7 @@ class OptimizedImageTest extends TestCase
         $response = $this->get('/media/service-logo/images/service/logo.png');
         $response->assertRedirect();
         $this->assertStringEndsWith('.webp', $response->headers->get('Location'));
+        $this->assertSame('public, max-age=3600', $response->headers->get('Cache-Control'));
         $this->assertCount(1, Storage::disk('public')->allFiles('optimized/service-logo'));
     }
 }

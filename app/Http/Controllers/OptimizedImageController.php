@@ -72,7 +72,7 @@ class OptimizedImageController extends Controller
         }
 
         return redirect($disk->url($variantPath), 302)
-            ->header('Cache-Control', 'public, max-age=31536000, immutable');
+            ->header('Cache-Control', 'public, max-age=3600');
     }
 
     private function createVariant(
