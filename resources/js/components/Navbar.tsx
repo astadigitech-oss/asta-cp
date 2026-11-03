@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import logo from "../assets/logo/Logo Hitam 2.png";
+import logoSmall from "../assets/logo/Logo-Hitam-230.webp";
 import p1 from "../assets/portfolio-1.jpg";
 import p2 from "../assets/portfolio-2.jpg";
 import p3 from "../assets/portfolio-3.jpg";
@@ -190,7 +191,7 @@ export function Navbar() {
           
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <img src={logo} alt="Asta Digital Agency" width={500} height={500} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
+            <img src={logoSmall} srcSet={`${logoSmall} 230w, ${logo} 500w`} sizes="115px" alt="Asta Digital Agency" width={230} height={230} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
           </a>

@@ -448,7 +448,11 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
-        <link rel="preload" as="image" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot.webp') }}" fetchpriority="high">
+        <link rel="preload" as="image"
+              href="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }}"
+              imagesrcset="{{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot-small.webp') }} 480w, {{ \Illuminate\Support\Facades\Vite::asset('resources/js/assets/Hero/Robot.webp') }} 954w"
+              imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+              fetchpriority="high">
     @endif
     @php
         $gaId = config('services.google.analytics_id');

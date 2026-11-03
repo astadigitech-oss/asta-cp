@@ -6,6 +6,8 @@ import { Eyebrow, Counter, OceanBackdrop } from "../common";
 
 import laptopImg from "@/assets/Hero/Laptop.webp";
 import robotImg from "@/assets/Hero/Robot.webp";
+import laptopSmallImg from "@/assets/Hero/Laptop-small.webp";
+import robotSmallImg from "@/assets/Hero/Robot-small.webp";
 
 const defaultClientNames = [
   "Telkom Indonesia",
@@ -109,6 +111,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                   <div className="absolute inset-0 flex items-center justify-center z-10">
                     <img
                       src={laptopImg}
+                      srcSet={`${laptopSmallImg} 480w, ${laptopImg} 952w`}
+                      sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
                       alt="Laptop ASTA Digital Agency"
                       width={952}
                       height={714}
@@ -120,6 +124,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                   <div className="absolute inset-0 flex items-center justify-center z-20">
                     <img
                       src={robotImg}
+                      srcSet={`${robotSmallImg} 480w, ${robotImg} 954w`}
+                      sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
                       alt="3D Robot ASTA Digital Agency"
                       width={954}
                       height={715}
