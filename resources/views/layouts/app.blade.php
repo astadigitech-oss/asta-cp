@@ -522,8 +522,8 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
         <link rel="preload" as="image"
-              href="/images/optimized/Hero/Robot-640.avif"
-              imagesrcset="/images/optimized/Hero/Robot-320.avif 320w, /images/optimized/Hero/Robot-480.avif 480w, /images/optimized/Hero/Robot-640.avif 640w, /images/optimized/Hero/Robot-954.avif 954w"
+              href="/images/optimized/Hero/Robot-webp-640.avif"
+              imagesrcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w"
               imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
               type="image/avif"
               fetchpriority="high">
@@ -559,15 +559,11 @@
         window.__INITIAL_DATA__ = @json($clientInitialData);
     </script>
     <link rel="preload" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}" as="style">
-    @if (!($isHomePage ?? false))
-        @viteReactRefresh
-        @vite(['resources/css/app.css', 'resources/js/main.tsx'])
-    @else
-        @vite(['resources/css/app.css'])
-    @endif
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="bg-background text-foreground antialiased">
-    <div id="react-app" data-preserve-ssr="{{ ($isHomePage ?? false) ? 'true' : 'false' }}">
+    <div id="react-app">
         {{-- Semantic Server-Side Pre-rendered Content untuk Mesin Pencari & Bot AI --}}
         @if ($article)
             <article class="max-w-4xl mx-auto px-4 py-12">
@@ -1052,9 +1048,9 @@
                         {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
                     </h1>
                     <picture class="block max-w-xl">
-                        <source type="image/avif" srcset="/images/optimized/Hero/Robot-320.avif 320w, /images/optimized/Hero/Robot-480.avif 480w, /images/optimized/Hero/Robot-640.avif 640w, /images/optimized/Hero/Robot-954.avif 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <source type="image/webp" srcset="/images/optimized/Hero/Robot-320.webp 320w, /images/optimized/Hero/Robot-480.webp 480w, /images/optimized/Hero/Robot-640.webp 640w, /images/optimized/Hero/Robot-954.webp 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <img src="/images/optimized/Hero/Robot-954.webp" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
+                        <source type="image/avif" srcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <source type="image/webp" srcset="/images/optimized/Hero/Robot-webp-320.webp 320w, /images/optimized/Hero/Robot-webp-480.webp 480w, /images/optimized/Hero/Robot-webp-640.webp 640w, /images/optimized/Hero/Robot-webp-954.webp 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <img src="/images/optimized/Hero/Robot-webp-954.webp" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
                     </picture>
 
                     <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-normal max-w-4xl">
