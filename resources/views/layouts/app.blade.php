@@ -558,7 +558,17 @@
     <script>
         window.__INITIAL_DATA__ = @json($clientInitialData);
     </script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box}
+        html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+        body{margin:0;min-width:320px;min-height:100vh;overflow-x:hidden;background:#f7fbff;color:#0b1f33;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+        #react-app{min-height:100vh;overflow-x:hidden}
+        h1,h2,h3,p{margin-top:0}
+    </style>
     <link rel="preload" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}" as="style">
+    <noscript>
+        <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
+    </noscript>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
