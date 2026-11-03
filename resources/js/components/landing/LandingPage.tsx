@@ -125,6 +125,35 @@ export function LandingPage() {
         {/* Above-the-fold critical content (loaded immediately) */}
         <Hero clientsList={landingData?.clients} />
 
+        <section className="mx-auto max-w-6xl space-y-6 px-4 py-12 sm:px-6 lg:px-10">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            {t("home_seo.title")}
+          </h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.website_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.website_description")}</p>
+            </article>
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.mobile_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.mobile_description")}</p>
+            </article>
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.systems_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.systems_description")}</p>
+            </article>
+          </div>
+          <div className="max-w-4xl">
+            <h3 className="font-semibold text-gray-900">{t("home_seo.process_title")}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.process_description")}</p>
+          </div>
+          <p className="max-w-4xl text-sm leading-relaxed text-gray-600">{t("home_seo.location")}</p>
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-primary">
+            <a href="#layanan" className="underline underline-offset-4">{t("home_seo.services_link")}</a>
+            <a href="#kontak" className="underline underline-offset-4">{t("home_seo.contact_link")}</a>
+          </div>
+        </section>
+
         {/* Below-the-fold deferred content (lazy loaded chunks) */}
         <DeferredSection hashTarget="tentang" minHeight="min-h-[400px]">
           <About discoversList={landingData?.discovers} />

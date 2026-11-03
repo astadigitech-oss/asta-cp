@@ -19,9 +19,7 @@ export const Route = createFileRoute("/$lang/")({
       name: "PT Asta Digital Agency",
       alternateName: "ASTA DIGITAL AGENCY",
       url: typeof window !== "undefined" ? window.location.origin : "https://astadigitalagency.com",
-      description: isEn
-        ? "ASTA DIGITAL AGENCY engineers high-performance mobile applications, modern web platforms, and scalable enterprise systems."
-        : "ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, dan perusahaan.",
+      description: isEn ? enTranslations.meta.description : idTranslations.meta.description,
       telephone: "+6281578223564",
       email: "astadigitech@gmail.com",
       sameAs: [

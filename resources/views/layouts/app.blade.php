@@ -196,7 +196,9 @@
             'url' => rtrim(config('app.url', url('/')), '/'),
             'logo' => asset('images/logo-dark.png'),
             'image' => $ogDefaultImage,
-            'description' => 'ASTA DIGITAL AGENCY membangun aplikasi mobile, website, dan sistem informasi enterprise modern untuk instansi, UMKM, sekolah, dan perusahaan skala menengah hingga besar.',
+            'description' => $currentLocale === 'en'
+                ? 'ASTA Digital Agency provides website development, mobile apps, and custom information systems for SMEs and organizations in Yogyakarta, Indonesia.'
+                : 'ASTA Digital Agency menyediakan jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan di Yogyakarta.',
             'telephone' => '+6281578223564',
             'email' => 'astadigitech@gmail.com',
             'priceRange' => '$$',
@@ -999,6 +1001,35 @@
                         </div>
                     </div>
                 </header>
+
+                <section class="space-y-6 border-b border-gray-100 pb-12 dark:border-gray-800">
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+                        {{ transKey($transDict, 'home_seo.title') }}
+                    </h2>
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.website_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.website_description') }}</p>
+                        </article>
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.mobile_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.mobile_description') }}</p>
+                        </article>
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.systems_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.systems_description') }}</p>
+                        </article>
+                    </div>
+                    <div class="max-w-4xl">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.process_title') }}</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.process_description') }}</p>
+                    </div>
+                    <p class="max-w-4xl text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.location') }}</p>
+                    <div class="flex flex-wrap gap-4 text-sm font-semibold text-blue-700 dark:text-blue-300">
+                        <a href="#layanan" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.services_link') }}</a>
+                        <a href="#kontak" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.contact_link') }}</a>
+                    </div>
+                </section>
 
                 {{-- 2. Section Tentang ASTA (#tentang) --}}
                 <section id="tentang" class="space-y-8 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">
