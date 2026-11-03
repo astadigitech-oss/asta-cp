@@ -49,7 +49,7 @@ function DeferredSection({
         ([entry]) => {
           if (entry.isIntersecting) activate();
         },
-        { rootMargin: "800px 0px" },
+        { rootMargin: "400px 0px" },
       );
       if (sectionRef.current) observer.observe(sectionRef.current);
     } else {
