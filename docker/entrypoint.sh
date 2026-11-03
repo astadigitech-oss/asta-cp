@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+# Keep PHP-FPM concurrency bounded; override based on the container memory budget.
+FPM_MAX_CHILDREN="${FPM_MAX_CHILDREN:-2}"
+case "$FPM_MAX_CHILDREN" in
+    ''|*[!0-9]*|0)
+        echo "FPM_MAX_CHILDREN must be a positive integer." >&2
+        exit 1
+        ;;
+esac
+sed -i "s/__FPM_MAX_CHILDREN__/$FPM_MAX_CHILDREN/" /usr/local/etc/php-fpm.d/www.conf
+
 # Wajib di Alpine: buat folder PID Nginx agar tidak crash saat start
 mkdir -p /run/nginx
 
@@ -39,5 +49,4 @@ php-fpm -D
 # Jalankan Nginx di foreground agar container tetap hidup (tidak loop restart)
 echo "==> Starting Nginx on port 80..."
 exec nginx -g "daemon off;"
-
 

@@ -59,3 +59,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Docker deployment
+
+PHP-FPM is limited to 2 child processes by default, with a 128 MB PHP memory limit per worker. Set `FPM_MAX_CHILDREN` in the deployment environment to adjust concurrency to the container's memory budget. Increasing this value can increase peak memory usage; check container memory and PHP-FPM logs before raising it.

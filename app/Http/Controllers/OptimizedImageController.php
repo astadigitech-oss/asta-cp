@@ -60,15 +60,42 @@ class OptimizedImageController extends Controller
         $variantPath = "optimized/{$preset}/{$presetHash}.webp";
 
         if (! $disk->exists($variantPath)) {
-            $this->createVariant(
-                $sourcePath,
-                $disk->path($variantPath),
-                $sourceWidth,
-                $sourceHeight,
-                $configuration['width'],
-                $configuration['height'],
-                $preset,
-            );
+            $lockDirectory = dirname($disk->path("optimized/.locks/{$presetHash}.lock"));
+
+            if (! is_dir($lockDirectory) && ! mkdir($lockDirectory, 0755, true) && ! is_dir($lockDirectory)) {
+                throw new RuntimeException('Unable to create the optimized image lock directory.');
+            }
+
+            $lock = fopen($lockDirectory . DIRECTORY_SEPARATOR . "{$presetHash}.lock", 'c');
+
+            if ($lock === false) {
+                throw new RuntimeException('Unable to lock the optimized image cache.');
+            }
+
+            try {
+                if (! flock($lock, LOCK_EX)) {
+                    throw new RuntimeException('Unable to lock the optimized image cache.');
+                }
+
+                try {
+                    if (! $disk->exists($variantPath)) {
+                        $this->createVariant(
+                            $sourcePath,
+                            $disk->path($variantPath),
+                            $sourceWidth,
+                            $sourceHeight,
+                            $imageInfo[2],
+                            $configuration['width'],
+                            $configuration['height'],
+                            $preset,
+                        );
+                    }
+                } finally {
+                    flock($lock, LOCK_UN);
+                }
+            } finally {
+                fclose($lock);
+            }
         }
 
         return redirect($disk->url($variantPath), 302)
@@ -80,17 +107,17 @@ class OptimizedImageController extends Controller
         string $destinationPath,
         int $sourceWidth,
         int $sourceHeight,
+        int $imageType,
         int $targetWidth,
         int $targetHeight,
         string $preset,
     ): void {
-        $contents = file_get_contents($sourcePath);
-
-        if ($contents === false) {
-            throw new RuntimeException('Unable to read the source image for optimization.');
-        }
-
-        $source = imagecreatefromstring($contents);
+        $source = match ($imageType) {
+            IMAGETYPE_JPEG => imagecreatefromjpeg($sourcePath),
+            IMAGETYPE_PNG => imagecreatefrompng($sourcePath),
+            IMAGETYPE_WEBP => imagecreatefromwebp($sourcePath),
+            default => false,
+        };
 
         if ($source === false) {
             abort(415, 'The requested image could not be decoded.');
