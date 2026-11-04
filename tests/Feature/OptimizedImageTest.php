@@ -11,6 +11,7 @@ class OptimizedImageTest extends TestCase
     public function test_image_html_attributes_include_preset_dimensions(): void
     {
         $this->assertSame('width="960" height="720"', OptimizedImage::htmlAttributes('service-cover'));
+        $this->assertSame('width="640" height="360"', OptimizedImage::htmlAttributes('discover-thumb'));
     }
 
     public function test_image_urls_use_an_optimized_variant_for_allowed_public_uploads(): void
@@ -21,9 +22,25 @@ class OptimizedImageTest extends TestCase
         $url = OptimizedImage::url('images/service/logo.png', 'service-logo');
 
         $this->assertSame(
-            route('media.optimized', ['preset' => 'service-logo', 'path' => 'images/service/logo.png']),
+            route('media.optimized', [
+                'preset' => 'service-logo',
+                'path' => 'images/service/logo.png',
+                'v' => OptimizedImage::version('images/service/logo.png', 'service-logo'),
+            ]),
             $url,
         );
+    }
+
+    public function test_image_version_changes_when_the_source_file_changes(): void
+    {
+        Storage::fake('public');
+        $path = 'images/service/logo.png';
+        Storage::disk('public')->put($path, 'first image');
+        $firstVersion = OptimizedImage::version($path, 'service-logo');
+
+        Storage::disk('public')->put($path, 'updated image');
+
+        $this->assertNotSame($firstVersion, OptimizedImage::version($path, 'service-logo'));
     }
 
     public function test_article_section_images_use_the_article_image_preset(): void
@@ -32,7 +49,11 @@ class OptimizedImageTest extends TestCase
         Storage::disk('public')->put('articles/sections/inline.png', 'image');
 
         $this->assertSame(
-            route('media.optimized', ['preset' => 'article-image', 'path' => 'articles/sections/inline.png']),
+            route('media.optimized', [
+                'preset' => 'article-image',
+                'path' => 'articles/sections/inline.png',
+                'v' => OptimizedImage::version('articles/sections/inline.png', 'article-image'),
+            ]),
             OptimizedImage::url('articles/sections/inline.png', 'article-image'),
         );
     }
@@ -43,7 +64,11 @@ class OptimizedImageTest extends TestCase
         Storage::disk('public')->put('images/elearning/section.png', 'image');
 
         $this->assertSame(
-            route('media.optimized', ['preset' => 'discover-section', 'path' => 'images/elearning/section.png']),
+            route('media.optimized', [
+                'preset' => 'discover-section',
+                'path' => 'images/elearning/section.png',
+                'v' => OptimizedImage::version('images/elearning/section.png', 'discover-section'),
+            ]),
             OptimizedImage::url('images/elearning/section.png', 'discover-section'),
         );
     }
@@ -61,25 +86,48 @@ class OptimizedImageTest extends TestCase
         $this->get('/media/service-logo/images/portfolios/project.png')->assertNotFound();
     }
 
-    public function test_image_endpoint_keeps_svg_logos_as_original_files(): void
+    public function test_image_endpoint_serves_svg_logos_directly_with_long_cache(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('images/service/logo.svg', '<svg></svg>');
 
-        $this->get('/media/service-logo/images/service/logo.svg')
-            ->assertRedirect(Storage::disk('public')->url('images/service/logo.svg'));
+        $response = $this->get('/media/service-logo/images/service/logo.svg')->assertOk();
+
+        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $response->headers->get('Cache-Control'));
+        $this->assertSame('image/svg+xml', $response->headers->get('Content-Type'));
     }
 
-    public function test_image_endpoint_redirects_oversized_images_to_the_original_file(): void
+    public function test_image_endpoint_serves_oversized_images_directly_with_long_cache(): void
     {
         Storage::fake('public');
         $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/bS8AAAAASUVORK5CYII=', true);
         $png = substr_replace($png, pack('N', 4000) . pack('N', 4000), 16, 8);
         Storage::disk('public')->put('images/clients/large-logo.png', $png);
 
-        $this->get('/media/client-logo/images/clients/large-logo.png')
-            ->assertRedirect(Storage::disk('public')->url('images/clients/large-logo.png'))
-            ->assertHeader('Cache-Control', 'max-age=86400, public');
+        $response = $this->get('/media/client-logo/images/clients/large-logo.png')->assertOk();
+
+        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $response->headers->get('Cache-Control'));
+        $this->assertSame('image/png', $response->headers->get('Content-Type'));
+    }
+
+    public function test_image_endpoint_serves_original_when_webp_support_is_unavailable(): void
+    {
+        if (function_exists('imagewebp')) {
+            $this->markTestSkipped('This fallback only applies when GD WebP support is unavailable.');
+        }
+
+        Storage::fake('public');
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/bS8AAAAASUVORK5CYII=', true);
+        Storage::disk('public')->put('images/service/logo.png', $png);
+
+        $response = $this->get('/media/service-logo/images/service/logo.png')->assertOk();
+
+        $this->assertSame('image/png', $response->headers->get('Content-Type'));
+        $this->assertSame($png, $response->baseResponse->getFile()->getContent());
+        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $response->headers->get('Cache-Control'));
     }
 
     public function test_image_endpoint_creates_a_cached_webp_variant(): void
@@ -97,9 +145,10 @@ class OptimizedImageTest extends TestCase
         Storage::disk('public')->put('images/service/logo.png', $png);
 
         $response = $this->get('/media/service-logo/images/service/logo.png');
-        $response->assertRedirect();
-        $this->assertStringEndsWith('.webp', $response->headers->get('Location'));
-        $this->assertSame('public, max-age=3600', $response->headers->get('Cache-Control'));
+        $response->assertOk();
+        $this->assertSame('image/webp', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $response->headers->get('Cache-Control'));
         $this->assertCount(1, Storage::disk('public')->allFiles('optimized/service-logo'));
         $this->assertSame(
             0644,

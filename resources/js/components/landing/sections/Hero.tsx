@@ -117,7 +117,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                     />
                   </div>
 
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
+                  <div className="absolute inset-0 flex items-center justify-center z-20 floating">
                     <ResponsiveImage
                       source="Hero/Robot.webp"
                       sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"

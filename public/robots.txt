@@ -3,10 +3,26 @@ User-agent: Googlebot
 User-agent: Bingbot
 User-agent: GPTBot
 User-agent: ClaudeBot
-User-agent: anthropic-ai
 User-agent: PerplexityBot
-User-agent: cohere-ai
 User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /dapur-belakang
+Disallow: /private/
+Disallow: /storage/framework/
+Disallow: /vendor/
+Disallow: /.env
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+Disallow: /dapur-belakang
+Disallow: /private/
+Disallow: /storage/framework/
+Disallow: /vendor/
+Disallow: /.env
+
+User-agent: cohere-ai
 Allow: /
 Disallow: /admin
 Disallow: /dapur-belakang
