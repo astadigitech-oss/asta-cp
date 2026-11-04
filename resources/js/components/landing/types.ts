@@ -36,7 +36,7 @@ export interface ServiceData {
 
 export interface PortfolioProject {
   id: string | number;
-  img: string;
+  img?: string;
   title: string;
   category: string;
   type: string;

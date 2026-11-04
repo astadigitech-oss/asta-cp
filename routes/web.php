@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\QueryException;
 use App\Models\Service;
 use App\Models\Article;
 use App\Models\Discover;
 use App\Models\Portfolio;
+use App\Models\Client;
+use App\Models\Testimonial;
 use App\Http\Controllers\OptimizedImageController;
 use App\Support\OptimizedImage;
 
@@ -150,6 +153,8 @@ Route::get('/{any?}', function () {
     $homeArticles = null;
     $homePortfolios = null;
     $homeDiscovers = null;
+    $homeClients = collect();
+    $homeTestimonials = collect();
     $blogArticles = null;
     $discoverItems = null;
     $article = null;
@@ -165,6 +170,22 @@ Route::get('/{any?}', function () {
     ];
 
     if ($isHomePage) {
+        try {
+            $homeClients = Client::all();
+        } catch (QueryException $e) {
+            report($e);
+        }
+
+        try {
+            $homeTestimonials = Testimonial::publiclyVerified()
+                ->orderBy('sort')
+                ->get()
+                ->filter(fn (Testimonial $testimonial) => Testimonial::hasPublicSource($testimonial->source_url))
+                ->values();
+        } catch (QueryException $e) {
+            report($e);
+        }
+
         try {
             $homeServices = Service::with(['serviceListMains' => function ($q) {
                 $q->orderBy('sort', 'asc');
@@ -469,6 +490,8 @@ Route::get('/{any?}', function () {
         'homeArticles' => $homeArticles,
         'homePortfolios' => $homePortfolios,
         'homeDiscovers' => $homeDiscovers,
+        'homeClients' => $homeClients,
+        'homeTestimonials' => $homeTestimonials,
         'seo' => $seo,
         'initialData' => $initialData,
     ], $statusCode);

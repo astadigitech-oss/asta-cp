@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import sharp from "sharp";
 import { readdir, mkdir, stat, writeFile, readFile, unlink } from "node:fs/promises";
 import path from "node:path";
@@ -81,7 +82,8 @@ try {
       if (!url.startsWith(prefix)) {
         throw new Error(`Unexpected generated image URL in manifest: ${url}`);
       }
-      previousOutputPaths.add(path.resolve(outputRoot, url.slice(prefix.length).split("/").join(path.sep)));
+      const relativePath = url.slice(prefix.length).split("?")[0];
+      previousOutputPaths.add(path.resolve(outputRoot, relativePath.split("/").join(path.sep)));
     }
   }
 } catch (error) {
@@ -105,6 +107,10 @@ for (const sourcePath of sources) {
   }
 
   const sourceStat = await stat(sourcePath);
+  const sourceHash = createHash("sha256")
+    .update(await readFile(sourcePath))
+    .digest("hex")
+    .slice(0, 12);
   sourceBytes += sourceStat.size;
   const limit = Math.min(metadata.width, maxDisplayWidth(relativePath));
   const extension = path.extname(relativePath).slice(1).toLowerCase();
@@ -139,11 +145,12 @@ for (const sourcePath of sources) {
         outputStat = null;
       }
 
-      if (!outputStat || outputStat.mtimeMs < sourceStat.mtimeMs) {
-        const buffer = await optimizedBuffer(sourcePath, outputWidth, format);
+      const buffer = await optimizedBuffer(sourcePath, outputWidth, format);
+      const existingBuffer = outputStat ? await readFile(outputPath) : null;
+      if (!existingBuffer || !existingBuffer.equals(buffer)) {
         await writeFile(outputPath, buffer);
-        outputStat = await stat(outputPath);
       }
+      outputStat = await stat(outputPath);
 
       responsiveBytes += outputStat.size;
       if (width === widths.at(-1)) {
@@ -151,7 +158,7 @@ for (const sourcePath of sources) {
         else largestAvifBytes += outputStat.size;
       }
 
-      formats[format].push(`/images/optimized/${outputRelative.split(path.sep).join("/")}.${format} ${outputWidth}w`);
+      formats[format].push(`/images/optimized/${outputRelative.split(path.sep).join("/")}.${format}?v=${sourceHash} ${outputWidth}w`);
     }
 
     finalDimensions = { width: outputWidth, height: outputHeight };
@@ -164,7 +171,7 @@ for (const sourcePath of sources) {
   ).split(path.sep).join("/");
 
   variants[normalizedPath] = {
-    src: `/images/optimized/${outputBase}.webp`,
+    src: `/images/optimized/${outputBase}.webp?v=${sourceHash}`,
     width: finalDimensions.width,
     height: finalDimensions.height,
     webpSrcSet: formats.webp.join(", "),

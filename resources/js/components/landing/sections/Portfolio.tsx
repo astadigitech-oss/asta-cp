@@ -13,11 +13,6 @@ import { SectionHeading, SectionPagination } from "../common";
 import { ResponsiveImage } from "../common/ResponsiveImage";
 import { PortfolioProject } from "../types";
 
-const defaultProjects: PortfolioProject[] = [
-  { id: "p1", img: "portfolio-1.jpg", title: "Portal Kominfo", category: "Institutional", type: "desktop", description: "Development of official government information portal with enterprise standards.", span: "lg:col-span-2 lg:row-span-2" },
-  { id: "p2", img: "portfolio-2.jpg", title: "Public Service App", category: "Mobile", type: "mobile", description: "Integrated public service mobile app.", span: "lg:col-span-2" },
-];
-
 const PORTFOLIOS_PER_PAGE = 6;
 
 export function Portfolio() {
@@ -37,12 +32,12 @@ export function Portfolio() {
     "lg:col-span-2",
   ];
 
-  const projectsList: PortfolioProject[] = (landingData?.portfolios && landingData.portfolios.length > 0)
-    ? landingData.portfolios.map((item: any, index: number) => {
+  const projectsList: PortfolioProject[] = (landingData?.portfolios ?? [])
+    .map((item, index) => {
       const catLabel = item.type === "mobile" ? "Mobile" : "Desktop";
       return {
         id: item.id,
-        img: item.image || "portfolio-1.jpg",
+        img: item.image,
         title: localize(item.name) || "Portfolio Item",
         category: catLabel,
         type: item.type || "desktop",
@@ -50,12 +45,7 @@ export function Portfolio() {
         demo_url: item.demo_url,
         span: spans[index % spans.length],
       };
-    })
-    : defaultProjects.map((p) => ({
-      ...p,
-      title: localize(p.title),
-      description: localize(p.description),
-    }));
+    });
 
   const categories = [
     { key: "all", label: t("portfolio.tab_all") },
@@ -140,15 +130,19 @@ export function Portfolio() {
                   onClick={() => setSelectedProject(p)}
                   className={`group relative aspect-[4/5] w-[85%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-primary shadow-glass sm:aspect-auto sm:w-auto sm:shrink cursor-pointer transition-all duration-300 hover:shadow-2xl ${p.span}`}
                 >
-                  <ResponsiveImage
-                    source={p.img}
-                    alt={p.title}
-                    width={800}
-                    height={1000}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  {p.img ? (
+                    <ResponsiveImage
+                      source={p.img}
+                      alt={p.title}
+                      width={800}
+                      height={1000}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-primary/80 to-secondary/70" aria-hidden="true" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-95" />
                   <div className="absolute inset-x-6 bottom-6 flex items-end justify-between gap-4 text-primary-foreground">
                     <div>
@@ -185,15 +179,19 @@ export function Portfolio() {
             {selectedProject && (
               <div className="flex flex-col max-h-[88dvh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <div className="relative h-48 sm:h-72 w-full overflow-hidden bg-gray-900 shrink-0 select-none">
-                  <ResponsiveImage
-                    source={selectedProject.img}
-                    alt={selectedProject.title}
-                    width={960}
-                    height={540}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
+                  {selectedProject.img ? (
+                    <ResponsiveImage
+                      source={selectedProject.img}
+                      alt={selectedProject.title}
+                      width={960}
+                      height={540}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-primary/80 to-secondary/70" aria-hidden="true" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20" />
 
                   {/* Close button top right */}

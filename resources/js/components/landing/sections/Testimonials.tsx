@@ -6,27 +6,6 @@ import { useLandingData, TestimonialItem } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { SectionHeading } from "../common";
 
-const defaultTestimonials: TestimonialItem[] = [
-  {
-    id: 1,
-    name: "Surya Aditama",
-    role: "Head of IT",
-    org: "Dinas Kominfo",
-    quote: "Asta Digital built a portal that met our strict standards.",
-    tag: "Government",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Ratih Pratiwi",
-    role: "Director",
-    org: "PT Mitra Andalan",
-    quote: "Clear communication and premium execution. Our internal system is far more efficient.",
-    tag: "Enterprise",
-    rating: 5,
-  },
-];
-
 const testimonialGradients = [
   "from-[oklch(0.45_0.18_230)] to-[oklch(0.35_0.16_250)]",
   "from-[oklch(0.48_0.2_195)] to-[oklch(0.38_0.18_215)]",
@@ -70,9 +49,7 @@ function TestimonialAvatar({ avatar, name, colorClass }: { avatar?: string; name
 export function Testimonials() {
   const { t, localize } = useTranslation();
   const { data: landingData } = useLandingData();
-  const rawTestimonials = (landingData?.testimonials && landingData.testimonials.length > 0)
-    ? landingData.testimonials
-    : defaultTestimonials;
+  const rawTestimonials = landingData?.testimonials ?? [];
 
   const testimonials = rawTestimonials.map((tItem) => ({
     ...tItem,
@@ -97,6 +74,8 @@ export function Testimonials() {
     resetTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [len]);
+
+  if (len === 0) return null;
 
   const goTo = (i: number) => { if (len === 0) return; setIdx((i + len) % len); resetTimer(); };
   const prev = () => goTo(idx - 1);
@@ -182,6 +161,16 @@ export function Testimonials() {
                       </div>
                     </div>
                   </figcaption>
+                  {tItem.source_url && (
+                    <a
+                      href={tItem.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-block text-sm font-semibold text-secondary underline underline-offset-4"
+                    >
+                      {t("testimonials.view_source")}
+                    </a>
+                  )}
                 </div>
               </motion.figure>
             );

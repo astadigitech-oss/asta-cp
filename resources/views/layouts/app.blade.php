@@ -121,6 +121,12 @@
         $homepageSourceModifiedAt,
         $homepageDataModifiedAt?->timestamp ?? 0,
     ));
+    $robotImageHash = '';
+    $robotImagePath = resource_path('js/assets/Hero/Robot.webp');
+    if (($isHomePage ?? false) && is_file($robotImagePath)) {
+        $robotImageHash = substr(hash_file('sha256', $robotImagePath), 0, 12);
+    }
+    $robotImageBase = '/images/optimized/Hero/Robot-webp';
 
     $keywords = 'asta digital agency, jasa pembuatan website, pengembangan aplikasi mobile, sistem informasi custom, software house indonesia, digital agency indonesia';
     if ($seo && !empty($seo->focusKeywords)) {
@@ -465,7 +471,7 @@
                     'name' => $currentLocale === 'en' ? 'Is your organization ready to grow with ASTA DIGITAL AGENCY?' : 'Siapkah perusahaan Anda berkembang bersama ASTA DIGITAL AGENCY?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY partners with enterprises to build progressive technology solutions, optimizing operational workflows and delivering high production cost efficiency.' : 'ASTA DIGITAL AGENCY siap bekerjasama dengan perusahaan Anda agar lebih maju, efektif, dan berkembang. Pengerjaan sistem yang cepat memberikan dampak progresif serta efisiensi biaya operasional tinggi.',
+                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY discusses project goals, operational workflows, and constraints with clients before preparing a proposal and scope of work.' : 'ASTA DIGITAL AGENCY membahas tujuan proyek, alur kerja, dan batasan bersama klien sebelum menyiapkan penawaran serta ruang lingkup kerja.',
                     ],
                 ],
                 [
@@ -473,7 +479,7 @@
                     'name' => $currentLocale === 'en' ? 'How does ASTA DIGITAL AGENCY ensure custom digital systems meet organizational goals?' : 'Bagaimana ASTA DIGITAL AGENCY memastikan hasil kustomisasi sistem sesuai dengan tujuan perusahaan?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'ASTA DIGITAL AGENCY maintains full strategic alignment with clients, conducting iterative architecture reviews so that every technical specification strictly matches enterprise goals.' : 'ASTA DIGITAL AGENCY memegang teguh komitmen menjaga satu visi dengan klien melalui proses kolaboratif sehingga setiap detail arsitektur digital selaras dengan ekspektasi bisnis Anda.',
+                        'text' => $currentLocale === 'en' ? 'Project requirements and technical choices are reviewed with stakeholders so the agreed scope reflects the organization’s goals.' : 'Kebutuhan proyek dan pilihan teknis dibahas bersama pemangku kepentingan agar ruang lingkup yang disepakati mencerminkan tujuan organisasi.',
                     ],
                 ],
                 [
@@ -481,7 +487,7 @@
                     'name' => $currentLocale === 'en' ? 'Does the partnership end once the software or website is launched?' : 'Apakah kemitraan berakhir setelah pembuatan website atau sistem selesai?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => $currentLocale === 'en' ? 'No, ASTA DIGITAL AGENCY provides continuous long-term technological partnerships, ensuring systems remain secure, scalable, and up-to-date post-launch.' : 'Tidak, ASTA DIGITAL AGENCY berkomitmen membangun ekosistem digital secara berkelanjutan dan bertindak sebagai mitra teknologi jangka panjang seiring pertumbuhan skala bisnis.',
+                        'text' => $currentLocale === 'en' ? 'Post-launch maintenance and support can be discussed and included in the proposal or service agreement.' : 'Pemeliharaan dan dukungan setelah peluncuran dapat dibahas dan dicantumkan dalam penawaran atau perjanjian layanan.',
                     ],
                 ],
             ],
@@ -522,8 +528,8 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
         <link rel="preload" as="image"
-              href="/images/optimized/Hero/Robot-webp-640.avif"
-              imagesrcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w"
+              href="{{ $robotImageBase }}-640.avif?v={{ $robotImageHash }}"
+              imagesrcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w"
               imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
               type="image/avif"
               fetchpriority="high">
@@ -570,6 +576,9 @@
     @if (\Illuminate\Support\Facades\Vite::isRunningHot())
         @vite(['resources/css/app.css', 'resources/js/main.tsx'])
     @else
+        <noscript>
+            <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
+        </noscript>
         @vite(['resources/js/main.tsx'])
     @endif
 </head>
@@ -916,13 +925,13 @@
                     </span>
                     <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
                         {{ $currentLocale === 'en'
-                            ? 'What technology case studies and software solutions has ASTA DIGITAL AGENCY developed?'
-                            : 'Apa saja studi kasus teknologi dan inovasi perangkat lunak dari ASTA DIGITAL AGENCY?' }}
+                            ? 'What project information and software work can you review?'
+                            : 'Informasi proyek dan pekerjaan perangkat lunak apa yang dapat ditinjau?' }}
                     </h1>
                     <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                         <strong>ASTA DIGITAL AGENCY</strong> {{ $currentLocale === 'en'
-                            ? 'presents real-world software engineering case studies, enterprise platforms, and digital transformation insights crafted for clients across various industries.'
-                            : 'menghadirkan dokumentasi rekayasa perangkat lunak, portal enterprise, aplikasi mobile, serta studi kasus transformasi digital yang terbukti memangkas waktu kerja dan meningkatkan produktivitas.' }}
+                            ? 'shares published project information and software work for visitors to review.'
+                            : 'membagikan informasi proyek dan pekerjaan perangkat lunak yang telah dipublikasikan untuk ditinjau pengunjung.' }}
                     </p>
                 </header>
 
@@ -968,7 +977,7 @@
                                     </div>
                                     <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                                            <span>{{ $currentLocale === 'en' ? 'Read Case Study' : 'Pelajari Studi Kasus' }}</span>
+                                            <span>{{ $currentLocale === 'en' ? 'Read More' : 'Pelajari Selengkapnya' }}</span>
                                             <span>→</span>
                                         </a>
                                     </div>
@@ -1000,8 +1009,8 @@
                             </h3>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
                                 {{ $currentLocale === 'en'
-                                    ? 'No. ASTA DIGITAL AGENCY provides ongoing engineering support, uptime monitoring, and continuous iterations to ensure systems scale smoothly as your enterprise grows.'
-                                    : 'Tidak. ASTA DIGITAL AGENCY memiliki komitmen membangun dan mengembangkan ekosistem digital Anda secara berkelanjutan dengan pendampingan teknis, garansi pemeliharaan, dan skalabilitas jangka panjang.' }}
+                                    ? 'Post-launch maintenance and support options can be discussed and included in the proposal or service agreement.'
+                                    : 'Opsi pemeliharaan dan dukungan setelah peluncuran dapat dibahas dan dicantumkan dalam penawaran atau perjanjian layanan.' }}
                             </p>
                         </div>
                     </div>
@@ -1048,7 +1057,7 @@
                 <header id="top" class="border-b border-gray-100 dark:border-gray-800 pb-12 space-y-6">
                     <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300">
                         <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
-                        {{ transKey($transDict, 'hero.eyebrow', 'Agensi Digital Premium · Est. 2022') }}
+                        {{ transKey($transDict, 'hero.eyebrow', 'Agensi Digital Yogyakarta') }}
                     </span>
 
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.08]">
@@ -1059,9 +1068,9 @@
                         {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
                     </h1>
                     <picture class="block max-w-xl">
-                        <source type="image/avif" srcset="/images/optimized/Hero/Robot-webp-320.avif 320w, /images/optimized/Hero/Robot-webp-480.avif 480w, /images/optimized/Hero/Robot-webp-640.avif 640w, /images/optimized/Hero/Robot-webp-954.avif 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <source type="image/webp" srcset="/images/optimized/Hero/Robot-webp-320.webp 320w, /images/optimized/Hero/Robot-webp-480.webp 480w, /images/optimized/Hero/Robot-webp-640.webp 640w, /images/optimized/Hero/Robot-webp-954.webp 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <img src="/images/optimized/Hero/Robot-webp-954.webp" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
+                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
                     </picture>
 
                     <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-normal max-w-4xl">
@@ -1079,34 +1088,41 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3 pt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
-                            <span class="text-emerald-500">🛡</span> {{ transKey($transDict, 'hero.trust_security', 'Keamanan Siap terjamin') }}
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
-                            <span class="text-amber-500">🏆</span> {{ transKey($transDict, 'hero.trust_award', 'Kualitas Penghargaan') }}
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 px-3 py-1.5">
-                            <span class="text-blue-500">⚡</span> {{ transKey($transDict, 'hero.trust_fast', 'Fast & Scalable') }}
-                        </span>
+                        <a href="#portofolio" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_portfolio') }}</a>
+                        <a href="#tentang" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_company') }}</a>
+                        <a href="#kontak" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_contact') }}</a>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-gray-100 dark:border-gray-800">
-                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
-                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">20+</div>
-                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_projects', 'PROYEK') }}</div>
+                    @if ($homeClients->isNotEmpty())
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3 pt-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{ transKey($transDict, 'hero.trusted_by') }}</span>
+                            @foreach ($homeClients as $client)
+                                @if ($client->image)
+                                    <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
+                                         alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
+                                         width="112" height="48" loading="lazy" decoding="async"
+                                         class="max-h-10 max-w-28 object-contain" />
+                                @else
+                                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
+                                @endif
+                            @endforeach
                         </div>
-                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
-                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">8+</div>
-                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_clients', 'KLIEN') }}</div>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
-                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">4+</div>
-                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_years', 'TAHUN') }}</div>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
-                            <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">98%</div>
-                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">{{ transKey($transDict, 'hero.stat_satisfaction', 'KEPUASAN') }}</div>
-                        </div>
+                    @endif
+
+                    <div class="grid gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:grid-cols-3">
+                        <h2 class="sr-only">{{ transKey($transDict, 'home_seo.proof_title') }}</h2>
+                        <a href="#portofolio" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_portfolio') }}</p>
+                        </a>
+                        <a href="#tentang" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_company') }}</p>
+                        </a>
+                        <a href="#kontak" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_contact') }}</p>
+                        </a>
                     </div>
                 </header>
 
@@ -1540,18 +1556,41 @@
                     </section>
                 @endif
 
-                {{-- 10. Section Testimoni --}}
-                <section class="space-y-4 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12 text-center max-w-3xl mx-auto">
-                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest">
-                        {{ transKey($transDict, 'testimonials.eyebrow', 'Testimoni') }}
-                    </span>
-                    <h2 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                        {{ transKey($transDict, 'testimonials.title') }}
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-                        {{ transKey($transDict, 'testimonials.description') }}
-                    </p>
-                </section>
+                @if (!empty($homeTestimonials) && $homeTestimonials->isNotEmpty())
+                    <section id="testimoni" class="space-y-6 border-b border-gray-100 pb-12 dark:border-gray-800">
+                        <div class="mx-auto max-w-3xl space-y-3 text-center">
+                            <span class="inline-block text-xs font-bold uppercase tracking-widest text-blue-600">
+                                {{ transKey($transDict, 'testimonials.eyebrow') }}
+                            </span>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white md:text-4xl">
+                                {{ transKey($transDict, 'testimonials.title') }}
+                            </h2>
+                            <p class="leading-relaxed text-gray-600 dark:text-gray-400">
+                                {{ transKey($transDict, 'testimonials.description') }}
+                            </p>
+                        </div>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            @foreach ($homeTestimonials as $testimonial)
+                                <figure class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                                    <blockquote class="leading-relaxed text-gray-800 dark:text-gray-200">
+                                        “{{ strip_tags($testimonial->quote) }}”
+                                    </blockquote>
+                                    <figcaption class="mt-4 text-sm">
+                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $testimonial->name }}</span>
+                                        @if ($testimonial->role || $testimonial->org)
+                                            <span class="text-gray-600 dark:text-gray-400">
+                                                · {{ collect([$testimonial->role, $testimonial->org])->filter()->implode(', ') }}
+                                            </span>
+                                        @endif
+                                    </figcaption>
+                                    <a href="{{ $testimonial->source_url }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-sm font-semibold text-blue-600 underline underline-offset-4">
+                                        {{ transKey($transDict, 'testimonials.view_source') }}
+                                    </a>
+                                </figure>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
 
                 {{-- 11. Section FAQ (#faq) --}}
                 <section id="faq" class="space-y-6 pt-4 border-b border-gray-100 dark:border-gray-800 pb-12">

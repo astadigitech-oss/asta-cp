@@ -56,6 +56,7 @@ export interface TestimonialItem {
   role?: string;
   org?: string;
   quote: string;
+  source_url?: string;
   avatar?: string;
   tag?: string;
   rating?: number;
