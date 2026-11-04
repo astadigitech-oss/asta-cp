@@ -53,6 +53,11 @@
     "systems_description": "Untuk kebutuhan yang tidak dapat dipenuhi aplikasi umum, ASTA Digital Agency membangun sistem informasi custom. Sistem dapat membantu mengelola data, mengotomatisasi proses, menampilkan laporan, serta menghubungkan layanan yang sudah digunakan. Hak akses dan alur persetujuan disesuaikan dengan peran setiap pengguna.",
     "process_title": "Proses pengembangan yang terarah",
     "process_description": "Setiap proyek dimulai dengan diskusi tentang tujuan, pengguna, alur kerja, anggaran, dan kendala operasional. Setelah prioritas serta ruang lingkup disepakati, tim menyusun rancangan dan rencana pengerjaan yang dapat ditinjau klien. Pengembangan dilakukan bertahap, dengan uji fungsi dan perbaikan sebelum serah terima. Dokumentasi dan arahan penggunaan membantu tim klien mengelola solusi setelah peluncuran.",
+    "review_title": "Pengujian dan serah terima",
+    "review_description": "Ruang lingkup, prioritas fitur, integrasi, dan jadwal dibahas sebelum pengerjaan. Klien dapat meninjau rancangan dan hasil pada setiap tahap, sehingga perubahan diputuskan berdasarkan kebutuhan nyata. Sebelum serah terima, tim memeriksa alur utama, tampilan di perangkat, serta integrasi yang termasuk dalam kesepakatan.",
+    "security_title": "Keamanan dan dukungan",
+    "security_description": "Keamanan dan pengelolaan data menjadi bagian dari perencanaan solusi. Hak akses disesuaikan dengan peran, sementara kebutuhan pencadangan, audit, dan pemulihan dibahas sesuai jenis sistem. Setelah peluncuran, dukungan pemeliharaan dan pengembangan lanjutan dapat disepakati berdasarkan kebutuhan serta ruang lingkup kerja.",
+    "updated_label": "Konten ini terakhir ditinjau:",
     "location": "Berbasis di Bantul, Yogyakarta, ASTA Digital Agency melayani UMKM, instansi, dan perusahaan di Yogyakarta maupun wilayah lain di Indonesia. Kami membantu membandingkan pilihan website, aplikasi mobile, atau sistem informasi custom berdasarkan kebutuhan pengguna, proses kerja, dan anggaran. Diskusi awal digunakan untuk memahami konteks proyek, bukan untuk menawarkan fitur yang tidak diperlukan.",
     "services_link": "Lihat layanan",
     "contact_link": "Diskusikan kebutuhan proyek"

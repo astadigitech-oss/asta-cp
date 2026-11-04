@@ -87,7 +87,19 @@ function DeferredSection({
 
 export function LandingPage() {
   const { data: landingData } = useLandingData();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const homepageModifiedAt = (
+    window as Window & {
+      __INITIAL_DATA__?: { homepageModifiedAt?: string };
+    }
+  ).__INITIAL_DATA__?.homepageModifiedAt;
+  const formattedModifiedAt = homepageModifiedAt
+    ? new Date(`${homepageModifiedAt}T00:00:00`).toLocaleDateString(language === "en" ? "en-US" : "id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
 
   useEffect(() => {
     let interval: number | undefined;
@@ -131,6 +143,12 @@ export function LandingPage() {
           <h2 className="font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             {t("home_seo.title")}
           </h2>
+          {homepageModifiedAt && formattedModifiedAt && (
+            <p className="text-sm text-gray-500">
+              {t("home_seo.updated_label")}{" "}
+              <time dateTime={homepageModifiedAt}>{formattedModifiedAt}</time>
+            </p>
+          )}
           <div className="grid gap-6 md:grid-cols-3">
             <article>
               <h3 className="font-semibold text-gray-900">{t("home_seo.website_title")}</h3>
@@ -148,6 +166,16 @@ export function LandingPage() {
           <div className="max-w-4xl">
             <h3 className="font-semibold text-gray-900">{t("home_seo.process_title")}</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.process_description")}</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.review_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.review_description")}</p>
+            </article>
+            <article>
+              <h3 className="font-semibold text-gray-900">{t("home_seo.security_title")}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.security_description")}</p>
+            </article>
           </div>
           <p className="max-w-4xl text-sm leading-relaxed text-gray-600">{t("home_seo.location")}</p>
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-primary">

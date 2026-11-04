@@ -53,6 +53,11 @@
     "systems_description": "When off-the-shelf applications do not fit a workflow, ASTA Digital Agency builds custom information systems. A solution can manage data, automate processes, present reports, and connect existing services. Access rules and approval flows can reflect the roles of the people using the system.",
     "process_title": "A structured development process",
     "process_description": "Each project begins with a discussion about goals, users, workflows, budget, and operational constraints. Once priorities and scope are agreed, the team prepares a plan and design that clients can review. Development proceeds in stages, followed by functional testing and revisions before handover. Documentation and usage guidance help the client's team manage the solution after launch.",
+    "review_title": "Testing and handover",
+    "review_description": "Project scope, feature priorities, integrations, and timing are discussed before work begins. Clients can review designs and results at each stage, so changes are based on actual needs. Before handover, the team checks key workflows, display across devices, and integrations included in the agreed scope.",
+    "security_title": "Security and ongoing support",
+    "security_description": "Security and data management are considered while planning each solution. Access is assigned by user role, while backup, audit, and recovery needs are discussed for the type of system. After launch, maintenance and further development can be agreed based on requirements and the defined scope of work.",
+    "updated_label": "Content last reviewed:",
     "location": "Based in Bantul, Yogyakarta, ASTA Digital Agency works with SMEs, institutions, and companies in the region and elsewhere in Indonesia. We help compare website, mobile app, and custom information system options against user needs, workflows, and budget. An initial discussion is used to understand the project context, not to propose features that are unnecessary.",
     "services_link": "Explore our services",
     "contact_link": "Discuss a project"

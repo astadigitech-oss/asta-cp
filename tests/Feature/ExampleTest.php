@@ -25,6 +25,10 @@ class ExampleTest extends TestCase
             '/<link rel="stylesheet" href="[^"]*(?:resources\\/css\\/app\\.css|\\/assets\\/app-[^"]+\\.css)"[^>]*media="print"/',
             $response->getContent(),
         );
+        $this->assertSame(
+            1,
+            preg_match_all('/<link rel="stylesheet" href="[^"]*(?:resources\\/css\\/app\\.css|\\/assets\\/app-[^"]+\\.css)"[^>]*>/', $response->getContent()),
+        );
     }
 
     public function test_root_renders_the_saved_locale_without_redirecting(): void
@@ -42,6 +46,9 @@ class ExampleTest extends TestCase
             ->assertSee('<script type="module" src=', false)
             ->assertSee('ASTA Digital Agency — Jasa Pembuatan Website Yogyakarta', false)
             ->assertSee('ASTA Digital Agency menyediakan jasa pembuatan website dan aplikasi mobile')
-            ->assertSee('ASTA Digital Agency mengerjakan jasa pembuatan website Yogyakarta');
+            ->assertSee('ASTA Digital Agency mengerjakan jasa pembuatan website Yogyakarta')
+            ->assertSee('Pengujian dan serah terima')
+            ->assertSee('Konten ini terakhir ditinjau:')
+            ->assertSee('dateModified');
     }
 }

@@ -549,6 +549,7 @@
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
     @php
         $clientInitialData = array_merge($initialData ?? ['locale' => $currentLocale], [
+            'homepageModifiedAt' => $homepageModifiedAt->toDateString(),
             'socialLinks' => $agencySocialLinks ?? [],
             'agencyGeo' => isset($agencyLatitude, $agencyLongitude) && is_numeric($agencyLatitude) && is_numeric($agencyLongitude)
                 ? ['latitude' => (float) $agencyLatitude, 'longitude' => (float) $agencyLongitude]
@@ -565,12 +566,12 @@
         #react-app{min-height:100vh;overflow-x:hidden}
         h1,h2,h3,p{margin-top:0}
     </style>
-    <link rel="preload" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}" as="style">
-    <noscript>
-        <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
-    </noscript>
     @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/main.tsx'])
+    @if (\Illuminate\Support\Facades\Vite::isRunningHot())
+        @vite(['resources/css/app.css', 'resources/js/main.tsx'])
+    @else
+        @vite(['resources/js/main.tsx'])
+    @endif
 </head>
 <body class="bg-background text-foreground antialiased">
     <div id="react-app">
@@ -1113,6 +1114,12 @@
                     <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
                         {{ transKey($transDict, 'home_seo.title') }}
                     </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ transKey($transDict, 'home_seo.updated_label') }}
+                        <time datetime="{{ $homepageModifiedAt->toDateString() }}">
+                            {{ $currentLocale === 'en' ? $homepageModifiedAt->format('F j, Y') : $homepageModifiedAt->format('d/m/Y') }}
+                        </time>
+                    </p>
                     <div class="grid gap-6 md:grid-cols-3">
                         <article>
                             <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.website_title') }}</h3>
@@ -1130,6 +1137,16 @@
                     <div class="max-w-4xl">
                         <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.process_title') }}</h3>
                         <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.process_description') }}</p>
+                    </div>
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.review_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.review_description') }}</p>
+                        </article>
+                        <article>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.security_title') }}</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.security_description') }}</p>
+                        </article>
                     </div>
                     <p class="max-w-4xl text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.location') }}</p>
                     <div class="flex flex-wrap gap-4 text-sm font-semibold text-blue-700 dark:text-blue-300">
@@ -1701,12 +1718,6 @@
                     <div class="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between text-xs gap-3">
                         <p>{{ transKey($transDict, 'footer.copyright', '© Copyright 2025 PT Asta Digital Agency') }}</p>
                         <p class="text-gray-400">Software House & IT Consultant Indonesia</p>
-                        <p>
-                            {{ $currentLocale === 'en' ? 'Last updated' : 'Terakhir diperbarui' }}:
-                            <time datetime="{{ $homepageModifiedAt->toDateString() }}">
-                                {{ $currentLocale === 'en' ? $homepageModifiedAt->format('F j, Y') : $homepageModifiedAt->format('d/m/Y') }}
-                            </time>
-                        </p>
                     </div>
                 </footer>
             </main>
