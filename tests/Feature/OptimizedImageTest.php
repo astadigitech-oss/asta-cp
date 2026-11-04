@@ -112,6 +112,24 @@ class OptimizedImageTest extends TestCase
         $this->assertSame('image/png', $response->headers->get('Content-Type'));
     }
 
+    public function test_image_endpoint_serves_original_when_webp_support_is_unavailable(): void
+    {
+        if (function_exists('imagewebp')) {
+            $this->markTestSkipped('This fallback only applies when GD WebP support is unavailable.');
+        }
+
+        Storage::fake('public');
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/bS8AAAAASUVORK5CYII=', true);
+        Storage::disk('public')->put('images/service/logo.png', $png);
+
+        $response = $this->get('/media/service-logo/images/service/logo.png')->assertOk();
+
+        $this->assertSame('image/png', $response->headers->get('Content-Type'));
+        $this->assertSame($png, $response->baseResponse->getFile()->getContent());
+        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('immutable', $response->headers->get('Cache-Control'));
+    }
+
     public function test_image_endpoint_creates_a_cached_webp_variant(): void
     {
         if (! function_exists('imagewebp')) {

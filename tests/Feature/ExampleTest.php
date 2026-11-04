@@ -10,12 +10,21 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_root_renders_the_default_locale_without_loading_the_spa(): void
+    public function test_root_renders_the_default_locale_and_loads_the_spa(): void
     {
-        $this->get('/')
+        $response = $this->get('/')
             ->assertOk()
             ->assertSee('<html lang="id">', false)
-            ->assertDontSee('<script type="module" src=', false);
+            ->assertSee('<script type="module" src=', false);
+
+        $this->assertMatchesRegularExpression(
+            '/<link rel="stylesheet" href="[^"]*(?:resources\\/css\\/app\\.css|\\/assets\\/app-[^"]+\\.css)"[^>]*>/',
+            $response->getContent(),
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<link rel="stylesheet" href="[^"]*(?:resources\\/css\\/app\\.css|\\/assets\\/app-[^"]+\\.css)"[^>]*media="print"/',
+            $response->getContent(),
+        );
     }
 
     public function test_root_renders_the_saved_locale_without_redirecting(): void
@@ -30,7 +39,7 @@ class ExampleTest extends TestCase
     {
         $this->get('/id')
             ->assertOk()
-            ->assertDontSee('<script type="module" src=', false)
+            ->assertSee('<script type="module" src=', false)
             ->assertSee('ASTA Digital Agency — Jasa Pembuatan Website Yogyakarta', false)
             ->assertSee('ASTA Digital Agency menyediakan jasa pembuatan website dan aplikasi mobile')
             ->assertSee('ASTA Digital Agency mengerjakan jasa pembuatan website Yogyakarta');

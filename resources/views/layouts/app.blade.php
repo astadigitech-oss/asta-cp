@@ -569,12 +569,8 @@
     <noscript>
         <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
     </noscript>
-    @if ($isHomePage ?? false)
-        @vite('resources/css/app.css')
-    @else
-        @viteReactRefresh
-        @vite(['resources/css/app.css', 'resources/js/main.tsx'])
-    @endif
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="bg-background text-foreground antialiased">
     <div id="react-app">

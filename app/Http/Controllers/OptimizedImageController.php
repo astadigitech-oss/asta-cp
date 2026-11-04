@@ -55,7 +55,10 @@ class OptimizedImageController extends Controller
         }
 
         if (! function_exists('imagewebp')) {
-            throw new RuntimeException('WebP support is required to optimize uploaded images.');
+            return $this->cachedFileResponse(
+                $sourcePath,
+                image_type_to_mime_type($imageInfo[2]),
+            );
         }
 
         $presetHash = OptimizedImage::version($path, $preset);
