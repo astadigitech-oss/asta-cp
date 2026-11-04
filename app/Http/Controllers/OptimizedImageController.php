@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Support\OptimizedImage;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OptimizedImageController extends Controller
 {
-    public function __invoke(string $preset, string $path): RedirectResponse
+    public function __invoke(string $preset, string $path): BinaryFileResponse
     {
         $configuration = OptimizedImage::presets()[$preset] ?? abort(404);
         $disk = Storage::disk('public');
@@ -25,8 +25,10 @@ class OptimizedImageController extends Controller
         $sourcePath = $disk->path($path);
 
         if (! in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp'], true)) {
-            return redirect($disk->url($path), 302)
-                ->header('Cache-Control', 'public, max-age=86400');
+            return $this->cachedFileResponse(
+                $disk->path($path),
+                $disk->mimeType($path) ?: 'application/octet-stream',
+            );
         }
 
         $imageInfo = getimagesize($sourcePath);
@@ -36,28 +38,27 @@ class OptimizedImageController extends Controller
         }
 
         if (! in_array($imageInfo[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) {
-            return redirect($disk->url($path), 302)
-                ->header('Cache-Control', 'public, max-age=86400');
+            return $this->cachedFileResponse(
+                $sourcePath,
+                image_type_to_mime_type($imageInfo[2]),
+            );
         }
 
         $sourceWidth = $imageInfo[0];
         $sourceHeight = $imageInfo[1];
 
         if ($sourceWidth * $sourceHeight > 12_000_000) {
-            return redirect($disk->url($path), 302)
-                ->header('Cache-Control', 'public, max-age=86400');
+            return $this->cachedFileResponse(
+                $sourcePath,
+                image_type_to_mime_type($imageInfo[2]),
+            );
         }
 
         if (! function_exists('imagewebp')) {
             throw new RuntimeException('WebP support is required to optimize uploaded images.');
         }
 
-        $presetHash = sha1(implode('|', [
-            $path,
-            $preset,
-            $disk->lastModified($path),
-            $disk->size($path),
-        ]));
+        $presetHash = OptimizedImage::version($path, $preset);
         $variantPath = "optimized/{$preset}/{$presetHash}.webp";
 
         if (! $disk->exists($variantPath)) {
@@ -99,8 +100,16 @@ class OptimizedImageController extends Controller
             }
         }
 
-        return redirect($disk->url($variantPath), 302)
-            ->header('Cache-Control', 'public, max-age=3600');
+        return $this->cachedFileResponse($disk->path($variantPath), 'image/webp');
+    }
+
+    private function cachedFileResponse(string $path, string $contentType): BinaryFileResponse
+    {
+        return response()->file($path, [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'Content-Type' => $contentType,
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     private function createVariant(

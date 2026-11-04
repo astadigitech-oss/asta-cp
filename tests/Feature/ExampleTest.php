@@ -10,19 +10,29 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_root_renders_the_default_locale_without_loading_the_spa(): void
     {
-        $response = $this->get('/');
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('<html lang="id">', false)
+            ->assertDontSee('<script type="module" src=', false);
+    }
 
-        $response->assertStatus(200);
+    public function test_root_renders_the_saved_locale_without_redirecting(): void
+    {
+        $this->withCookie('asta_lang', 'en')
+            ->get('/')
+            ->assertOk()
+            ->assertSee('<html lang="en">', false);
     }
 
     public function test_indonesian_homepage_renders_its_target_keyword_in_metadata_and_content(): void
     {
         $this->get('/id')
             ->assertOk()
-            ->assertSee('ASTA Digital Agency — Jasa Pembuatan Website &amp; Aplikasi', false)
-            ->assertSee('Jasa Pembuatan Website, Aplikasi Mobile, dan Sistem Informasi')
-            ->assertSee('ASTA Digital Agency melayani jasa pembuatan website company profile');
+            ->assertDontSee('<script type="module" src=', false)
+            ->assertSee('ASTA Digital Agency — Jasa Pembuatan Website Yogyakarta', false)
+            ->assertSee('ASTA Digital Agency menyediakan jasa pembuatan website dan aplikasi mobile')
+            ->assertSee('ASTA Digital Agency mengerjakan jasa pembuatan website Yogyakarta');
     }
 }

@@ -112,14 +112,17 @@ Route::get('/media/{preset}/{path}', OptimizedImageController::class)
     ->where('path', '.+')
     ->name('media.optimized');
 
-// Primary SPA Catch-all Route dengan Subfolder Locale Support & Dynamic Article & Discover SEO Server-side Rendering
-// NOTE: Tidak menggunakan redirect agar tidak loop dengan React Router (TanStack).
-// Locale dideteksi dari URL path, lalu diserahkan ke frontend untuk handle routing.
+// Locale root menggunakan SSR langsung; halaman localized menggunakan React untuk fitur SPA.
 Route::get('/{any?}', function () {
-    $path = request()->path();
+    $path = trim(request()->path(), '/');
     $locale = 'id'; // default
 
-    if (str_starts_with($path, 'en/') || $path === 'en') {
+    if ($path === '') {
+        $preferredLocale = request()->cookie('asta_lang');
+        if (in_array($preferredLocale, ['id', 'en'], true)) {
+            $locale = $preferredLocale;
+        }
+    } elseif (str_starts_with($path, 'en/') || $path === 'en') {
         $locale = 'en';
     } elseif (str_starts_with($path, 'id/') || $path === 'id') {
         $locale = 'id';
