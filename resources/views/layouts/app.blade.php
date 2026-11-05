@@ -1671,7 +1671,7 @@
                                 <div>
                                     <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ transKey($transDict, 'contact.info_phone') }}</span>
                                     <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="tel:+6281578223564">+62 815 7822 3564</a>
-                                    <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="mailto:astadigitech@gmail.com">astadigitech@gmail.com</a>
+                                    <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="mailto:cs@astadigitalagency.com">cs@astadigitalagency.com</a>
                                 </div>
                             </address>
                         </div>
@@ -1739,7 +1739,7 @@
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
-                            <p class="text-xs">Email: <a href="mailto:astadigitech@gmail.com" class="text-blue-600 hover:underline">astadigitech@gmail.com</a></p>
+                            <p class="text-xs">Email: <a href="mailto:cs@astadigitalagency.com" class="text-blue-600 hover:underline">cs@astadigitalagency.com</a></p>
                             <p class="text-xs">{{ transKey($transDict, 'contact.info_phone', 'Telepon') }}: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
                         </div>
                         <div class="space-y-2">

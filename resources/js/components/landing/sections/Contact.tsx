@@ -78,8 +78,8 @@ export function Contact() {
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
                         {t("contact.info_email")}
                       </div>
-                      <a href="mailto:astadigitech@gmail.com" className="mt-0.5 block text-sm font-semibold text-white">
-                        astadigitech@gmail.com
+                      <a href="mailto:cs@astadigitalagency.com" className="mt-0.5 block text-sm font-semibold text-white">
+                        cs@astadigitalagency.com
                       </a>
                     </div>
                   </li>
