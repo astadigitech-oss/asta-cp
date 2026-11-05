@@ -4,8 +4,6 @@ import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
-import { HomeFAQ } from "./sections/HomeFAQ";
-import { Contact } from "./sections/Contact";
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
@@ -18,7 +16,9 @@ const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.St
 const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
 const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
 const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
+const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
 const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
+const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
 
 function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }) {
@@ -50,7 +50,7 @@ function DeferredSection({
         ([entry]) => {
           if (entry.isIntersecting) activate();
         },
-        { rootMargin: "400px 0px" },
+        { rootMargin: "600px 0px" },
       );
       if (sectionRef.current) observer.observe(sectionRef.current);
     } else {
@@ -72,7 +72,8 @@ function DeferredSection({
   return (
     <div
       ref={sectionRef}
-      className={shouldLoad ? "contents" : `w-full ${minHeight}`}
+      className={shouldLoad ? "w-full" : `w-full ${minHeight}`}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}
     >
       {shouldLoad ? (
         <Suspense fallback={<SectionFallback minHeight={minHeight} />}>
@@ -227,13 +228,17 @@ export function LandingPage() {
           <Testimonials />
         </DeferredSection>
 
-        <HomeFAQ />
+        <DeferredSection hashTarget="faq" minHeight="min-h-[450px]">
+          <HomeFAQ />
+        </DeferredSection>
 
         <DeferredSection minHeight="min-h-[250px]">
           <CTA />
         </DeferredSection>
 
-        <Contact />
+        <DeferredSection hashTarget="kontak" minHeight="min-h-[600px]">
+          <Contact />
+        </DeferredSection>
       </main>
       <DeferredSection minHeight="min-h-[250px]">
         <Footer />

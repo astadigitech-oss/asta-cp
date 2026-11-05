@@ -171,6 +171,14 @@ Route::get('/{any?}', function () {
 
     if ($isHomePage) {
         try {
+            $initialData['landing'] = Cache::remember('landing_api_cache', 30, function () {
+                return (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
+            });
+        } catch (\Throwable $e) {
+            $initialData['landing'] = null;
+        }
+
+        try {
             $homeClients = Client::all();
         } catch (QueryException $e) {
             report($e);
