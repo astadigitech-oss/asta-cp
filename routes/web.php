@@ -18,6 +18,23 @@ use App\Support\OptimizedImage;
 |--------------------------------------------------------------------------
 */
 
+// Route robots.txt fallback jika request masuk ke PHP (misal via Nginx fallback atau dev server)
+Route::get('/robots.txt', function () {
+    $file = public_path('robots.txt');
+    if (file_exists($file)) {
+        return response()->file($file, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    abort(404);
+});
+
+// Redirect jika user salah ketik "robot.txt" (tanpa akhiran 's')
+Route::get('/robot.txt', function () {
+    return redirect('/robots.txt', 301);
+});
+
 // XML Sitemap — dibangun dengan spatie/laravel-sitemap, cache 24 jam
 // Mendukung hreflang multilingual (id/en) untuk semua konten dinamis
 Route::get('/sitemap.xml', function () {
