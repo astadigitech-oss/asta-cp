@@ -573,14 +573,7 @@
         h1,h2,h3,p{margin-top:0}
     </style>
     @viteReactRefresh
-    @if (\Illuminate\Support\Facades\Vite::isRunningHot())
-        @vite(['resources/css/app.css', 'resources/js/main.tsx'])
-    @else
-        <noscript>
-            <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}">
-        </noscript>
-        @vite(['resources/js/main.tsx'])
-    @endif
+    @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="bg-background text-foreground antialiased">
     <div id="react-app">
@@ -1036,9 +1029,9 @@
                 </a>
             </main>
         @else
-            {{-- Homepage SSR uses the locale dictionary directly; React does not replace this markup. --}}
-            <header class="border-b border-gray-200 bg-white/95 dark:border-gray-800 dark:bg-gray-950">
-                <nav aria-label="{{ $currentLocale === 'en' ? 'Main navigation' : 'Navigasi utama' }}" class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+            {{-- Homepage SSR uses the locale dictionary directly; geometry mirrors React Hero for 0 CLS. --}}
+            <header class="fixed top-0 left-0 right-0 z-50 h-20 border-b border-gray-200/50 bg-white/80 backdrop-blur-md dark:border-gray-800/50 dark:bg-gray-950/80">
+                <nav aria-label="{{ $currentLocale === 'en' ? 'Main navigation' : 'Navigasi utama' }}" class="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-10">
                     <a href="/{{ $currentLocale }}" class="font-bold text-gray-900 dark:text-white">ASTA Digital Agency</a>
                     <div class="flex flex-wrap items-center gap-4 text-sm">
                         <a href="#tentang" class="hover:text-blue-600">{{ transKey($transDict, 'nav.about') }}</a>
@@ -1052,79 +1045,94 @@
                     </div>
                 </nav>
             </header>
-            <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
-                {{-- 1. Hero Section (#top) --}}
-                <header id="top" class="border-b border-gray-100 dark:border-gray-800 pb-12 space-y-6">
-                    <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300">
-                        <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
-                        {{ transKey($transDict, 'hero.eyebrow', 'Agensi Digital Yogyakarta') }}
-                    </span>
+            <main>
+                {{-- 1. Hero Section (#top) - Mirrors React Hero grid exactly to prevent any CLS --}}
+                <section id="top" class="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6 xl:pt-34">
+                    <div class="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] px-4 sm:px-6 lg:px-10 xl:px-14">
+                        <div class="grid items-center gap-14 lg:grid-cols-12">
+                            <div class="lg:col-span-7 space-y-5">
+                                <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                                    {{ transKey($transDict, 'hero.eyebrow', 'Agensi Digital Yogyakarta') }}
+                                </span>
 
-                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.08]">
-                        {{ transKey($transDict, 'hero.title_1', 'Membangun ') }}
-                        <span class="text-blue-600 underline decoration-blue-400 decoration-wavy decoration-2 underline-offset-8">
-                            {{ transKey($transDict, 'hero.title_highlight', 'pengalaman digital') }}
-                        </span>
-                        {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
-                    </h1>
-                    <picture class="block max-w-xl">
-                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="mx-auto h-auto max-h-[360px] w-full object-contain">
-                    </picture>
+                                <h1 class="font-display text-[2.5rem] font-bold leading-[1.02] tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-[4.25rem]">
+                                    {{ transKey($transDict, 'hero.title_1', 'Membangun ') }}
+                                    <span class="text-blue-600 underline decoration-blue-400 decoration-wavy decoration-2 underline-offset-8">
+                                        {{ transKey($transDict, 'hero.title_highlight', 'pengalaman digital') }}
+                                    </span>
+                                    {{ transKey($transDict, 'hero.title_2', ' terbaik untuk bisnis modern.') }}
+                                </h1>
 
-                    <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-normal max-w-4xl">
-                        {{ transKey($transDict, 'hero.description') }}
-                    </p>
+                                <p class="max-w-xl text-base leading-relaxed text-gray-600 dark:text-gray-300 sm:text-lg">
+                                    {{ transKey($transDict, 'hero.description') }}
+                                </p>
 
-                    <div class="flex flex-wrap items-center gap-3 pt-2">
-                        <a href="#kontak" class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] text-white px-6 py-3 text-sm font-semibold shadow-md hover:opacity-95 transition-all">
-                            {{ transKey($transDict, 'hero.cta_start', 'Mulai Proyek') }}
-                            <span>→</span>
-                        </a>
-                        <a href="#portofolio" class="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 shadow-xs hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                            {{ transKey($transDict, 'hero.cta_portfolio', 'Lihat Portofolio') }}
-                        </a>
-                    </div>
+                                <div class="flex flex-wrap items-center gap-3 pt-2">
+                                    <a href="#kontak" class="inline-flex h-12 items-center gap-2 rounded-full bg-[#004AAD] px-6 text-sm font-semibold text-white shadow-md hover:opacity-95 transition-all">
+                                        {{ transKey($transDict, 'hero.cta_start', 'Mulai Proyek') }}
+                                        <span>→</span>
+                                    </a>
+                                    <a href="#portofolio" class="inline-flex h-12 items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-6 text-sm font-semibold text-gray-700 shadow-xs hover:bg-white dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 transition-colors">
+                                        {{ transKey($transDict, 'hero.cta_portfolio', 'Lihat Portofolio') }}
+                                    </a>
+                                </div>
 
-                    <div class="flex flex-wrap items-center gap-3 pt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                        <a href="#portofolio" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_portfolio') }}</a>
-                        <a href="#tentang" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_company') }}</a>
-                        <a href="#kontak" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_contact') }}</a>
-                    </div>
+                                <div class="flex flex-wrap items-center gap-3 pt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
+                                    <a href="#portofolio" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_portfolio') }}</a>
+                                    <a href="#tentang" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_company') }}</a>
+                                    <a href="#kontak" class="rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 hover:text-blue-600 dark:border-gray-800 dark:bg-gray-900/70">{{ transKey($transDict, 'hero.trust_contact') }}</a>
+                                </div>
+                            </div>
 
-                    @if ($homeClients->isNotEmpty())
-                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3 pt-3">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{ transKey($transDict, 'hero.trusted_by') }}</span>
-                            @foreach ($homeClients as $client)
-                                @if ($client->image)
-                                    <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
-                                         alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
-                                         width="112" height="48" loading="lazy" decoding="async"
-                                         class="max-h-10 max-w-28 object-contain" />
-                                @else
-                                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
-                                @endif
-                            @endforeach
+                            <div class="relative lg:col-span-5">
+                                <div class="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] flex items-center justify-center">
+                                    <picture class="block h-full w-full">
+                                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
+                                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-contain">
+                                    </picture>
+                                </div>
+                            </div>
                         </div>
-                    @endif
 
-                    <div class="grid gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:grid-cols-3">
-                        <h2 class="sr-only">{{ transKey($transDict, 'home_seo.proof_title') }}</h2>
-                        <a href="#portofolio" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_portfolio') }}</p>
-                        </a>
-                        <a href="#tentang" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_company') }}</p>
-                        </a>
-                        <a href="#kontak" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                            <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h2>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_contact') }}</p>
-                        </a>
+                        @if ($homeClients->isNotEmpty())
+                            <div class="mt-12 rounded-2xl glass px-4 py-5 sm:px-6 shadow-soft sm:mt-14 overflow-hidden min-h-[92px] flex items-center">
+                                <div class="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 lg:gap-8 w-full">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 shrink-0">{{ transKey($transDict, 'hero.trusted_by') }}</span>
+                                    <div class="flex flex-wrap items-center gap-5">
+                                        @foreach ($homeClients as $client)
+                                            @if ($client->image)
+                                                <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
+                                                     alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
+                                                     width="112" height="44" loading="lazy" decoding="async"
+                                                     class="max-h-10 max-w-28 object-contain opacity-75" />
+                                            @else
+                                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="mt-8 grid gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:grid-cols-3">
+                            <h2 class="sr-only">{{ transKey($transDict, 'home_seo.proof_title') }}</h2>
+                            <a href="#portofolio" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h2>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_portfolio') }}</p>
+                            </a>
+                            <a href="#tentang" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h2>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_company') }}</p>
+                            </a>
+                            <a href="#kontak" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
+                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h2>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_contact') }}</p>
+                            </a>
+                        </div>
                     </div>
-                </header>
+                </section>
 
                 <section class="space-y-6 border-b border-gray-100 pb-12 dark:border-gray-800">
                     <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">

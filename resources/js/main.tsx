@@ -37,6 +37,9 @@ if (rootElement && rootElement.dataset.preserveSsr !== 'true') {
   if (initialData?.blogArticles) {
     queryClient.setQueryData(['articles', 1, 'All', ''], initialData.blogArticles);
   }
+  if (initialData?.landing) {
+    queryClient.setQueryData(['landing'], initialData.landing);
+  }
 
   const root = ReactDOM.createRoot(rootElement);
   root.render(
