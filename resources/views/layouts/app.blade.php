@@ -233,7 +233,7 @@
                 ? 'ASTA Digital Agency provides website development, mobile apps, and custom information systems for SMEs and organizations in Yogyakarta, Indonesia.'
                 : 'ASTA Digital Agency menyediakan jasa pembuatan website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan di Yogyakarta.',
             'telephone' => '+6281578223564',
-            'email' => 'astadigitech@gmail.com',
+            'email' => 'cs@astadigitalagency.com',
             'priceRange' => '$$',
             'foundingDate' => '2022',
             'areaServed' => [

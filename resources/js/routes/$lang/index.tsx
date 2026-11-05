@@ -32,7 +32,7 @@ export const Route = createFileRoute("/$lang/")({
       url: typeof window !== "undefined" ? window.location.origin : "https://astadigitalagency.com",
       description: isEn ? enTranslations.meta.description : idTranslations.meta.description,
       telephone: "+6281578223564",
-      email: "astadigitech@gmail.com",
+      email: "cs@astadigitalagency.com",
       sameAs: [
         "https://www.instagram.com/astadigitalagency/",
         "https://www.linkedin.com/in/asta-digital-agency-b9441637a/",
