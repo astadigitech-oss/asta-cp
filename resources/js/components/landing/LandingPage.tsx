@@ -239,7 +239,7 @@ export function LandingPage() {
               <span className="text-gray-500">{language === "en" ? "Verified Social Profiles:" : "Profil Sosial Terverifikasi:"}</span>
               <a href="https://www.instagram.com/astadigitalagency/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">Instagram (@astadigitalagency)</a>
               <span className="text-gray-300">•</span>
-              <a href="https://www.linkedin.com/in/asta-digital-agency-b9441637a/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">LinkedIn (PT Asta Digital Agency)</a>
+              <a href="https://www.linkedin.com/company/asta-digital-agency/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">LinkedIn (PT Asta Digital Agency)</a>
             </div>
           </div>
         </section>
