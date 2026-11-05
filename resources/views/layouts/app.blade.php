@@ -100,8 +100,15 @@
     }
 
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
-    $metaTitle = html_entity_decode(localizeTextPhp($rawTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $metaDesc = localizeTextPhp($rawDesc, $currentLocale);
+    $parsedTitle = localizeTextPhp($rawTitle, $currentLocale);
+    if ($currentLocale === 'en' && ($discover || $article)) {
+        $idTitle = localizeTextPhp($rawTitle, 'id');
+        if ($parsedTitle === $idTitle && !str_contains($parsedTitle, 'Case Study') && !str_contains($parsedTitle, 'Insights')) {
+            $parsedTitle .= ($discover ? ' — Case Study' : ' — Insights');
+        }
+    }
+    $metaTitle = html_entity_decode($parsedTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $metaDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($rawDesc, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : 'page'));
 
     $homepageSourceFiles = [
         resource_path('views/layouts/app.blade.php'),
@@ -151,8 +158,8 @@
         }
     }
 
-    $ogTitle = localizeTextPhp($seo?->ogTitle ?? $rawTitle, $currentLocale);
-    $ogDesc = localizeTextPhp($seo?->ogDescription ?? $rawDesc, $currentLocale);
+    $ogTitle = $seo?->ogTitle ? html_entity_decode(localizeTextPhp($seo->ogTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8') : $metaTitle;
+    $ogDesc = $seo?->ogDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->ogDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : 'page')) : $metaDesc;
 
     $rawOgImage = $seo?->ogImage;
     if (!empty($rawOgImage)) {
@@ -166,8 +173,8 @@
     }
     $ogType = ($article || $discover) ? 'article' : ($isBlogPage ? 'blog' : ($isDiscoverPage ? 'website' : ($seo?->ogType ?? 'website')));
 
-    $twitterTitle = localizeTextPhp($seo?->twitterTitle ?? $rawTitle, $currentLocale);
-    $twitterDesc = localizeTextPhp($seo?->twitterDescription ?? $rawDesc, $currentLocale);
+    $twitterTitle = $seo?->twitterTitle ? html_entity_decode(localizeTextPhp($seo->twitterTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8') : $metaTitle;
+    $twitterDesc = $seo?->twitterDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->twitterDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : 'page')) : $metaDesc;
     $rawTwitterImage = $seo?->twitterImage;
     $twitterImage = !empty($rawTwitterImage)
         ? (str_starts_with($rawTwitterImage, 'http') ? $rawTwitterImage : asset('storage/' . ltrim($rawTwitterImage, '/')))
@@ -209,6 +216,8 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@astadigitalagency">
+    <meta name="twitter:creator" content="@astadigitalagency">
     <meta name="twitter:url" content="{{ $canonicalUrl }}">
     <meta name="twitter:title" content="{{ $twitterTitle }}">
     <meta name="twitter:description" content="{{ $twitterDesc }}">
@@ -258,7 +267,8 @@
             ],
             'sameAs' => array_values(array_filter(array_merge([
                 'https://www.instagram.com/astadigitalagency/',
-                'https://www.linkedin.com/in/asta-digital-agency-b9441637a/',
+                'https://www.linkedin.com/company/asta-digital-agency/',
+                'https://share.google/mde5DANqT5rDfNKfO',
             ], $agencySocialLinks))),
         ];
         if (is_numeric($agencyLatitude) && is_numeric($agencyLongitude)) {
@@ -640,7 +650,9 @@
                 @endif
 
                 <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed space-y-4">
-                    {!! localizeTextPhp($article->body, $currentLocale) !!}
+                    <!--email_off-->
+                    {!! \App\Support\ContentSanitizer::cleanArticleHtml(localizeTextPhp($article->body, $currentLocale), $article->title) !!}
+                    <!--email_on-->
                 </div>
 
                 @if (!empty($article->content_sections) && is_array($article->content_sections))
@@ -657,7 +669,7 @@
                                 @endif
                                 @if (!empty($sec['description']))
                                     <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                        {!! localizeTextPhp($sec['description'], $currentLocale) !!}
+                                        {!! \App\Support\ContentSanitizer::cleanArticleHtml(localizeTextPhp($sec['description'], $currentLocale), $article->title) !!}
                                     </div>
                                 @endif
                             </div>
@@ -736,12 +748,28 @@
             </article>
         @elseif ($discover)
             <article class="max-w-4xl mx-auto px-4 py-12">
+
+                {{-- Breadcrumb Navigation — Provides outgoing links for SEO crawlers --}}
+                <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs text-gray-500 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+                    <a href="{{ url('/' . $currentLocale) }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Home' : 'Beranda' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <a href="{{ url('/' . $currentLocale . '/discover') }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Insights & Case Studies' : 'Wawasan & Studi Kasus' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[200px] sm:max-w-xs" aria-current="page">
+                        {{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}
+                    </span>
+                </nav>
+
                 <header class="mb-8">
                     @if (!empty($discover->type))
                         <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">{{ $discover->type }}</span>
                     @endif
                     <h1 class="text-3xl md:text-5xl font-bold mt-2 mb-4 text-gray-900 dark:text-white leading-tight">
-                        {{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}
+                        {{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}{{ $currentLocale === 'en' && !is_array($discover->name) && !preg_match('/\[:\s*en\s*\]/i', $discover->name ?? '') && !str_contains($discover->name ?? '', 'Case Study') ? ' — Case Study' : '' }}
                     </h1>
                 </header>
 
@@ -819,6 +847,41 @@
                         </div>
                     </div>
                 </section>
+
+                {{-- CTA & Navigation Section — Outgoing links for SEO (internal + external) --}}
+                <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800" aria-label="{{ $currentLocale === 'en' ? 'Related Links' : 'Tautan Terkait' }}">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        {{ $currentLocale === 'en' ? 'Interested in a Similar Digital Solution?' : 'Tertarik Membangun Solusi Digital Serupa?' }}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
+                        {{ $currentLocale === 'en'
+                            ? 'ASTA Digital Agency specializes in custom enterprise software, mobile apps, and modern web platforms. Contact our team for a free consultation and discover how we can help grow your business.'
+                            : 'ASTA Digital Agency ahli membangun sistem informasi enterprise, aplikasi mobile, dan website modern yang disesuaikan kebutuhan bisnis Anda. Hubungi tim kami untuk konsultasi gratis.' }}
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ url('/' . $currentLocale . '#kontak') }}"
+                           class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] px-6 py-3 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity">
+                            {{ $currentLocale === 'en' ? 'Contact Us' : 'Hubungi Kami' }}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                        <a href="{{ url('/' . $currentLocale . '/discover') }}"
+                           class="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            {{ $currentLocale === 'en' ? 'Explore All Case Studies' : 'Jelajahi Semua Studi Kasus' }}
+                        </a>
+                        <a href="{{ url('/' . $currentLocale . '/blog') }}"
+                           class="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            {{ $currentLocale === 'en' ? 'Read Our Articles' : 'Baca Artikel Kami' }}
+                        </a>
+                        <a href="https://astadigitalagency.com"
+                           target="_blank"
+                           rel="noopener"
+                           class="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            ASTA Digital Agency
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </section>
+
             </article>
         @elseif ($isBlogPage)
             <main class="max-w-6xl mx-auto px-4 py-12">
@@ -1176,6 +1239,52 @@
                     <div class="flex flex-wrap gap-4 text-sm font-semibold text-blue-700 dark:text-blue-300">
                         <a href="#layanan" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.services_link') }}</a>
                         <a href="#kontak" class="underline underline-offset-4">{{ transKey($transDict, 'home_seo.contact_link') }}</a>
+                    </div>
+
+                    {{-- Kartu Transparansi Identitas Perusahaan & Titik Kontak (Memenuhi E-E-A-T & Bot AI) --}}
+                    <div class="rounded-2xl border border-gray-200 bg-gray-50/70 p-6 text-sm text-gray-700 shadow-xs dark:border-gray-800 dark:bg-gray-900/50">
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-base mb-3">
+                            {{ $currentLocale === 'en' ? 'Company Information & Contact Transparency' : 'Informasi Resmi Perusahaan & Transparansi Kontak' }}
+                        </h4>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    {{ $currentLocale === 'en' ? 'Legal Entity & Status' : 'Entitas Resmi & Status' }}
+                                </span>
+                                <span class="font-medium text-gray-900 dark:text-white">PT Asta Digital Agency</span>
+                                <span class="block text-xs text-gray-500">{{ $currentLocale === 'en' ? 'Registered Software House' : 'Software House & Konsultan IT Terdaftar' }}</span>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    {{ $currentLocale === 'en' ? 'Direct Phone / WhatsApp' : 'Telepon / WhatsApp' }}
+                                </span>
+                                <a href="tel:+6281578223564" class="font-semibold text-blue-600 hover:underline dark:text-blue-400">+62 815 7822 3564</a>
+                                <span class="block text-xs text-gray-500">{{ $currentLocale === 'en' ? 'Mon-Fri: 08:00 - 17:00 WIB' : 'Senin - Jumat: 08:00 - 17:00 WIB' }}</span>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    {{ $currentLocale === 'en' ? 'Official Email' : 'Email Resmi' }}
+                                </span>
+                                <!--email_off-->
+                                <a href="mailto:cs@astadigitalagency.com" class="font-semibold text-blue-600 hover:underline dark:text-blue-400">cs@astadigitalagency.com</a>
+                                <!--email_on-->
+                                <span class="block text-xs text-gray-500">24/7 Client Support</span>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    {{ $currentLocale === 'en' ? 'Head Office & Location' : 'Alamat Kantor Operasional' }}
+                                </span>
+                                <address class="font-medium text-gray-900 dark:text-white not-italic text-xs leading-relaxed">
+                                    Jl. Imogiri Timur, Gng. Tobanan V, Wonokromo, Pleret, Bantul, D.I. Yogyakarta 55791
+                                </address>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-wrap items-center gap-4 text-xs font-medium">
+                            <span class="text-gray-500">{{ $currentLocale === 'en' ? 'Verified Social Profiles:' : 'Profil Sosial Terverifikasi:' }}</span>
+                            <a href="https://www.instagram.com/astadigitalagency/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline dark:text-blue-400">Instagram (@astadigitalagency)</a>
+                            <span class="text-gray-300">•</span>
+                            <a href="https://www.linkedin.com/company/asta-digital-agency/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline dark:text-blue-400">LinkedIn (PT Asta Digital Agency)</a>
+                        </div>
                     </div>
                 </section>
 
@@ -1679,7 +1788,9 @@
                                 <div>
                                     <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ transKey($transDict, 'contact.info_phone') }}</span>
                                     <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="tel:+6281578223564">+62 815 7822 3564</a>
+                                    <!--email_off-->
                                     <a class="mt-1 block text-blue-700 underline dark:text-blue-300" href="mailto:cs@astadigitalagency.com">cs@astadigitalagency.com</a>
+                                    <!--email_on-->
                                 </div>
                             </address>
                         </div>
@@ -1747,7 +1858,9 @@
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
+                            <!--email_off-->
                             <p class="text-xs">Email: <a href="mailto:cs@astadigitalagency.com" class="text-blue-600 hover:underline">cs@astadigitalagency.com</a></p>
+                            <!--email_on-->
                             <p class="text-xs">{{ transKey($transDict, 'contact.info_phone', 'Telepon') }}: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
                         </div>
                         <div class="space-y-2">

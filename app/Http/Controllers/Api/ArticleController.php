@@ -128,12 +128,12 @@ class ArticleController extends Controller
         }
 
         $rawSections = is_array($article->content_sections) ? $article->content_sections : [];
-        $formattedSections = collect($rawSections)->map(function ($section) {
+        $formattedSections = collect($rawSections)->map(function ($section) use ($article) {
             return [
                 'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : (!empty($section['image']) ? 'image' : 'none')),
                 'image' => !empty($section['image']) ? $this->formatImageUrl($section['image'], 'article-image') : null,
                 'video_url' => $section['video_url'] ?? null,
-                'description' => $section['description'] ?? '',
+                'description' => \App\Support\ContentSanitizer::cleanArticleHtml($section['description'] ?? '', $article->title),
             ];
         })->values()->all();
 
@@ -148,6 +148,11 @@ class ArticleController extends Controller
                 ->implode(', ');
         }
 
+        $articleLocale = request()->query('lang', app()->getLocale() ?: 'id');
+        $articleTitleRaw = is_array($article->title) ? ($article->title[$articleLocale] ?? reset($article->title)) : $article->title;
+        $articleDescRaw = $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''));
+        $articleLocalizedDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($articleDescRaw, $articleLocale, $articleTitleRaw, 'article');
+
         return response()->json([
             'id' => $article->id,
             'title' => $article->title,
@@ -156,7 +161,7 @@ class ArticleController extends Controller
             'images' => $formattedImages,
             'excerpt' => $article->excerpt,
             'tldr_summary' => $article->tldr_summary ?? [],
-            'body' => $article->body,
+            'body' => \App\Support\ContentSanitizer::cleanArticleHtml($article->body, $article->title),
             'content_sections' => $formattedSections,
             'faqs' => $article->faqs ?? [],
             'author' => $article->author ?? 'ASTA Digital Team',
@@ -166,16 +171,16 @@ class ArticleController extends Controller
             'updated_at_iso' => $article->updated_at?->toIso8601String(),
             'seo' => [
                 'meta_title' => $seo?->title ?? $article->title,
-                'meta_description' => $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? '')),
+                'meta_description' => $articleLocalizedDesc,
                 'canonical_url' => $canonicalUrl,
                 'robots' => $seo?->robots ?? 'index, follow',
                 'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $article->title),
-                'og_description' => $seo?->ogDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                'og_description' => $articleLocalizedDesc,
                 'og_image' => $seo?->ogImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                 'og_type' => $seo?->ogType ?? 'article',
                 'twitter_card' => 'summary_large_image',
                 'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $article->title),
-                'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                'twitter_description' => $articleLocalizedDesc,
                 'twitter_image' => $seo?->twitterImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                 'keywords' => $keywords,
                 'schema_jsonld' => $seo?->schemaJsonld,

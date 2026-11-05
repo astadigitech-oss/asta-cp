@@ -1,10 +1,10 @@
+# =============================================================
+# robots.txt — ASTA Digital Agency
+# https://astadigitalagency.com
+# =============================================================
+
+# ---- General crawlers ----------------------------------------
 User-agent: *
-User-agent: Googlebot
-User-agent: Bingbot
-User-agent: GPTBot
-User-agent: ClaudeBot
-User-agent: PerplexityBot
-User-agent: Google-Extended
 Allow: /
 Disallow: /admin
 Disallow: /dapur-belakang
@@ -12,23 +12,79 @@ Disallow: /private/
 Disallow: /storage/framework/
 Disallow: /vendor/
 Disallow: /.env
+
+# ---- Google --------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+# ---- Microsoft / Bing ----------------------------------------
+User-agent: Bingbot
+Allow: /
+
+# ---- AI Search & Generative Engines --------------------------
+# OpenAI / ChatGPT
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic / Claude
+User-agent: ClaudeBot
+Allow: /
 
 User-agent: anthropic-ai
 Allow: /
-Disallow: /admin
-Disallow: /dapur-belakang
-Disallow: /private/
-Disallow: /storage/framework/
-Disallow: /vendor/
-Disallow: /.env
 
+User-agent: Claude-Web
+Allow: /
+
+# Google AI Overviews / Gemini
+User-agent: Google-CloudVertexBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Cohere
 User-agent: cohere-ai
 Allow: /
-Disallow: /admin
-Disallow: /dapur-belakang
-Disallow: /private/
-Disallow: /storage/framework/
-Disallow: /vendor/
-Disallow: /.env
 
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Apple
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Common Crawl (used by many AI training sets)
+User-agent: CCBot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Amazon / Alexa
+User-agent: ia_archiver
+Allow: /
+
+# ---- Sitemap -------------------------------------------------
 Sitemap: https://astadigitalagency.com/sitemap.xml

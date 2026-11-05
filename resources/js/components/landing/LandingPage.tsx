@@ -4,6 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
+import { HomeFAQ } from "./sections/HomeFAQ";
+import { Footer } from "./sections/Footer";
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
@@ -16,10 +18,8 @@ const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.St
 const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
 const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
 const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
-const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
 const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
 const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
-const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
 
 function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }) {
   return <div className={`w-full ${minHeight}`} aria-hidden="true" />;
@@ -45,6 +45,15 @@ function DeferredSection({
       setShouldLoad(true);
     };
 
+    // Deteksi jika dibuka oleh bot/crawler (Googlebot, Bingbot, RankBeam, crawler AI, headless browser)
+    const isBot = typeof navigator !== "undefined" &&
+      /bot|crawl|spider|slurp|headless|rankbeam|lighthouse|inspect|preview|checker|evaluator/i.test(navigator.userAgent);
+
+    if (isBot) {
+      activate();
+      return;
+    }
+
     if ("IntersectionObserver" in window) {
       observer = new IntersectionObserver(
         ([entry]) => {
@@ -57,6 +66,9 @@ function DeferredSection({
       activate();
     }
 
+    // Safety timeout: jika bot atau tester tidak memicu scroll, muat konten setelah 1.5s
+    const timer = setTimeout(activate, 1500);
+
     const loadForHash = () => {
       if (hashTarget && window.location.hash === `#${hashTarget}`) activate();
     };
@@ -65,6 +77,7 @@ function DeferredSection({
     window.addEventListener("hashchange", loadForHash);
     return () => {
       observer?.disconnect();
+      clearTimeout(timer);
       window.removeEventListener("hashchange", loadForHash);
     };
   }, [hashTarget]);
@@ -185,6 +198,50 @@ export function LandingPage() {
             <a href="#layanan" className="underline underline-offset-4">{t("home_seo.services_link")}</a>
             <a href="#kontak" className="underline underline-offset-4">{t("home_seo.contact_link")}</a>
           </div>
+
+          {/* Explicit Business Identity & Contact Transparency Card for AI/SEO Verification */}
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/70 p-6 text-sm text-gray-700 shadow-xs dark:border-gray-800 dark:bg-gray-900/50">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-base mb-3">
+              {language === "en" ? "Company Information & Contact Transparency" : "Informasi Resmi Perusahaan & Transparansi Kontak"}
+            </h4>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  {language === "en" ? "Legal Entity & Status" : "Entitas Resmi & Status"}
+                </span>
+                <span className="font-medium text-gray-900 dark:text-white">PT Asta Digital Agency</span>
+                <span className="block text-xs text-gray-500">{language === "en" ? "Registered Software House" : "Software House & Konsultan IT Terdaftar"}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  {language === "en" ? "Direct Phone / WhatsApp" : "Telepon / WhatsApp"}
+                </span>
+                <a href="tel:+6281578223564" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">+62 815 7822 3564</a>
+                <span className="block text-xs text-gray-500">{language === "en" ? "Mon-Fri: 08:00 - 17:00 WIB" : "Senin - Jumat: 08:00 - 17:00 WIB"}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  {language === "en" ? "Official Email" : "Email Resmi"}
+                </span>
+                <a href="mailto:cs@astadigitalagency.com" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">cs@astadigitalagency.com</a>
+                <span className="block text-xs text-gray-500">24/7 Client Support</span>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  {language === "en" ? "Head Office & Location" : "Alamat Kantor Operasional"}
+                </span>
+                <address className="font-medium text-gray-900 dark:text-white not-italic text-xs leading-relaxed">
+                  Jl. Imogiri Timur, Gng. Tobanan V, Wonokromo, Pleret, Bantul, D.I. Yogyakarta 55791
+                </address>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-wrap items-center gap-4 text-xs font-medium">
+              <span className="text-gray-500">{language === "en" ? "Verified Social Profiles:" : "Profil Sosial Terverifikasi:"}</span>
+              <a href="https://www.instagram.com/astadigitalagency/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">Instagram (@astadigitalagency)</a>
+              <span className="text-gray-300">•</span>
+              <a href="https://www.linkedin.com/in/asta-digital-agency-b9441637a/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">LinkedIn (PT Asta Digital Agency)</a>
+            </div>
+          </div>
         </section>
 
         {/* Below-the-fold deferred content (lazy loaded chunks) */}
@@ -228,9 +285,7 @@ export function LandingPage() {
           <Testimonials />
         </DeferredSection>
 
-        <DeferredSection hashTarget="faq" minHeight="min-h-[450px]">
-          <HomeFAQ />
-        </DeferredSection>
+        <HomeFAQ />
 
         <DeferredSection minHeight="min-h-[250px]">
           <CTA />
@@ -240,9 +295,7 @@ export function LandingPage() {
           <Contact />
         </DeferredSection>
       </main>
-      <DeferredSection minHeight="min-h-[250px]">
-        <Footer />
-      </DeferredSection>
+      <Footer />
     </div>
   );
 }
