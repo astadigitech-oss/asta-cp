@@ -38,46 +38,40 @@ function DeferredSection({
   const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
-    let observer: IntersectionObserver | undefined;
-
-    const activate = () => {
-      observer?.disconnect();
+    // Jika hash target di URL sesuai, muat langsung
+    if (hashTarget && typeof window !== "undefined" && window.location.hash === `#${hashTarget}`) {
       setShouldLoad(true);
-    };
-
-    // Deteksi jika dibuka oleh bot/crawler (Googlebot, Bingbot, RankBeam, crawler AI, headless browser)
-    const isBot = typeof navigator !== "undefined" &&
-      /bot|crawl|spider|slurp|headless|rankbeam|lighthouse|inspect|preview|checker|evaluator/i.test(navigator.userAgent);
-
-    if (isBot) {
-      activate();
       return;
     }
+
+    let observer: IntersectionObserver | undefined;
 
     if ("IntersectionObserver" in window) {
       observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry.isIntersecting) activate();
+          if (entry.isIntersecting) {
+            setShouldLoad(true);
+            observer?.disconnect();
+          }
         },
-        { rootMargin: "600px 0px" },
+        { rootMargin: "250px 0px" },
       );
-      if (sectionRef.current) observer.observe(sectionRef.current);
+      if (sectionRef.current) {
+        observer.observe(sectionRef.current);
+      }
     } else {
-      activate();
+      setShouldLoad(true);
     }
 
-    // Safety timeout: jika bot atau tester tidak memicu scroll, muat konten setelah 1.5s
-    const timer = setTimeout(activate, 1500);
-
     const loadForHash = () => {
-      if (hashTarget && window.location.hash === `#${hashTarget}`) activate();
+      if (hashTarget && window.location.hash === `#${hashTarget}`) {
+        setShouldLoad(true);
+      }
     };
 
-    loadForHash();
     window.addEventListener("hashchange", loadForHash);
     return () => {
       observer?.disconnect();
-      clearTimeout(timer);
       window.removeEventListener("hashchange", loadForHash);
     };
   }, [hashTarget]);

@@ -395,7 +395,7 @@ export function BlogDetailPage() {
                       alt={localizedTitle}
                       width={1200}
                       height={675}
-                      fetchPriority="high"
+                      loading="lazy"
                       decoding="async"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
                     />

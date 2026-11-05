@@ -28,6 +28,7 @@ export function Services() {
   const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
   const [serviceImageIndex, setServiceImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredCardId, setHoveredCardId] = useState<number | string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const loopWidthRef = useRef(0);
@@ -301,10 +302,12 @@ export function Services() {
       <div
         key={`${s.id}-${index}`}
         onClick={() => handleCardClick(s)}
+        onMouseEnter={() => setHoveredCardId(s.id)}
+        onMouseLeave={() => setHoveredCardId(null)}
         className="group relative w-[82vw] max-w-[320px] sm:max-w-none sm:w-[320px] md:w-[350px] lg:w-[380px] h-[330px] sm:h-[350px] shrink-0 overflow-hidden rounded-[28px] border border-white/60 bg-white/80 p-6 sm:p-7 shadow-glass backdrop-blur-md transition-all duration-300 sm:hover:-translate-y-2 sm:hover:shadow-2xl cursor-pointer flex flex-col justify-between select-none"
       >
-        {/* Cover Background on Hover with 80% opacity - Desktop only (touch devices do not trigger hover) */}
-        {hoverBg && (
+        {/* Cover Background on Hover - Loaded on demand to avoid eager payload */}
+        {hoveredCardId === s.id && hoverBg && (
           <div className="hidden sm:block pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[28px]">
             <img
               src={hoverBg}
@@ -314,10 +317,10 @@ export function Services() {
               draggable={false}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-80"
+              className="h-full w-full object-cover opacity-80 transition-opacity duration-300"
             />
             {/* Dark overlay for contrast on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30 opacity-100" />
           </div>
         )}
 

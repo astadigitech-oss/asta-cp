@@ -348,7 +348,7 @@ export function DiscoverDetailPage() {
                     width={1200}
                     height={675}
                     sizes="(min-width: 1280px) 1100px, 100vw"
-                    fetchPriority="high"
+                    loading="lazy"
                     decoding="async"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
                   />

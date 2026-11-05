@@ -7,13 +7,13 @@ type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet"> & {
 };
 
 export const ResponsiveImage = forwardRef<HTMLImageElement, Props>(function ResponsiveImage(
-  { source, sizes = "100vw", ...imageProps },
+  { source, sizes = "100vw", loading = "lazy", decoding = "async", ...imageProps },
   ref,
 ) {
   const variant = imageVariants[source];
 
   if (!variant) {
-    return <img ref={ref} src={source} sizes={sizes} {...imageProps} />;
+    return <img ref={ref} src={source} sizes={sizes} loading={loading} decoding={decoding} {...imageProps} />;
   }
 
   return (
@@ -26,6 +26,8 @@ export const ResponsiveImage = forwardRef<HTMLImageElement, Props>(function Resp
         height={imageProps.height ?? variant.height}
         sizes={sizes}
         ref={ref}
+        loading={loading}
+        decoding={decoding}
         {...imageProps}
       />
     </picture>
