@@ -38,6 +38,11 @@ php artisan storage:link --force || true
 # Jalankan migrasi jika perlu
 php artisan migrate --force || true
 
+# Bersihkan cache lama dan kompilasi ulang view & config untuk performa tinggi
+php artisan optimize:clear || true
+php artisan config:cache || true
+php artisan view:cache || true
+
 # Test syntax konfigurasi Nginx agar jika ada error langsung terbaca di log Dokploy
 echo "==> Testing Nginx configuration..."
 nginx -t
