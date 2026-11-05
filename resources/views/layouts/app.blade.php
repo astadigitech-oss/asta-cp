@@ -618,7 +618,7 @@
                         <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
                              {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!}
-                             fetchpriority="high"
+                             loading="lazy"
                              decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
                     </div>
@@ -778,7 +778,7 @@
                         <img src="{{ \App\Support\OptimizedImage::url(is_array($discover->image) ? ($discover->image[0] ?? null) : $discover->image, 'discover-card') }}"
                              alt="{{ localizeTextPhp(is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name, $currentLocale) }}"
                              {!! \App\Support\OptimizedImage::htmlAttributes('discover-card') !!}
-                             fetchpriority="high"
+                             loading="lazy"
                              decoding="async"
                              class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
                     </div>
@@ -1409,6 +1409,7 @@
 
                     <div class="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-2xl p-6 bg-gray-50/50 dark:bg-gray-900/50">
                         <table class="w-full text-left border-collapse text-sm">
+                            <caption class="sr-only">{{ $currentLocale === 'en' ? 'Comparison of Software Solutions and Development Methodologies' : 'Tabel Perbandingan Solusi Perangkat Lunak dan Metode Rekayasa ASTA' }}</caption>
                             <thead>
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
                                     <th class="py-3 px-4 font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'comparison.col_parameter', 'Parameter Evaluasi') }}</th>

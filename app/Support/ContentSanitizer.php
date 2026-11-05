@@ -100,6 +100,23 @@ class ContentSanitizer
 
             return $matches[0];
         }, $html);
+
+        // 3. Remove accidental nofollow from internal links (domain astadigitalagency.com or relative paths)
+        $cleanedHtml = preg_replace_callback('/<a\b([^>]*)>/i', function ($aMatch) {
+            $attrs = $aMatch[1];
+            $isInternal = preg_match('/href=[\'"](?:https?:\/\/(?:www\.)?astadigitalagency\.com|\/(?!\/))/i', $attrs);
+            if ($isInternal && preg_match('/rel=[\'"][^\'"]*nofollow[^\'"]*[\'"]/i', $attrs)) {
+                $attrs = preg_replace_callback('/rel=([\'"])(.*?)\1/i', function ($relMatch) {
+                    $q = $relMatch[1];
+                    $val = preg_replace('/\bnofollow\b/i', '', $relMatch[2]);
+                    $val = trim(preg_replace('/\s+/', ' ', $val));
+                    return $val !== '' ? "rel={$q}{$val}{$q}" : '';
+                }, $attrs);
+            }
+            return "<a{$attrs}>";
+        }, $cleanedHtml);
+
+        return $cleanedHtml;
     }
 
     /**

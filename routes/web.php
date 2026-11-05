@@ -131,6 +131,7 @@ Route::get('/{any?}', function () {
         if (in_array($preferredLocale, ['id', 'en'], true)) {
             $locale = $preferredLocale;
         }
+        return redirect("/{$locale}", 301);
     } elseif (str_starts_with($path, 'en/') || $path === 'en') {
         $locale = 'en';
     } elseif (str_starts_with($path, 'id/') || $path === 'id') {
