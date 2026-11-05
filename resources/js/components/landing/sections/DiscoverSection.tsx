@@ -18,15 +18,9 @@ import { SectionPagination } from "../common";
 import { ResponsiveImage } from "../common/ResponsiveImage";
 import { DiscoverData, getDiscoverImages } from "../types";
 
-const defaultDiscovers: DiscoverData[] = [
-  { id: 1, year: "2022", name: "Inisiasi & Pendirian ASTA Digital", short_description: "Asta Digital didirikan untuk menghadirkan solusi software berkualitas tinggi." },
-  { id: 2, year: "2023", name: "Ekspansi Layanan Enterprise", short_description: "Mengembangkan aplikasi web & mobile enterprise untuk berbagai instansi." },
-  { id: 3, year: "2024", name: "Transformasi Digital Terpadu", short_description: "Menjangkau puluhan mitra bisnis dan instansi publik di seluruh Indonesia." },
-];
-
 const DISCOVERS_PER_PAGE = 3;
 
-export function DiscoverSection({ discoversList = defaultDiscovers }: { discoversList?: DiscoverData[] }) {
+export function DiscoverSection({ discoversList = [] }: { discoversList?: DiscoverData[] }) {
   const { t, localize, language } = useTranslation();
   const params = useParams({ strict: false }) as Record<string, string>;
   const lang = params?.lang || language || "id";
@@ -35,8 +29,7 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
   const [activeDiscoverTab, setActiveDiscoverTab] = useState<"all" | "story" | "elearning">("all");
   const sectionRef = useRef<HTMLElement>(null);
 
-  const rawList = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
-  const localizedList = rawList.map((item) => ({
+  const localizedList = discoversList.map((item) => ({
     ...item,
     name: localize(item.name),
     short_description: item.short_description ? localize(item.short_description) : undefined,
@@ -54,6 +47,8 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
     (currentPage - 1) * DISCOVERS_PER_PAGE,
     currentPage * DISCOVERS_PER_PAGE
   );
+
+  if (localizedList.length === 0) return null;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -167,15 +162,19 @@ export function DiscoverSection({ discoversList = defaultDiscovers }: { discover
                     className="block cursor-pointer"
                   >
                     <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
-                      <ResponsiveImage
-                        source={images[0] || "portfolio-1.jpg"}
-                        alt={item.name}
-                        width={640}
-                        height={400}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
+                      {images[0] ? (
+                        <ResponsiveImage
+                          source={images[0]}
+                          alt={item.name}
+                          width={640}
+                          height={400}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gradient-to-br from-[#004AAD]/80 to-[#00a3be]/70" aria-hidden="true" />
+                      )}
                       {images.length > 1 && (
                         <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
                           <ImageIcon className="h-3 w-3" />

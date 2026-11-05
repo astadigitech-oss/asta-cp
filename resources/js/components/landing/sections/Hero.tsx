@@ -1,30 +1,14 @@
-import { ArrowRight, Shield, Award, Zap } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Building2, ContactRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData, ClientItem } from "@/hooks/useLandingData";
-import { Eyebrow, Counter, OceanBackdrop } from "../common";
+import { Eyebrow, OceanBackdrop } from "../common";
 import { ResponsiveImage } from "../common/ResponsiveImage";
-
-const defaultClientNames = [
-  "Telkom Indonesia",
-  "Bank Mandiri",
-  "Kemenkes RI",
-  "Universitas Indonesia",
-  "Pertamina",
-  "Astra International",
-];
 
 export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
   const { t } = useTranslation();
   const { data: landingData } = useLandingData();
   const clients = clientsList && clientsList.length > 0 ? clientsList : (landingData?.clients || []);
-
-  const heroStats = [
-    { value: 20, suffix: "+", label: t("hero.stat_projects") },
-    { value: 8, suffix: "+", label: t("hero.stat_clients") },
-    { value: 4, suffix: "+", label: t("hero.stat_years") },
-    { value: 98, suffix: "%", label: t("hero.stat_satisfaction") },
-  ];
 
   return (
     <section id="top" className="relative overflow-hidden pt-26 pb-6 sm:pt-26 lg:pb-6 xl:pt-34">
@@ -79,17 +63,17 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
               </Button>
             </div>
 
-            {/* Floating trust chips */}
+            {/* Link to verifiable company information */}
             <div className="mt-10 flex flex-wrap items-center gap-3 text-xs font-medium text-primary/70">
-              <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft">
-                <Shield className="h-3.5 w-3.5 text-success" /> {t("hero.trust_security")}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft">
-                <Award className="h-3.5 w-3.5 text-secondary" /> {t("hero.trust_award")}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft">
-                <Zap className="h-3.5 w-3.5 text-accent" /> {t("hero.trust_fast")}
-              </span>
+              <a href="#portofolio" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft hover:text-secondary">
+                <BriefcaseBusiness className="h-3.5 w-3.5 text-secondary" /> {t("hero.trust_portfolio")}
+              </a>
+              <a href="#tentang" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft hover:text-secondary">
+                <Building2 className="h-3.5 w-3.5 text-secondary" /> {t("hero.trust_company")}
+              </a>
+              <a href="#kontak" className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 shadow-soft hover:text-secondary">
+                <ContactRound className="h-3.5 w-3.5 text-secondary" /> {t("hero.trust_contact")}
+              </a>
             </div>
           </div>
 
@@ -133,27 +117,6 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                 </div>
               </div>
 
-              {heroStats.map((s, i) => {
-                const positions = [
-                  "top-4 left-0",
-                  "top-12 right-0",
-                  "bottom-16 left-2",
-                  "bottom-6 right-4",
-                ];
-                return (
-                  <div
-                    key={s.label}
-                    className={`absolute ${positions[i]} z-20 hidden rounded-2xl glass p-3.5 shadow-glass backdrop-blur-md sm:block`}
-                  >
-                    <div className="font-display text-xl font-bold leading-none text-primary">
-                      <Counter to={s.value} suffix={s.suffix} />
-                    </div>
-                    <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      {s.label}
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </div>
@@ -162,15 +125,13 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
         <div className="mt-12 rounded-2xl glass px-4 py-5 sm:px-6 shadow-soft sm:mt-14 overflow-hidden">
           <div className="flex flex-col lg:flex-row items-center gap-5 sm:gap-6 lg:gap-8">
             <div className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.22em] leading-relaxed text-muted-foreground shrink-0 text-center lg:text-left lg:whitespace-nowrap max-w-full">
-              {t("hero.trusted_by") || "Dipercaya oleh berbagai organisasi terkemuka"}
+              {t("hero.trusted_by")}
             </div>
 
             {/* Logo Display Area */}
             {(() => {
-              const displayClients =
-                clients.length > 0
-                  ? clients
-                  : defaultClientNames.map((name, idx) => ({ id: idx + 1, name, image: undefined as string | undefined }));
+              const displayClients = clients;
+              if (displayClients.length === 0) return null;
 
               const isAutoScroll = displayClients.length >= 5;
 

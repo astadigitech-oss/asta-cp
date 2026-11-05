@@ -52,7 +52,7 @@ export function Footer() {
                 <Instagram className="h-4 w-4" />
               </a>
               <a
-                href="mailto:astadigitech@gmail.com"
+                href="mailto:cs@astadigitalagency.com"
                 className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:bg-white/20 hover:scale-110"
                 aria-label="Email"
               >
@@ -97,8 +97,8 @@ export function Footer() {
               <a href="tel:+6281578223564" className="mt-2 block text-xs text-white/80 hover:text-white">
                 +62 815 7822 3564
               </a>
-              <a href="mailto:astadigitech@gmail.com" className="mt-1 block text-xs text-white/80 hover:text-white">
-                astadigitech@gmail.com
+              <a href="mailto:cs@astadigitalagency.com" className="mt-1 block text-xs text-white/80 hover:text-white">
+                cs@astadigitalagency.com
               </a>
             </div>
 

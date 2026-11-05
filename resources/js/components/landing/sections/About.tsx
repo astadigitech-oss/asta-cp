@@ -22,12 +22,6 @@ import { SectionHeading } from "../common";
 import { ResponsiveImage } from "../common/ResponsiveImage";
 import { DiscoverData, getDiscoverImages } from "../types";
 
-const defaultDiscovers: DiscoverData[] = [
-  { id: 1, year: "2022", name: "Inisiasi & Pendirian ASTA Digital", short_description: "Asta Digital didirikan untuk menghadirkan solusi software berkualitas tinggi." },
-  { id: 2, year: "2023", name: "Ekspansi Layanan Enterprise", short_description: "Mengembangkan aplikasi web & mobile enterprise untuk berbagai instansi." },
-  { id: 3, year: "2024", name: "Transformasi Digital Terpadu", short_description: "Menjangkau puluhan mitra bisnis dan instansi publik di seluruh Indonesia." },
-];
-
 const values = [
   { icon: Shield, titleKey: "about.val_1_title", descKey: "about.val_1_desc" },
   { icon: FileText, titleKey: "about.val_2_title", descKey: "about.val_2_desc" },
@@ -35,7 +29,7 @@ const values = [
   { icon: Users, titleKey: "about.val_4_title", descKey: "about.val_4_desc" },
 ];
 
-export function About({ discoversList = defaultDiscovers }: { discoversList?: DiscoverData[] }) {
+export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }) {
   const { t, localize } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedTimelineImage, setSelectedTimelineImage] = useState<DiscoverData | null>(null);
@@ -120,8 +114,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
     applyTransform(1, 0, 0);
   };
 
-  const rawDiscovers = discoversList && discoversList.length > 0 ? discoversList : defaultDiscovers;
-  const allDiscovers = rawDiscovers.map((item) => ({
+  const allDiscovers = discoversList.map((item) => ({
     ...item,
     name: localize(item.name),
     short_description: item.short_description ? localize(item.short_description) : undefined,
@@ -130,6 +123,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
   const highlighted = allDiscovers.filter((item) => item.is_highlight);
   const timelineItems = (highlighted.length > 0 ? highlighted : allDiscovers).slice(0, 4);
   const activeItem = timelineItems[selectedIndex] || timelineItems[0];
+  const activeItemImages = activeItem ? getDiscoverImages(activeItem.image) : [];
 
   useEffect(() => {
     if (timelineItems.length <= 1) return;
@@ -185,42 +179,44 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
               </div>
             </div>
 
-            <div className="mt-6 min-w-0 rounded-2xl glass p-6 shadow-glass flex flex-col justify-between flex-1">
-              <div className="flex items-center justify-between shrink-0 mb-3">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary">
-                  {t("about.company_story")}
+            {timelineItems.length > 0 && (
+              <div className="mt-6 min-w-0 rounded-2xl glass p-6 shadow-glass flex flex-col justify-between flex-1">
+                <div className="mb-3 flex shrink-0 items-center justify-between">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary">
+                    {t("about.company_story")}
+                  </div>
                 </div>
+                <ul className="flex flex-1 flex-col justify-between space-y-2.5">
+                  {timelineItems.map((item, idx) => {
+                    const isSelected = selectedIndex === idx;
+                    return (
+                      <li
+                        key={item.id || idx}
+                        onClick={() => {
+                          setSelectedIndex(idx);
+                          scrollToDiscover();
+                        }}
+                        className={`flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-all ${
+                          isSelected
+                            ? "scale-[1.02] border border-secondary/30 bg-white/95 shadow-sm"
+                            : "hover:bg-white/60"
+                        }`}
+                      >
+                        <span className="grid h-7 shrink-0 place-items-center rounded-lg gradient-accent px-2.5 text-[11px] font-bold text-white shadow-soft">
+                          {item.year}
+                        </span>
+                        <span className="line-clamp-1 min-w-0 break-words text-sm font-semibold text-foreground/90">
+                          {item.is_pinned && (
+                            <Pin className="mr-1 inline-block h-3.5 w-3.5 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />
+                          )}
+                          {item.name}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
-              <ul className="space-y-2.5 flex-1 flex flex-col justify-between">
-                {timelineItems.map((item, idx) => {
-                  const isSelected = selectedIndex === idx;
-                  return (
-                    <li
-                      key={item.id || idx}
-                      onClick={() => {
-                        setSelectedIndex(idx);
-                        scrollToDiscover();
-                      }}
-                      className={`flex items-center gap-3 p-2 rounded-xl transition-all cursor-pointer ${
-                        isSelected
-                          ? "bg-white/95 shadow-sm border border-secondary/30 scale-[1.02]"
-                          : "hover:bg-white/60"
-                      }`}
-                    >
-                      <span className="grid text-white h-7 px-2.5 shrink-0 place-items-center rounded-lg gradient-accent text-[11px] font-bold text-accent-foreground shadow-soft">
-                        {item.year || "2026"}
-                      </span>
-                      <span className="min-w-0 break-words text-sm font-semibold text-foreground/90 line-clamp-1">
-                        {item.is_pinned && (
-                          <Pin className="mr-1 inline-block h-3.5 w-3.5 fill-[#004AAD] text-[#004AAD]" aria-label="Pinned" />
-                        )}
-                        {item.name}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            )}
           </motion.div>
 
           <div className="min-w-0 lg:col-span-7 flex flex-col justify-between">
@@ -249,45 +245,54 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
             </div>
 
             {/* Large image connected to selected timeline/discover event */}
-            <div
-              onClick={() => {
-                setSelectedTimelineImage(activeItem);
-                setTimelineImgIndex(0);
-              }}
-              className="group relative mt-6 flex-1 min-h-[260px] overflow-hidden rounded-[32px] border border-white/60 shadow-glass cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
-            >
-              <ResponsiveImage
-                source={getDiscoverImages(activeItem.image)[0] || "portfolio-3.jpg"}
-                alt={activeItem.name}
-                width={1200}
-                height={900}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
-                decoding="async"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
-              {getDiscoverImages(activeItem.image).length > 1 && (
-                <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs font-semibold text-white border border-white/20">
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  <span>{getDiscoverImages(activeItem.image).length} foto</span>
-                </div>
-              )}
-              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-primary-foreground">
-                <div>
-                  {activeItem.year && (
-                    <div className="text-[11px] font-semibold uppercase tracking-widest text-cyan-300">
-                      {activeItem.year}
-                    </div>
-                  )}
-                  <div className="mt-1 font-display text-xl sm:text-2xl font-bold text-white group-hover:text-cyan-200 transition-colors">
-                    {activeItem.name}
+            {activeItem && (
+              <div
+                onClick={() => {
+                  if (activeItemImages.length === 0) return;
+                  setSelectedTimelineImage(activeItem);
+                  setTimelineImgIndex(0);
+                }}
+                className={`group relative mt-6 min-h-[260px] flex-1 overflow-hidden rounded-[32px] border border-white/60 shadow-glass transition-transform duration-300 ${activeItemImages.length > 0 ? "cursor-pointer hover:scale-[1.01]" : ""}`}
+              >
+                {activeItemImages[0] ? (
+                  <ResponsiveImage
+                    source={activeItemImages[0]}
+                    alt={activeItem.name}
+                    width={1200}
+                    height={900}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/70" aria-hidden="true" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
+                {activeItemImages.length > 1 && (
+                  <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span>{activeItemImages.length} foto</span>
                   </div>
+                )}
+                <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-primary-foreground">
+                  <div>
+                    {activeItem.year && (
+                      <div className="text-[11px] font-semibold uppercase tracking-widest text-cyan-300">
+                        {activeItem.year}
+                      </div>
+                    )}
+                    <div className="mt-1 font-display text-xl font-bold text-white transition-colors group-hover:text-cyan-200 sm:text-2xl">
+                      {activeItem.name}
+                    </div>
+                  </div>
+                  {activeItemImages.length > 0 && (
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full glass-dark text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-[#004AAD]">
+                      <ArrowRight className="h-5 w-5" />
+                    </span>
+                  )}
                 </div>
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full glass-dark text-white transition-all duration-300 group-hover:bg-[#004AAD] group-hover:scale-110">
-                  <ArrowRight className="h-5 w-5" />
-                </span>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -297,7 +302,7 @@ export function About({ discoversList = defaultDiscovers }: { discoversList?: Di
         <DialogContentFullscreen>
           {selectedTimelineImage && (() => {
             const timelineImages = getDiscoverImages(selectedTimelineImage.image);
-            const currentImg = timelineImages[timelineImgIndex] || "portfolio-3.jpg";
+            const currentImg = timelineImages[timelineImgIndex] || timelineImages[0] || "";
             const hasMultiple = timelineImages.length > 1;
 
             return (

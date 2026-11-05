@@ -9,6 +9,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -68,7 +69,13 @@ class TestimonialForm
                             ])
                             ->required()
                             ->columnSpanFull(),
-                        Grid::make(3)
+                        TextInput::make('source_url')
+                            ->label('Public evidence URL')
+                            ->url()
+                            ->required(fn (Get $get): bool => (bool) $get('is_verified'))
+                            ->helperText('Link to a public page, customer review, or published quote that supports this testimonial.')
+                            ->columnSpanFull(),
+                        Grid::make(4)
                             ->schema([
                                 TextInput::make('rating')
                                     ->label('Rating (1 - 5)')
@@ -85,6 +92,11 @@ class TestimonialForm
                                 Toggle::make('is_active')
                                     ->label('Display on Landing Page')
                                     ->default(true)
+                                    ->required(),
+                                Toggle::make('is_verified')
+                                    ->label('Source verified')
+                                    ->helperText('Only publish after checking the linked source and permission to use the quote.')
+                                    ->default(false)
                                     ->required(),
                             ]),
                     ])->columnSpanFull(),

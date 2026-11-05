@@ -44,6 +44,15 @@ class TestimonialsTable
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
+                IconColumn::make('is_verified')
+                    ->label('Source Verified')
+                    ->boolean(),
+                TextColumn::make('source_url')
+                    ->label('Evidence URL')
+                    ->url(fn ($record) => $record->source_url)
+                    ->openUrlInNewTab()
+                    ->limit(32)
+                    ->toggleable(),
                 TextColumn::make('sort')
                     ->label('Sort Order')
                     ->sortable(),
