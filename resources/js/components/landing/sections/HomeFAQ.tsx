@@ -30,7 +30,7 @@ export function HomeFAQ() {
   ];
 
   return (
-    <section id="faq" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6">
+    <section id="faq" className="relative overflow-hidden bg-surface py-6 sm:py-6 lg:py-6" itemScope itemType="https://schema.org/FAQPage">
       <div className="pointer-events-none absolute inset-0 -z-10 gradient-ocean opacity-60" />
       <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <div>
@@ -44,19 +44,31 @@ export function HomeFAQ() {
         <div
           className="mx-auto mt-12 sm:mt-16 max-w-4xl"
         >
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible defaultValue="faq-0" className="w-full space-y-4">
             {faqItems.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`faq-${index}`}
                 className="overflow-hidden rounded sm:rounded px-6 sm:px-8 transition-all duration-300"
+                itemScope
+                itemProp="mainEntity"
+                itemType="https://schema.org/Question"
               >
                 <AccordionTrigger className="py-5 text-left font-display text-base sm:text-lg font-bold text-primary hover:underline cursor-pointer">
-                  {faq.question}
+                  <h3 className="font-display text-base sm:text-lg font-bold text-primary inline m-0" itemProp="name">
+                    {faq.question}
+                  </h3>
                 </AccordionTrigger>
-                <AccordionContent className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground">
+                <AccordionContent
+                  forceMount
+                  className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground data-[state=closed]:hidden data-[state=open]:block"
+                  itemScope
+                  itemProp="acceptedAnswer"
+                  itemType="https://schema.org/Answer"
+                >
                   <div
                     className="prose prose-sm max-w-none text-muted-foreground"
+                    itemProp="text"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </AccordionContent>

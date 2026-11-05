@@ -73,6 +73,35 @@ interface ArticleDetailData {
   };
 }
 
+/**
+ * Sanitizes article content HTML:
+ * 1. Removes any heading tag that duplicates the article title to eliminate "identical headings" warnings.
+ * 2. Demotes any <h1> tags inside content to <h2> to maintain strict single-H1 semantic hierarchy.
+ */
+function sanitizeArticleContentHtml(html: string, titleToDedupe: string): string {
+  if (!html) return "";
+
+  const norm = (str: string) =>
+    str
+      .replace(/<[^>]*>/g, " ")
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim()
+      .toLowerCase();
+
+  const normalizedTitle = norm(titleToDedupe);
+
+  return html.replace(/<h([1-6])([^>]*)>(.*?)<\/h\1>/gis, (match, tagNum, attrs, innerText) => {
+    const headingNorm = norm(innerText);
+    if (normalizedTitle && headingNorm === normalizedTitle) {
+      return "";
+    }
+    if (tagNum === "1") {
+      return `<h2${attrs}>${innerText}</h2>`;
+    }
+    return match;
+  });
+}
+
 export function BlogDetailPage() {
   const { slug, lang } = useParams({ strict: false }) as { slug?: string; lang?: string };
   const { t, localize, language } = useTranslation();
@@ -497,7 +526,7 @@ export function BlogDetailPage() {
                                 prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-a:break-all
                                 prose-strong:text-gray-900
                                 prose-img:rounded-2xl prose-img:shadow-sm"
-                              dangerouslySetInnerHTML={{ __html: localize(section.description) }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeArticleContentHtml(localize(section.description), localizedTitle) }}
                             />
                           )}
                         </section>
@@ -517,7 +546,7 @@ export function BlogDetailPage() {
                       prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-a:break-all
                       prose-strong:text-gray-900
                       prose-img:rounded-2xl prose-img:shadow-sm"
-                    dangerouslySetInnerHTML={{ __html: localizedBody }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeArticleContentHtml(localizedBody, localizedTitle) }}
                   />
                 )}
 
@@ -582,9 +611,9 @@ export function BlogDetailPage() {
             <div className="mt-16 sm:mt-20">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">
+                  <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">
                     {lang === "en" ? "Related Articles & Insights" : "Artikel & Rekomendasi Terkait"}
-                  </h3>
+                  </h2>
                   <p className="text-sm text-gray-500 mt-1">
                     {lang === "en"
                       ? "Explore more tips, strategies, and digital technology insights from ASTA Digital."
@@ -649,9 +678,9 @@ export function BlogDetailPage() {
                           )}
                         </div>
 
-                        <h4 className="font-bold text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-[#004AAD] transition-colors">
+                        <h3 className="font-bold text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-[#004AAD] transition-colors">
                           {recTitle}
-                        </h4>
+                        </h3>
 
                         {recExcerpt && (
                           <p className="mt-2 text-xs text-gray-500 line-clamp-2 font-normal leading-relaxed">
@@ -674,9 +703,9 @@ export function BlogDetailPage() {
           {/* Consultation CTA Card */}
           <div className="mt-16 rounded-3xl bg-gradient-to-br from-[#004AAD] via-[#053d86] to-[#02204a] p-8 sm:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="max-w-xl text-center sm:text-left">
-              <h3 className="font-display text-2xl sm:text-3xl font-bold">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold">
                 {lang === "en" ? "Have Questions or Need a Digital Solution?" : "Punya Pertanyaan atau Butuh Solusi Digital?"}
-              </h3>
+              </h2>
               <p className="mt-2 text-sm text-blue-100 leading-relaxed">
                 {lang === "en"
                   ? "Consult your technology and software development needs with ASTA Digital experts today."

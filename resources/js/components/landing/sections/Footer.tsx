@@ -59,7 +59,7 @@ export function Footer() {
                 <Mail className="h-4 w-4" />
               </a>
               <a
-                href="https://www.linkedin.com/in/asta-digital-agency-b9441637a/"
+                href="https://www.linkedin.com/company/asta-digital-agency/"
                 target="_blank"
                 rel="noreferrer"
                 className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:bg-white/20 hover:scale-110"

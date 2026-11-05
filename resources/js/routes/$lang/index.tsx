@@ -35,7 +35,8 @@ export const Route = createFileRoute("/$lang/")({
       email: "cs@astadigitalagency.com",
       sameAs: [
         "https://www.instagram.com/astadigitalagency/",
-        "https://www.linkedin.com/in/asta-digital-agency-b9441637a/",
+        "https://www.linkedin.com/company/asta-digital-agency/",
+        "https://share.google/mde5DANqT5rDfNKfO",
         ...socialLinks,
       ],
       foundingDate: "2022",

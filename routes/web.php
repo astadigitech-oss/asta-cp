@@ -115,6 +115,12 @@ Route::get('/media/{preset}/{path}', OptimizedImageController::class)
     ->where('path', '.+')
     ->name('media.optimized');
 
+// Redirect Cloudflare email protection link jika di-crawl oleh SEO bot (mencegah 404 broken link)
+Route::get('/cdn-cgi/l/email-protection', function () {
+    $locale = request()->cookie('asta_lang') ?: (app()->getLocale() ?: 'id');
+    return redirect("/{$locale}#kontak", 301);
+});
+
 // Locale root menggunakan SSR langsung; halaman localized menggunakan React untuk fitur SPA.
 Route::get('/{any?}', function () {
     $path = trim(request()->path(), '/');
@@ -335,6 +341,10 @@ Route::get('/{any?}', function () {
                 })->values()->all();
 
                 $initialData['id'] = $discoverParam;
+                $discoverNameRaw = is_array($discover->name) ? ($discover->name[$locale] ?? reset($discover->name)) : $discover->name;
+                $discoverDescRaw = $seo?->description ?? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$locale] ?? reset($discover->short_description)) : ($discover->short_description ?? ''));
+                $discoverLocalizedDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($discoverDescRaw, $locale, $discoverNameRaw, 'discover');
+
                 $initialData['discover'] = [
                     'id' => $discover->id,
                     'name' => $discover->name,
@@ -352,16 +362,16 @@ Route::get('/{any?}', function () {
                     'DiscoverLists' => $discover->DiscoverLists,
                     'seo' => [
                         'meta_title' => $seo?->title ?? $discover->name,
-                        'meta_description' => $seo?->description ?? strip_tags($discover->short_description ?? ''),
+                        'meta_description' => $discoverLocalizedDesc,
                         'canonical_url' => $seo?->canonical ?? url("/{$locale}/discover/" . (method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($locale) : ($discover->slug ?: $discover->id))),
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $discover->name),
-                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'og_description' => $discoverLocalizedDesc,
                         'og_image' => $seo?->ogImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'og_type' => $seo?->ogType ?? 'article',
                         'twitter_card' => 'summary_large_image',
                         'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $discover->name),
-                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags($discover->short_description ?? '')),
+                        'twitter_description' => $discoverLocalizedDesc,
                         'twitter_image' => $seo?->twitterImage ?? ($discoverOgImage ?? ($formattedImages[0] ?? null)),
                         'schema_jsonld' => $seo?->schemaJsonld,
                     ],
@@ -413,13 +423,13 @@ Route::get('/{any?}', function () {
                 }
 
                 $rawSections = is_array($article->content_sections) ? $article->content_sections : [];
-                $formattedSections = collect($rawSections)->map(function ($section) {
+                $formattedSections = collect($rawSections)->map(function ($section) use ($article) {
                     $img = !empty($section['image']) ? OptimizedImage::url($section['image'], 'article-image') : null;
                     return [
                         'media_type' => $section['media_type'] ?? (!empty($section['video_url']) ? 'video' : (!empty($section['image']) ? 'image' : 'none')),
                         'image' => $img,
                         'video_url' => $section['video_url'] ?? null,
-                        'description' => $section['description'] ?? '',
+                        'description' => \App\Support\ContentSanitizer::cleanArticleHtml($section['description'] ?? '', $article->title),
                     ];
                 })->values()->all();
 
@@ -433,6 +443,10 @@ Route::get('/{any?}', function () {
                 }
 
                 $initialData['slug'] = $cleanPath;
+                $articleTitleRaw = is_array($article->title) ? ($article->title[$locale] ?? reset($article->title)) : $article->title;
+                $articleDescRaw = $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''));
+                $articleLocalizedDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($articleDescRaw, $locale, $articleTitleRaw, 'article');
+
                 $initialData['article'] = [
                     'id' => $article->id,
                     'title' => $article->title,
@@ -441,7 +455,7 @@ Route::get('/{any?}', function () {
                     'images' => $formattedImages,
                     'excerpt' => $article->excerpt,
                     'tldr_summary' => $article->tldr_summary ?? [],
-                    'body' => $article->body,
+                    'body' => \App\Support\ContentSanitizer::cleanArticleHtml($article->body, $article->title),
                     'content_sections' => $formattedSections,
                     'faqs' => $article->faqs ?? [],
                     'author' => $article->author ?? 'ASTA Digital Team',
@@ -451,16 +465,16 @@ Route::get('/{any?}', function () {
                     'updated_at_iso' => $article->updated_at?->toIso8601String(),
                     'seo' => [
                         'meta_title' => $seo?->title ?? $article->title,
-                        'meta_description' => $seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? '')),
+                        'meta_description' => $articleLocalizedDesc,
                         'canonical_url' => $canonicalUrl,
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $article->title),
-                        'og_description' => $seo?->ogDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'og_description' => $articleLocalizedDesc,
                         'og_image' => $seo?->ogImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                         'og_type' => $seo?->ogType ?? 'article',
                         'twitter_card' => 'summary_large_image',
                         'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $article->title),
-                        'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? ($article->excerpt ?: strip_tags($article->body ?? ''))),
+                        'twitter_description' => $articleLocalizedDesc,
                         'twitter_image' => $seo?->twitterImage ?? ($thumbnailOgUrl ?? ($formattedImages[0] ?? null)),
                         'keywords' => $keywords,
                         'schema_jsonld' => $seo?->schemaJsonld,
