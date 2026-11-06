@@ -252,7 +252,7 @@
             'openingHoursSpecification' => [
                 [
                     '@type' => 'OpeningHoursSpecification',
-                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                     'opens' => '08:00',
                     'closes' => '17:00',
                 ],

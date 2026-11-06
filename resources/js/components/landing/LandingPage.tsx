@@ -211,7 +211,7 @@ export function LandingPage() {
                   {language === "en" ? "Direct Phone / WhatsApp" : "Telepon / WhatsApp"}
                 </span>
                 <a href="tel:+6281578223564" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">+62 815 7822 3564</a>
-                <span className="block text-xs text-gray-500">{language === "en" ? "Mon-Fri: 08:00 - 17:00 WIB" : "Senin - Jumat: 08:00 - 17:00 WIB"}</span>
+                <span className="block text-xs text-gray-500">{language === "en" ? "Mon-Sat: 08:00 - 17:00 WIB" : "Senin - Sabtu: 08:00 - 17:00 WIB"}</span>
               </div>
               <div>
                 <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">
