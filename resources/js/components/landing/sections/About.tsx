@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Shield,
   FileText,
@@ -125,13 +125,36 @@ export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }
   const activeItem = timelineItems[selectedIndex] || timelineItems[0];
   const activeItemImages = activeItem ? getDiscoverImages(activeItem.image) : [];
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isSectionInView, setIsSectionInView] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
   useEffect(() => {
-    if (timelineItems.length <= 1) return;
+    const el = sectionRef.current;
+    if (!el || !("IntersectionObserver" in window)) {
+      setIsSectionInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsSectionInView(entry.isIntersecting);
+      },
+      { rootMargin: "100px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (timelineItems.length <= 1 || !isSectionInView || isHovered) return;
     const interval = window.setInterval(() => {
+      if (document.hidden) return;
       setSelectedIndex((currentIndex) => (currentIndex + 1) % timelineItems.length);
     }, 5000);
     return () => window.clearInterval(interval);
-  }, [timelineItems.length]);
+  }, [timelineItems.length, isSectionInView, isHovered]);
 
   const scrollToDiscover = () => {
     const elem = document.getElementById("discover");
@@ -141,7 +164,7 @@ export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }
   };
 
   return (
-    <section id="tentang" className="relative overflow-hidden py-6 sm:py-6 lg:py-6">
+    <section ref={sectionRef} id="tentang" className="relative overflow-hidden py-6 sm:py-6 lg:py-6">
       <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
         <div className="grid items-stretch gap-8 lg:gap-10 xl:gap-14 lg:grid-cols-12">
           <motion.div
@@ -194,7 +217,6 @@ export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }
                         key={item.id || idx}
                         onClick={() => {
                           setSelectedIndex(idx);
-                          scrollToDiscover();
                         }}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-all ${
                           isSelected
@@ -247,50 +269,82 @@ export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }
             {/* Large image connected to selected timeline/discover event */}
             {activeItem && (
               <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 onClick={() => {
                   if (activeItemImages.length === 0) return;
                   setSelectedTimelineImage(activeItem);
                   setTimelineImgIndex(0);
                 }}
-                className={`group relative mt-6 min-h-[260px] flex-1 overflow-hidden rounded-[32px] border border-white/60 shadow-glass transition-transform duration-300 ${activeItemImages.length > 0 ? "cursor-pointer hover:scale-[1.01]" : ""}`}
+                className={`group relative mt-6 min-h-[280px] sm:min-h-[320px] flex-1 overflow-hidden rounded-[32px] border border-white/60 shadow-glass transition-transform duration-300 ${activeItemImages.length > 0 ? "cursor-pointer hover:scale-[1.01]" : ""}`}
               >
-                {activeItemImages[0] ? (
-                  <ResponsiveImage
-                    source={activeItemImages[0]}
-                    alt={activeItem.name}
-                    width={1200}
-                    height={900}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/70" aria-hidden="true" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
-                {activeItemImages.length > 1 && (
-                  <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    <span>{activeItemImages.length} foto</span>
-                  </div>
-                )}
-                <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-primary-foreground">
-                  <div>
-                    {activeItem.year && (
-                      <div className="text-[11px] font-semibold uppercase tracking-widest text-cyan-300">
-                        {activeItem.year}
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div
+                    key={activeItem.id || selectedIndex}
+                    initial={{
+                      clipPath: "inset(0% 0% 0% 100%)",
+                      scale: 1.04,
+                      opacity: 0.85,
+                    }}
+                    animate={{
+                      clipPath: "inset(0% 0% 0% 0%)",
+                      scale: 1,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      clipPath: "inset(0% 100% 0% 0%)",
+                      scale: 0.98,
+                      opacity: 0.7,
+                    }}
+                    transition={{
+                      duration: 0.65,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="absolute inset-0 h-full w-full transform-gpu will-change-[clip-path,transform]"
+                  >
+                    {activeItemImages[0] ? (
+                      <ResponsiveImage
+                        source={activeItemImages[0]}
+                        alt={activeItem.name}
+                        width={1200}
+                        height={900}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-primary/80 to-secondary/70" aria-hidden="true" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
+                    {activeItemImages.length > 1 && (
+                      <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                        <ImageIcon className="h-3.5 w-3.5" />
+                        <span>{activeItemImages.length} foto</span>
                       </div>
                     )}
-                    <div className="mt-1 font-display text-xl font-bold text-white transition-colors group-hover:text-cyan-200 sm:text-2xl">
-                      {activeItem.name}
+                    <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-primary-foreground z-10">
+                      <motion.div
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        {activeItem.year && (
+                          <div className="text-[11px] font-semibold uppercase tracking-widest text-cyan-300">
+                            {activeItem.year}
+                          </div>
+                        )}
+                        <div className="mt-1 font-display text-xl font-bold text-white transition-colors group-hover:text-cyan-200 sm:text-2xl">
+                          {activeItem.name}
+                        </div>
+                      </motion.div>
+                      {activeItemImages.length > 0 && (
+                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full glass-dark text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-[#004AAD]">
+                          <ArrowRight className="h-5 w-5" />
+                        </span>
+                      )}
                     </div>
-                  </div>
-                  {activeItemImages.length > 0 && (
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full glass-dark text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-[#004AAD]">
-                      <ArrowRight className="h-5 w-5" />
-                    </span>
-                  )}
-                </div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             )}
           </div>

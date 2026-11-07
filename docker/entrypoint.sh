@@ -38,6 +38,9 @@ php artisan storage:link --force || true
 # Jalankan migrasi jika perlu
 php artisan migrate --force || true
 
+# Downscale oversized original storage images agar tidak memicu payload raksasa pada Lighthouse / PageSpeed
+php artisan images:downscale-storage || true
+
 # Bersihkan cache lama dan kompilasi ulang view & config untuk performa tinggi
 php artisan optimize:clear || true
 php artisan config:cache || true

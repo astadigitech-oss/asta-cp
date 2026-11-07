@@ -44,7 +44,7 @@ export function HomeFAQ() {
         <div
           className="mx-auto mt-12 sm:mt-16 max-w-4xl"
         >
-          <Accordion type="single" collapsible defaultValue="faq-0" className="w-full space-y-4">
+          <Accordion type="single" collapsible className="w-full space-y-4">
             {faqItems.map((faq, index) => (
               <AccordionItem
                 key={index}
@@ -60,8 +60,7 @@ export function HomeFAQ() {
                   </h3>
                 </AccordionTrigger>
                 <AccordionContent
-                  forceMount
-                  className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground data-[state=closed]:hidden data-[state=open]:block"
+                  className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground"
                   itemScope
                   itemProp="acceptedAnswer"
                   itemType="https://schema.org/Answer"
