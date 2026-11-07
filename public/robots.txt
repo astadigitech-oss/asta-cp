@@ -1,90 +1,16 @@
-# =============================================================
-# robots.txt — ASTA Digital Agency
+# ASTA Digital Agency
 # https://astadigitalagency.com
-# =============================================================
 
-# ---- General crawlers ----------------------------------------
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
+
+# Private and internal paths
 Disallow: /admin
 Disallow: /dapur-belakang
 Disallow: /private/
-Disallow: /storage/framework/
+Disallow: /storage/
 Disallow: /vendor/
 Disallow: /.env
 
-# ---- Google --------------------------------------------------
-User-agent: Googlebot
-Allow: /
-
-User-agent: Googlebot-Image
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: AdsBot-Google
-Allow: /
-
-# ---- Microsoft / Bing ----------------------------------------
-User-agent: Bingbot
-Allow: /
-
-# ---- AI Search & Generative Engines --------------------------
-# OpenAI / ChatGPT
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-# Anthropic / Claude
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-# Google AI Overviews / Gemini
-User-agent: Google-CloudVertexBot
-Allow: /
-
-# Perplexity
-User-agent: PerplexityBot
-Allow: /
-
-# Cohere
-User-agent: cohere-ai
-Allow: /
-
-# Meta AI
-User-agent: FacebookBot
-Allow: /
-
-# Apple
-User-agent: Applebot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-# Common Crawl (used by many AI training sets)
-User-agent: CCBot
-Allow: /
-
-# You.com
-User-agent: YouBot
-Allow: /
-
-# Amazon / Alexa
-User-agent: ia_archiver
-Allow: /
-
-# ---- Sitemap -------------------------------------------------
 Sitemap: https://astadigitalagency.com/sitemap.xml
