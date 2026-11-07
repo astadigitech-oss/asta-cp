@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\ImageOptimizer;
 use App\Support\OptimizedImage;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -48,10 +49,22 @@ class OptimizedImageController extends Controller
         $sourceHeight = $imageInfo[1];
 
         if ($sourceWidth * $sourceHeight > 12_000_000) {
-            return $this->cachedFileResponse(
-                $sourcePath,
-                image_type_to_mime_type($imageInfo[2]),
-            );
+            // Attempt a safe downscale of the oversized source
+            if (ImageOptimizer::downscaleIfOversized($path, max(1200, $configuration['width'] * 2), max(900, $configuration['height'] * 2))) {
+                clearstatcache(true, $sourcePath);
+                $imageInfo = @getimagesize($sourcePath);
+                if ($imageInfo !== false) {
+                    $sourceWidth = $imageInfo[0];
+                    $sourceHeight = $imageInfo[1];
+                }
+            }
+
+            if ($sourceWidth * $sourceHeight > 12_000_000) {
+                return $this->cachedFileResponse(
+                    $sourcePath,
+                    image_type_to_mime_type($imageInfo[2]),
+                );
+            }
         }
 
         if (! function_exists('imagewebp')) {

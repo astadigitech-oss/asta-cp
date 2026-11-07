@@ -19,6 +19,7 @@ class ClientForm
                     ->disk('public')
                     ->directory('images/clients')
                     ->image()
+                    ->maxSize(3072)
                     ->imageResizeMode('contain')
                     ->imageResizeTargetWidth('520')
                     ->imageResizeTargetHeight('200'),
