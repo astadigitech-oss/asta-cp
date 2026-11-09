@@ -122,25 +122,34 @@ export function BlogDetailPage() {
     },
     enabled: !!slug,
     retry: 1,
-    placeholderData: (prev) => prev,
     staleTime: 1000 * 60 * 5, // 5 menit cache
   });
 
-  // Scroll to top saat berpindah ke artikel baru (bukan saat berganti bahasa)
+  // Scroll to top saat berpindah ke artikel baru
   useEffect(() => {
-    if (article?.id) {
-      if (prevArticleIdRef.current && prevArticleIdRef.current === article.id) {
-        return;
-      }
-      prevArticleIdRef.current = article.id;
-    }
     window.scrollTo({ top: 0, behavior: "instant" });
     setActiveImgIndex(0);
-  }, [slug, article?.id]);
+    prevArticleIdRef.current = article?.id ?? null;
+  }, [slug]);
 
   // Auto-sync URL slug saat bahasa berganti: jika sedang di /en/slug-id, ubah URL ke /en/slug-en
   useEffect(() => {
     if (!article || !article.slug) return;
+
+    // Pastikan data artikel yang sedang aktif memang sesuai dengan slug saat ini,
+    // agar navigasi ke artikel rekomendasi lain tidak dicegat / dikembalikan ke artikel lama.
+    const idSlug = localize(article.slug, "id");
+    const enSlug = localize(article.slug, "en");
+    const matchesCurrentArticle =
+      slug === String(article.id) ||
+      slug === article.slug ||
+      slug === idSlug ||
+      slug === enSlug;
+
+    if (!matchesCurrentArticle) {
+      return;
+    }
+
     const targetLang = lang || language || "id";
     const expectedSlug = localize(article.slug, targetLang as any);
     if (expectedSlug && slug !== expectedSlug && slug !== String(article.id)) {

@@ -85,6 +85,20 @@ export function DiscoverDetailPage() {
   // Auto-sync URL slug saat bahasa berganti: jika sedang di /en/discover/slug-id, ubah URL ke /en/discover/slug-en
   useEffect(() => {
     if (!rawDiscover || !rawDiscover.slug) return;
+
+    // Pastikan data discover yang aktif memang cocok dengan param id/slug saat ini
+    const idSlug = localize(rawDiscover.slug, "id");
+    const enSlug = localize(rawDiscover.slug, "en");
+    const matchesCurrentDiscover =
+      id === String(rawDiscover.id) ||
+      id === rawDiscover.slug ||
+      id === idSlug ||
+      id === enSlug;
+
+    if (!matchesCurrentDiscover) {
+      return;
+    }
+
     const targetLang = lang || language || "id";
     const expectedSlug = localize(rawDiscover.slug, targetLang as any);
     if (expectedSlug && id !== expectedSlug && id !== String(rawDiscover.id)) {
