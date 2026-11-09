@@ -2,7 +2,7 @@
 set -e
 
 # Keep PHP-FPM concurrency bounded; override based on the container memory budget.
-FPM_MAX_CHILDREN="${FPM_MAX_CHILDREN:-2}"
+FPM_MAX_CHILDREN="${FPM_MAX_CHILDREN:-4}"
 case "$FPM_MAX_CHILDREN" in
     ''|*[!0-9]*|0)
         echo "FPM_MAX_CHILDREN must be a positive integer." >&2
