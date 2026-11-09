@@ -48,6 +48,15 @@ class OptimizedImageController extends Controller
         $sourceWidth = $imageInfo[0];
         $sourceHeight = $imageInfo[1];
 
+        // Safety guard: if the image is too large for on-the-fly web processing in PHP-FPM,
+        // serve the original file directly with long cache instead of risking a fatal OOM crash.
+        if (! ImageOptimizer::isSafeToDecode($sourceWidth, $sourceHeight, true)) {
+            return $this->cachedFileResponse(
+                $sourcePath,
+                image_type_to_mime_type($imageInfo[2]),
+            );
+        }
+
         if ($sourceWidth * $sourceHeight > 12_000_000) {
             // Attempt a safe downscale of the oversized source
             if (ImageOptimizer::downscaleIfOversized($path, max(1200, $configuration['width'] * 2), max(900, $configuration['height'] * 2))) {

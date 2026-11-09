@@ -60,6 +60,12 @@ class DownscaleStorageImagesCommand extends Command
 
                 if ($w > $limits['width'] || $h > $limits['height']) {
                     $originalSize = @filesize($fullPath) ?: 0;
+
+                    if (! ImageOptimizer::isSafeToDecode($w, $h, false)) {
+                        $this->warn("  Skipped: {$file} ({$w}x{$h}) - exceeds safe memory limits to prevent OOM");
+                        continue;
+                    }
+
                     $this->line("  Downscaling: {$file} ({$w}x{$h}, " . round($originalSize / 1024) . ' KB)');
 
                     $downscaled = ImageOptimizer::downscaleIfOversized(

@@ -7,6 +7,69 @@ use Throwable;
 
 class ImageOptimizer
 {
+    public const MAX_SAFE_WEB_PIXELS = 10_000_000; // ~10 MP max on-the-fly in PHP-FPM
+    public const MAX_SAFE_CLI_PIXELS = 25_000_000; // ~25 MP max in CLI
+    public const MAX_SAFE_DIMENSION = 8_000;        // Max width or height for safe GD decode
+    public const MAX_WEB_DIMENSION = 5_000;         // Max width or height in web requests
+
+    /**
+     * Determine whether an image is safe to decode into GD memory without triggering an OOM crash.
+     */
+    public static function isSafeToDecode(int $width, int $height, bool $isWeb = false): bool
+    {
+        if ($width <= 0 || $height <= 0) {
+            return false;
+        }
+
+        $maxDimension = $isWeb ? self::MAX_WEB_DIMENSION : self::MAX_SAFE_DIMENSION;
+        if ($width > $maxDimension || $height > $maxDimension) {
+            return false;
+        }
+
+        $totalPixels = $width * $height;
+        $maxPixels = $isWeb ? self::MAX_SAFE_WEB_PIXELS : self::MAX_SAFE_CLI_PIXELS;
+        if ($totalPixels > $maxPixels) {
+            return false;
+        }
+
+        // Estimate uncompressed GD memory (approx 5 bytes per pixel + 16MB base buffer)
+        $estimatedBytes = ($totalPixels * 5) + (16 * 1024 * 1024);
+        $memoryLimit = self::getMemoryLimitBytes();
+
+        if ($memoryLimit > 0) {
+            $currentUsage = memory_get_usage(true);
+            $availableMemory = $memoryLimit - $currentUsage;
+            // Prevent attempting decode if estimated requirement exceeds 70% of available memory
+            if ($estimatedBytes > ($availableMemory * 0.70)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Parse php ini memory_limit string to bytes. Returns -1 for unlimited.
+     */
+    public static function getMemoryLimitBytes(): int
+    {
+        $limit = ini_get('memory_limit');
+        if (! $limit || $limit === '-1') {
+            return -1;
+        }
+
+        $limit = trim($limit);
+        $last = strtolower($limit[strlen($limit) - 1]);
+        $val = (int) $limit;
+
+        return match ($last) {
+            'g' => $val * 1024 * 1024 * 1024,
+            'm' => $val * 1024 * 1024,
+            'k' => $val * 1024,
+            default => (int) $limit,
+        };
+    }
+
     /**
      * Downscale an image on disk if its dimensions exceed the given max width or height.
      * Preserves aspect ratio, PNG transparency, and WebP transparency.
@@ -41,6 +104,11 @@ class ImageOptimizer
 
         // If already within bounds, nothing to do
         if ($origWidth <= $maxWidth && $origHeight <= $maxHeight) {
+            return false;
+        }
+
+        // Safety guard: ensure decoding this image will not exhaust available memory
+        if (! self::isSafeToDecode($origWidth, $origHeight, false)) {
             return false;
         }
 
