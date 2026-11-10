@@ -194,7 +194,7 @@ export function ServiceDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7fbff] text-[#0b1f33] selection:bg-accent/30 selection:text-accent font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f7fbff] text-[#0b1f33] selection:bg-accent/30 selection:text-accent font-sans flex flex-col justify-between pt-[90px]">
       <Toaster position="top-right" />
       <Navbar />
 
@@ -567,22 +567,22 @@ export function ServiceDetailPage() {
 
       {/* Contact Dialog */}
       <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent className="max-w-3xl p-0 overflow-hidden rounded-[24px] border border-white/60 bg-white shadow-2xl focus:outline-none">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl sm:rounded-[28px] border border-gray-100 bg-white shadow-2xl focus:outline-none">
           <div className="grid sm:grid-cols-12">
             {/* Left Panel */}
-            <div className="relative overflow-hidden gradient-hero p-8 text-primary-foreground sm:col-span-5">
+            <div className="relative overflow-hidden gradient-hero p-5 sm:p-8 text-primary-foreground sm:col-span-5">
               <div className="pointer-events-none absolute inset-0 opacity-30 gradient-mesh" />
               <div className="relative">
-                <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm">
+                <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm">
                   {currentLang === "en" ? "Get in Touch" : "Hubungi Kami"}
                 </span>
-                <h2 className="mt-4 font-display text-2xl font-bold leading-tight">
+                <h2 className="mt-2 sm:mt-4 font-display text-xl sm:text-2xl font-bold leading-tight">
                   {t("contact.title")}
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-white/80">
+                <p className="mt-2 text-xs sm:text-sm leading-relaxed text-white/80">
                   {t("contact.description")}
                 </p>
-                <ul className="mt-8 space-y-5">
+                <ul className="mt-4 sm:mt-8 space-y-3 sm:space-y-5 hidden sm:block">
                   <li className="flex items-center gap-3">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl glass-dark">
                       <Mail className="h-4 w-4" />
@@ -627,29 +627,29 @@ export function ServiceDetailPage() {
             </div>
 
             {/* Right Panel: Form */}
-            <form onSubmit={handleContactSubmit} className="p-8 sm:col-span-7">
+            <form onSubmit={handleContactSubmit} className="p-5 sm:p-8 sm:col-span-7">
               {/* Anti-Spam */}
               <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden opacity-0 absolute -z-10 pointer-events-none h-0 w-0" />
               <input type="hidden" name="_timer" value={mountedAt} />
 
-              <h3 className="font-display text-xl font-bold text-primary">{t("contact.form_title")}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{t("contact.form_description")}</p>
+              <h3 className="font-display text-lg sm:text-xl font-bold text-primary">{t("contact.form_title")}</h3>
+              <p className="mt-1 text-xs sm:text-sm text-muted-foreground">{t("contact.form_description")}</p>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="cd-name">{t("contact.form.full_name")}</Label>
-                  <Input id="cd-name" name="name" required placeholder={t("contact.form.placeholder_first_name")} className="rounded-xl" />
+              <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label htmlFor="cd-name" className="text-xs sm:text-sm">{t("contact.form.full_name")}</Label>
+                  <Input id="cd-name" name="name" required placeholder={t("contact.form.placeholder_first_name")} className="rounded-xl h-10 text-xs sm:text-sm" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="cd-org">{t("contact.form.organization")}</Label>
-                  <Input id="cd-org" name="org" placeholder={t("contact.form.placeholder_organization")} className="rounded-xl" />
+                <div className="space-y-1">
+                  <Label htmlFor="cd-org" className="text-xs sm:text-sm">{t("contact.form.organization")}</Label>
+                  <Input id="cd-org" name="org" placeholder={t("contact.form.placeholder_organization")} className="rounded-xl h-10 text-xs sm:text-sm" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="cd-email">{t("contact.form.email")}</Label>
-                  <Input id="cd-email" name="email" type="email" required placeholder={t("contact.form.placeholder_email")} className="rounded-xl" />
+                <div className="space-y-1">
+                  <Label htmlFor="cd-email" className="text-xs sm:text-sm">{t("contact.form.email")}</Label>
+                  <Input id="cd-email" name="email" type="email" required placeholder={t("contact.form.placeholder_email")} className="rounded-xl h-10 text-xs sm:text-sm" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="cd-phone">{t("contact.form.phone")}</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="cd-phone" className="text-xs sm:text-sm">{t("contact.form.phone")}</Label>
                   <Input
                     id="cd-phone"
                     name="phone"
@@ -657,7 +657,7 @@ export function ServiceDetailPage() {
                     inputMode="tel"
                     maxLength={20}
                     placeholder={t("contact.form.placeholder_phone")}
-                    className="rounded-xl"
+                    className="rounded-xl h-10 text-xs sm:text-sm"
                     onKeyDown={(e) => {
                       if (
                         e.key === "Backspace" || e.key === "Delete" ||
@@ -678,9 +678,9 @@ export function ServiceDetailPage() {
                     }}
                   />
                 </div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="cd-message">{t("contact.form.message")}</Label>
-                  <Textarea id="cd-message" name="message" required rows={4} placeholder={t("contact.form.placeholder_message")} className="rounded-xl" />
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="cd-message" className="text-xs sm:text-sm">{t("contact.form.message")}</Label>
+                  <Textarea id="cd-message" name="message" required rows={3} placeholder={t("contact.form.placeholder_message")} className="rounded-xl text-xs sm:text-sm resize-none" />
                 </div>
               </div>
 
@@ -688,13 +688,13 @@ export function ServiceDetailPage() {
                 type="submit"
                 disabled={submitting}
                 size="lg"
-                className="mt-6 h-11 w-full rounded-full gradient-accent text-accent-foreground shadow-glass sm:w-auto sm:px-8 cursor-pointer"
+                className="mt-5 h-11 w-full rounded-full gradient-accent text-accent-foreground shadow-glass sm:w-auto sm:px-8 cursor-pointer text-xs sm:text-sm font-semibold"
               >
                 {submitting ? (
                   t("contact.form.submitting")
                 ) : (
-                  <div className="flex items-center justify-center gap-1 text-white">
-                    {t("contact.form.submit")} <MessageSquare className="ml-1.5 h-4 w-4" />
+                  <div className="flex items-center justify-center gap-1.5 text-white">
+                    {t("contact.form.submit")} <MessageSquare className="h-4 w-4" />
                   </div>
                 )}
               </Button>
