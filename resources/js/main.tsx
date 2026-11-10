@@ -34,6 +34,12 @@ if (rootElement && rootElement.dataset.preserveSsr !== 'true') {
   if (initialData?.discover && initialData.id) {
     queryClient.setQueryData(['discover', String(initialData.id)], initialData.discover);
   }
+  if (initialData?.service && initialData.id) {
+    queryClient.setQueryData(['service', String(initialData.id)], initialData.service);
+  }
+  if (initialData?.portfolio && initialData.id) {
+    queryClient.setQueryData(['portfolio', String(initialData.id)], initialData.portfolio);
+  }
   if (initialData?.blogArticles) {
     queryClient.setQueryData(['articles', 1, 'All', ''], initialData.blogArticles);
   }

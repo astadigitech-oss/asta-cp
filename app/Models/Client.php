@@ -18,9 +18,14 @@ class Client extends Model
     protected static function booted(): void
     {
         static::saved(function (Client $client) {
+            \Illuminate\Support\Facades\Cache::forget('landing_api_cache');
             if ($client->image) {
                 ImageOptimizer::downscaleIfOversized($client->image, 520, 200);
             }
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('landing_api_cache');
         });
     }
 }

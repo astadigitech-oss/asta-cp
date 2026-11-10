@@ -14,6 +14,12 @@
     } elseif ($discover && method_exists($discover, 'getLocalizedSlug')) {
         $idUrl = rtrim($baseUrl, '/') . '/id/discover/' . $discover->getLocalizedSlug('id');
         $enUrl = rtrim($baseUrl, '/') . '/en/discover/' . $discover->getLocalizedSlug('en');
+    } elseif ($service) {
+        $idUrl = rtrim($baseUrl, '/') . '/id/services/' . $service->id;
+        $enUrl = rtrim($baseUrl, '/') . '/en/services/' . $service->id;
+    } elseif ($portfolio) {
+        $idUrl = rtrim($baseUrl, '/') . '/id/portfolio/' . $portfolio->id;
+        $enUrl = rtrim($baseUrl, '/') . '/en/portfolio/' . $portfolio->id;
     } else {
         $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
         $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
@@ -70,15 +76,29 @@
     // Dynamic SEO computation
     $isBlogPage = $isBlogPage ?? false;
     $isDiscoverPage = $isDiscoverPage ?? false;
+    $isServicesPage = $isServicesPage ?? false;
+    $isPortfolioPage = $isPortfolioPage ?? false;
     $isNotFound = $isNotFound ?? false;
-    $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : null);
-    $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : null);
+    $service = $service ?? null;
+    $portfolio = $portfolio ?? null;
+    $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : ($service ? (is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name) : ($portfolio ? $portfolio->name : null)));
+    $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : ($service ? strip_tags(is_array($service->short_description) ? ($service->short_description[$currentLocale] ?? reset($service->short_description)) : ($service->short_description ?? '')) : ($portfolio ? strip_tags($portfolio->description ?? '') : null)));
 
     if ($isNotFound) {
         $rawTitle = $currentLocale === 'en' ? 'Page Not Found (404) — ASTA Digital Agency' : 'Halaman Tidak Ditemukan (404) — ASTA Digital Agency';
         $rawDesc = $currentLocale === 'en'
             ? 'The page you are looking for could not be found or has been moved.'
             : 'Halaman yang Anda tuju tidak ditemukan atau mungkin telah dipindahkan.';
+    } elseif ($isServicesPage) {
+        $rawTitle = $currentLocale === 'en' ? 'Digital Services & Solutions — ASTA Digital Agency' : 'Semua Layanan & Solusi Digital — ASTA Digital Agency';
+        $rawDesc = $currentLocale === 'en'
+            ? 'Explore digital solutions and engineering services from ASTA Digital Agency: Web apps, Mobile apps, and Custom enterprise systems.'
+            : 'Jelajahi kumpulan layanan dan solusi teknologi dari ASTA Digital Agency: Pembuatan website, aplikasi mobile iOS & Android, dan sistem informasi custom.';
+    } elseif ($isPortfolioPage) {
+        $rawTitle = $currentLocale === 'en' ? 'Portfolio & Project Showcase — ASTA Digital Agency' : 'Semua Portofolio & Studi Kasus — ASTA Digital Agency';
+        $rawDesc = $currentLocale === 'en'
+            ? 'Discover mobile apps, web systems, and digital solutions engineered by ASTA Digital Agency for businesses and institutions.'
+            : 'Jelajahi rekam jejak dan proyek sistem informasi, aplikasi mobile, serta solusi digital yang telah dikerjakan oleh ASTA Digital Agency.';
     } elseif ($isBlogPage) {
         $rawTitle = $currentLocale === 'en' ? 'Articles & Insights — ASTA Digital Agency' : 'Artikel & Wawasan — ASTA Digital Agency';
         $rawDesc = $currentLocale === 'en'
@@ -158,8 +178,27 @@
         }
     }
 
+    // Service first image fallback
+    $serviceImg = null;
+    if ($service) {
+        $firstImg = is_array($service->image) ? ($service->image[0] ?? null) : $service->image;
+        if ($firstImg) {
+            $serviceImg = str_starts_with($firstImg, 'http') ? $firstImg : asset('storage/' . ltrim($firstImg, '/'));
+        } elseif (!empty($service->cover_image)) {
+            $serviceImg = str_starts_with($service->cover_image, 'http') ? $service->cover_image : asset('storage/' . ltrim($service->cover_image, '/'));
+        } elseif (!empty($service->logo)) {
+            $serviceImg = str_starts_with($service->logo, 'http') ? $service->logo : asset('storage/' . ltrim($service->logo, '/'));
+        }
+    }
+
+    // Portfolio image fallback
+    $portfolioImg = null;
+    if ($portfolio && !empty($portfolio->image)) {
+        $portfolioImg = \App\Support\OptimizedImage::url($portfolio->image, 'portfolio-card') ?: (str_starts_with($portfolio->image, 'http') ? $portfolio->image : asset('storage/' . ltrim($portfolio->image, '/')));
+    }
+
     $ogTitle = $seo?->ogTitle ? html_entity_decode(localizeTextPhp($seo->ogTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8') : $metaTitle;
-    $ogDesc = $seo?->ogDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->ogDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : 'page')) : $metaDesc;
+    $ogDesc = $seo?->ogDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->ogDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : ($service ? 'service' : ($portfolio ? 'portfolio' : 'page')))) : $metaDesc;
 
     $rawOgImage = $seo?->ogImage;
     if (!empty($rawOgImage)) {
@@ -169,12 +208,12 @@
             ? (str_starts_with($article->thumbnail, 'http')
                 ? $article->thumbnail
                 : asset('storage/' . ltrim($article->thumbnail, '/')))
-            : ($discoverImg ?: $ogDefaultImage));
+            : ($discoverImg ?: ($serviceImg ?: ($portfolioImg ?: $ogDefaultImage))));
     }
-    $ogType = ($article || $discover) ? 'article' : ($isBlogPage ? 'blog' : ($isDiscoverPage ? 'website' : ($seo?->ogType ?? 'website')));
+    $ogType = ($article || $discover) ? 'article' : ($service || $portfolio ? 'website' : ($isBlogPage ? 'blog' : ($isDiscoverPage ? 'website' : ($seo?->ogType ?? 'website'))));
 
     $twitterTitle = $seo?->twitterTitle ? html_entity_decode(localizeTextPhp($seo->twitterTitle, $currentLocale), ENT_QUOTES | ENT_HTML5, 'UTF-8') : $metaTitle;
-    $twitterDesc = $seo?->twitterDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->twitterDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : 'page')) : $metaDesc;
+    $twitterDesc = $seo?->twitterDescription ? \App\Support\ContentSanitizer::resolveLocalizedDescription($seo->twitterDescription, $currentLocale, $itemTitle, $discover ? 'discover' : ($article ? 'article' : ($service ? 'service' : ($portfolio ? 'portfolio' : 'page')))) : $metaDesc;
     $rawTwitterImage = $seo?->twitterImage;
     $twitterImage = !empty($rawTwitterImage)
         ? (str_starts_with($rawTwitterImage, 'http') ? $rawTwitterImage : asset('storage/' . ltrim($rawTwitterImage, '/')))
@@ -377,7 +416,32 @@
     {!! is_string($seo->schemaJsonld) ? $seo->schemaJsonld : json_encode($seo->schemaJsonld, $jsonFlags) !!}
     </script>
     @endif
-    @elseif (!$article && !$discover && !$isBlogPage && !$isDiscoverPage && !$isNotFound)
+    @elseif ($portfolio)
+    @php
+        $portfolioSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => $portfolio->type === 'mobile' ? 'MobileApplication' : 'SoftwareApplication',
+            'name' => $portfolio->name,
+            'description' => $metaDesc,
+            'applicationCategory' => $portfolio->type === 'mobile' ? 'MobileApp' : 'BusinessApplication',
+            'operatingSystem' => $portfolio->type === 'mobile' ? 'Android, iOS' : 'Web, Windows, macOS',
+            'image' => $portfolioImg ?: $ogDefaultImage,
+            'inLanguage' => $currentLocale,
+            'author' => [
+                '@type' => 'Organization',
+                'name' => 'PT Asta Digital Agency',
+                'url' => rtrim(config('app.url', url('/')), '/'),
+            ],
+            'url' => $canonicalUrl,
+        ];
+        if (!empty($portfolio->demo_url)) {
+            $portfolioSchema['sameAs'] = $portfolio->demo_url;
+        }
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode(array_filter($portfolioSchema), $jsonFlags) !!}
+    </script>
+    @elseif (!$article && !$discover && !$service && !$portfolio && !$isBlogPage && !$isDiscoverPage && !$isNotFound)
     {{-- Global FAQPage JSON-LD untuk Homepage & SEO Bot Extraction (100% Sinkron CSR) --}}
     @php
         $homeFaqSchema = [
@@ -882,6 +946,170 @@
                     </div>
                 </section>
 
+            </article>
+        @elseif ($service)
+            <article class="max-w-4xl mx-auto px-4 py-12">
+                {{-- Breadcrumb Navigation --}}
+                <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs text-gray-500 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+                    <a href="{{ url('/' . $currentLocale) }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Home' : 'Beranda' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <a href="{{ url('/' . $currentLocale . '#layanan') }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Services' : 'Layanan' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[200px] sm:max-w-xs" aria-current="page">
+                        {{ localizeTextPhp(is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name, $currentLocale) }}
+                    </span>
+                </nav>
+
+                <header class="mb-8">
+                    @if (!empty($service->header))
+                        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">{{ $service->header }}</span>
+                    @endif
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mt-2 leading-tight">
+                        {{ localizeTextPhp(is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name, $currentLocale) }}
+                    </h1>
+                    @if ($serviceImg)
+                        <div class="mt-6 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
+                            <img src="{{ $serviceImg }}"
+                                 alt="{{ localizeTextPhp(is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name, $currentLocale) }}"
+                                 class="w-full max-h-[480px] object-cover">
+                        </div>
+                    @endif
+                </header>
+
+                @if (!empty($service->short_description))
+                    <div class="p-5 mb-8 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border-l-4 border-[#004AAD] text-gray-800 dark:text-gray-200">
+                        {!! localizeTextPhp(is_array($service->short_description) ? ($service->short_description[$currentLocale] ?? reset($service->short_description)) : $service->short_description, $currentLocale) !!}
+                    </div>
+                @endif
+
+                @if (!empty($service->description))
+                    <div class="prose prose-blue max-w-none text-gray-700 dark:text-gray-300 mb-10">
+                        {!! localizeTextPhp(is_array($service->description) ? ($service->description[$currentLocale] ?? reset($service->description)) : $service->description, $currentLocale) !!}
+                    </div>
+                @endif
+
+                @if ($service->serviceListMains && $service->serviceListMains->count() > 0)
+                    <section class="mt-8 mb-10" aria-label="{{ $currentLocale === 'en' ? 'Features & Capabilities' : 'Fitur Utama' }}">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                            {{ $currentLocale === 'en' ? 'Key Features & Capabilities' : 'Fitur Utama & Kapabilitas Layanan' }}
+                        </h2>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach ($service->serviceListMains as $feature)
+                                <li class="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                    <span class="text-blue-600 font-bold">✓</span>
+                                    <span>{{ strip_tags(localizeTextPhp($feature->description, $currentLocale)) }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </section>
+                @endif
+
+                {{-- CTA Section --}}
+                <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        {{ $currentLocale === 'en' ? 'Ready to Build This Solution?' : 'Siap Mengembangkan Solusi Ini untuk Bisnis Anda?' }}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6 text-sm sm:text-base">
+                        {{ $currentLocale === 'en'
+                            ? 'Consult your project needs with the ASTA Digital Agency engineering team for optimal performance, scalability, and impact.'
+                            : 'Konsultasikan kebutuhan proyek Anda dengan tim pengembang ASTA Digital Agency untuk hasil yang berdaya guna dan berjangka panjang.' }}
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ url('/' . $currentLocale . '#kontak') }}"
+                           class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] px-6 py-3 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity">
+                            {{ $currentLocale === 'en' ? 'Contact Us' : 'Hubungi Kami' }}
+                        </a>
+                        <a href="https://wa.me/6281578223564"
+                           target="_blank"
+                           rel="noopener"
+                           class="inline-flex items-center gap-2 rounded-full border border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-gray-800 transition-colors">
+                            WhatsApp (+62 815 7822 3564)
+                        </a>
+                    </div>
+                </section>
+            </article>
+        @elseif ($portfolio)
+            <article class="max-w-4xl mx-auto px-4 py-12">
+                {{-- Breadcrumb Navigation --}}
+                <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs text-gray-500 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+                    <a href="{{ url('/' . $currentLocale) }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Home' : 'Beranda' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <a href="{{ url('/' . $currentLocale . '#portofolio') }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Portfolio' : 'Portofolio' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[200px] sm:max-w-xs" aria-current="page">
+                        {{ $portfolio->name }}
+                    </span>
+                </nav>
+
+                <header class="mb-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-block rounded-full bg-[#004AAD] text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                            {{ $portfolio->type === 'mobile' ? 'Mobile App' : 'Desktop & Web App' }}
+                        </span>
+                        @if ($portfolio->demo_url)
+                            <a href="{{ $portfolio->demo_url }}" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 text-white px-3 py-1 text-xs font-semibold hover:bg-emerald-700 transition-colors">
+                                Live Demo ↗
+                            </a>
+                        @endif
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+                        {{ $portfolio->name }}
+                    </h1>
+                    @if ($portfolioImg)
+                        <div class="mt-6 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-900">
+                            <img src="{{ $portfolioImg }}"
+                                 alt="{{ $portfolio->name }}"
+                                 class="w-full max-h-[520px] object-cover">
+                        </div>
+                    @endif
+                </header>
+
+                @if (!empty($portfolio->description))
+                    <div class="prose prose-blue max-w-none text-gray-700 dark:text-gray-300 mb-10">
+                        {!! $portfolio->description !!}
+                    </div>
+                @endif
+
+                {{-- Action / CTA Section --}}
+                <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        {{ $currentLocale === 'en' ? 'Need a Similar Digital Solution?' : 'Tertarik Membangun Sistem Digital Seperti Ini?' }}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6 text-sm sm:text-base">
+                        {{ $currentLocale === 'en'
+                            ? 'Collaborate with ASTA Digital Agency to design and engineer scalable web or mobile solutions tailored to your organization.'
+                            : 'Wujudkan ide dan kebutuhan digitalisasi perusahaan Anda bersama ASTA Digital Agency dengan teknologi terkini dan performa optimal.' }}
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        @if ($portfolio->demo_url)
+                            <a href="{{ $portfolio->demo_url }}"
+                               target="_blank"
+                               rel="noopener"
+                               class="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-emerald-700 transition-colors">
+                                {{ $currentLocale === 'en' ? 'View Live Demo' : 'Buka Live Demo' }} ↗
+                            </a>
+                        @endif
+                        <a href="{{ url('/' . $currentLocale . '#kontak') }}"
+                           class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] px-6 py-3 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity">
+                            {{ $currentLocale === 'en' ? 'Consult Your Project' : 'Konsultasikan Proyek Anda' }}
+                        </a>
+                        <a href="https://wa.me/6281578223564"
+                           target="_blank"
+                           rel="noopener"
+                           class="inline-flex items-center gap-2 rounded-full border border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-white dark:bg-gray-900 px-6 py-3 text-sm font-semibold hover:bg-emerald-50 dark:hover:bg-gray-800 transition-colors">
+                            WhatsApp (+62 815 7822 3564)
+                        </a>
+                    </div>
+                </section>
             </article>
         @elseif ($isBlogPage)
             <main class="max-w-6xl mx-auto px-4 py-12">

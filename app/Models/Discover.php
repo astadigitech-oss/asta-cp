@@ -77,14 +77,17 @@ class Discover extends Model implements HasSEOContract
 
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+            \Illuminate\Support\Facades\Cache::forget('landing_api_cache');
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+            \Illuminate\Support\Facades\Cache::forget('landing_api_cache');
         });
 
         static::restored(function () {
             \Illuminate\Support\Facades\Cache::forget('sitemap_xml_content');
+            \Illuminate\Support\Facades\Cache::forget('landing_api_cache');
         });
     }
 

@@ -16,6 +16,10 @@ import { Route as LangIndexRouteImport } from './routes/$lang/index'
 import { Route as LangSlugRouteImport } from './routes/$lang/$slug'
 import { Route as LangDiscoverIndexRouteImport } from './routes/$lang/discover.index'
 import { Route as LangDiscoverIdRouteImport } from './routes/$lang/discover.$id'
+import { Route as LangServicesIndexRouteImport } from './routes/$lang/services.index'
+import { Route as LangServicesIdRouteImport } from './routes/$lang/services.$id'
+import { Route as LangPortfolioIndexRouteImport } from './routes/$lang/portfolio.index'
+import { Route as LangPortfolioIdRouteImport } from './routes/$lang/portfolio.$id'
 import { Route as LangBlogIndexRouteImport } from './routes/$lang/blog.index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -60,6 +64,30 @@ const LangDiscoverIdRoute = LangDiscoverIdRouteImport.update({
   getParentRoute: () => LangRoute,
 } as any)
 
+const LangServicesIndexRoute = LangServicesIndexRouteImport.update({
+  id: '/$lang/services/',
+  path: '/services/',
+  getParentRoute: () => LangRoute,
+} as any)
+
+const LangServicesIdRoute = LangServicesIdRouteImport.update({
+  id: '/$lang/services/$id',
+  path: '/services/$id',
+  getParentRoute: () => LangRoute,
+} as any)
+
+const LangPortfolioIndexRoute = LangPortfolioIndexRouteImport.update({
+  id: '/$lang/portfolio/',
+  path: '/portfolio/',
+  getParentRoute: () => LangRoute,
+} as any)
+
+const LangPortfolioIdRoute = LangPortfolioIdRouteImport.update({
+  id: '/$lang/portfolio/$id',
+  path: '/portfolio/$id',
+  getParentRoute: () => LangRoute,
+} as any)
+
 const LangBlogIndexRoute = LangBlogIndexRouteImport.update({
   id: '/$lang/blog/',
   path: '/blog/',
@@ -75,6 +103,12 @@ export interface FileRoutesByFullPath {
   '/$lang/discover': typeof LangDiscoverIndexRoute
   '/$lang/discover/': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
+  '/$lang/services': typeof LangServicesIndexRoute
+  '/$lang/services/': typeof LangServicesIndexRoute
+  '/$lang/services/$id': typeof LangServicesIdRoute
+  '/$lang/portfolio': typeof LangPortfolioIndexRoute
+  '/$lang/portfolio/': typeof LangPortfolioIndexRoute
+  '/$lang/portfolio/$id': typeof LangPortfolioIdRoute
   '/$lang/blog': typeof LangBlogIndexRoute
   '/$lang/blog/': typeof LangBlogIndexRoute
 }
@@ -86,6 +120,10 @@ export interface FileRoutesByTo {
   '/$lang/$slug': typeof LangSlugRoute
   '/$lang/discover': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
+  '/$lang/services': typeof LangServicesIndexRoute
+  '/$lang/services/$id': typeof LangServicesIdRoute
+  '/$lang/portfolio': typeof LangPortfolioIndexRoute
+  '/$lang/portfolio/$id': typeof LangPortfolioIdRoute
   '/$lang/blog': typeof LangBlogIndexRoute
 }
 
@@ -98,15 +136,19 @@ export interface FileRoutesById {
   '/$lang/$slug': typeof LangSlugRoute
   '/$lang/discover/': typeof LangDiscoverIndexRoute
   '/$lang/discover/$id': typeof LangDiscoverIdRoute
+  '/$lang/services/': typeof LangServicesIndexRoute
+  '/$lang/services/$id': typeof LangServicesIdRoute
+  '/$lang/portfolio/': typeof LangPortfolioIndexRoute
+  '/$lang/portfolio/$id': typeof LangPortfolioIdRoute
   '/$lang/blog/': typeof LangBlogIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$slug' | '/$lang' | '/$lang/' | '/$lang/$slug' | '/$lang/discover' | '/$lang/discover/' | '/$lang/discover/$id' | '/$lang/blog' | '/$lang/blog/'
+  fullPaths: '/' | '/$slug' | '/$lang' | '/$lang/' | '/$lang/$slug' | '/$lang/discover' | '/$lang/discover/' | '/$lang/discover/$id' | '/$lang/services' | '/$lang/services/' | '/$lang/services/$id' | '/$lang/portfolio' | '/$lang/portfolio/' | '/$lang/portfolio/$id' | '/$lang/blog' | '/$lang/blog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$slug' | '/$lang' | '/$lang/$slug' | '/$lang/discover' | '/$lang/discover/$id' | '/$lang/blog'
-  id: '__root__' | '/' | '/$slug' | '/$lang' | '/$lang/' | '/$lang/$slug' | '/$lang/discover/' | '/$lang/discover/$id' | '/$lang/blog/'
+  to: '/' | '/$slug' | '/$lang' | '/$lang/$slug' | '/$lang/discover' | '/$lang/discover/$id' | '/$lang/services' | '/$lang/services/$id' | '/$lang/portfolio' | '/$lang/portfolio/$id' | '/$lang/blog'
+  id: '__root__' | '/' | '/$slug' | '/$lang' | '/$lang/' | '/$lang/$slug' | '/$lang/discover/' | '/$lang/discover/$id' | '/$lang/services/' | '/$lang/services/$id' | '/$lang/portfolio/' | '/$lang/portfolio/$id' | '/$lang/blog/'
   fileRoutesById: FileRoutesById
 }
 
@@ -121,6 +163,10 @@ export interface LangRouteChildren {
   LangSlugRoute: typeof LangSlugRoute
   LangDiscoverIndexRoute: typeof LangDiscoverIndexRoute
   LangDiscoverIdRoute: typeof LangDiscoverIdRoute
+  LangServicesIndexRoute: typeof LangServicesIndexRoute
+  LangServicesIdRoute: typeof LangServicesIdRoute
+  LangPortfolioIndexRoute: typeof LangPortfolioIndexRoute
+  LangPortfolioIdRoute: typeof LangPortfolioIdRoute
   LangBlogIndexRoute: typeof LangBlogIndexRoute
 }
 
@@ -175,6 +221,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangDiscoverIdRouteImport
       parentRoute: typeof LangRouteImport
     }
+    '/$lang/services/': {
+      id: '/$lang/services/'
+      path: '/services'
+      fullPath: '/$lang/services'
+      preLoaderRoute: typeof LangServicesIndexRouteImport
+      parentRoute: typeof LangRouteImport
+    }
+    '/$lang/services/$id': {
+      id: '/$lang/services/$id'
+      path: '/services/$id'
+      fullPath: '/$lang/services/$id'
+      preLoaderRoute: typeof LangServicesIdRouteImport
+      parentRoute: typeof LangRouteImport
+    }
+    '/$lang/portfolio/': {
+      id: '/$lang/portfolio/'
+      path: '/portfolio'
+      fullPath: '/$lang/portfolio'
+      preLoaderRoute: typeof LangPortfolioIndexRouteImport
+      parentRoute: typeof LangRouteImport
+    }
+    '/$lang/portfolio/$id': {
+      id: '/$lang/portfolio/$id'
+      path: '/portfolio/$id'
+      fullPath: '/$lang/portfolio/$id'
+      preLoaderRoute: typeof LangPortfolioIdRouteImport
+      parentRoute: typeof LangRouteImport
+    }
     '/$lang/blog/': {
       id: '/$lang/blog/'
       path: '/blog'
@@ -190,6 +264,10 @@ const LangRouteWithChildren = LangRoute._addFileChildren({
   LangSlugRoute,
   LangDiscoverIndexRoute,
   LangDiscoverIdRoute,
+  LangServicesIndexRoute,
+  LangServicesIdRoute,
+  LangPortfolioIndexRoute,
+  LangPortfolioIdRoute,
   LangBlogIndexRoute,
 } as LangRouteChildren)
 

@@ -35,8 +35,13 @@ export interface ServiceItem {
   description?: string;
   short_description?: string;
   logo?: string;
+  cover_image?: string;
   image?: string | string[];
-  serviceListMains?: { id: number; description: string }[];
+  serviceListMains?: { id: number; description: string; sort?: number }[];
+  faqs?: { question: string; answer: string }[];
+  created_at?: string;
+  updated_at?: string;
+  seo?: any;
 }
 
 export interface PortfolioItem {
@@ -93,9 +98,9 @@ export function useLandingData() {
     queryKey: ["landing"],
     queryFn: () =>
       axios.get<LandingData>("/api/landing").then((res) => res.data),
-    staleTime: 30 * 1000,     // 30 detik agar perubahan admin cepat terbaca
-    gcTime: 5 * 60 * 1000,    // 5 menit
-    refetchOnWindowFocus: true, // Otomatis refresh saat kembali ke tab web
+    staleTime: 60 * 1000,     // 1 menit agar navigasi antar halaman instan
+    gcTime: 10 * 60 * 1000,   // 10 menit simpan di memory
+    refetchOnWindowFocus: false, // Hindari lag/re-fetch berlebihan saat buka-tutup layar di mobile
     retry: 1,
   });
 }
