@@ -33,6 +33,12 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
 import { ServiceData, getServiceImages } from "@/components/landing/types";
+import { FAQSection } from "../common/FAQSection";
+
+interface ServiceFaq {
+  question: string;
+  answer: string;
+}
 
 const Footer = lazy(() => import("@/components/landing/sections/Footer").then((m) => ({ default: m.Footer })));
 
@@ -48,19 +54,19 @@ export function ServiceDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [mountedAt] = useState(() => Date.now());
 
-  // Try finding from cached landingData first
+  // Try finding from cached landingData first for immediate render
   const allServices = (landingData?.services || []) as ServiceData[];
   const cachedItem = allServices.find((item) => String(item.id) === String(id));
 
-  // Fallback direct query if not in cache (e.g. direct load)
+  // Query single service detail to ensure full and fresh data (faqs, images, seo)
   const { data: fetchedItem, isLoading, isError } = useQuery<ServiceData>({
     queryKey: ["service", id],
     queryFn: () => axios.get<ServiceData>(`/api/services/${id}`).then((res) => res.data),
-    enabled: !cachedItem && Boolean(id),
-    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(id),
+    staleTime: 30 * 1000,
   });
 
-  const rawService = cachedItem || fetchedItem;
+  const rawService = fetchedItem || cachedItem;
 
   // Scroll to top on mount or service change
   useEffect(() => {
@@ -68,22 +74,36 @@ export function ServiceDetailPage() {
     setActiveImgIndex(0);
   }, [id]);
 
+  const rawFaqs: Array<{ question?: any; answer?: any }> = Array.isArray(rawService?.faqs)
+    ? (rawService.faqs as Array<{ question?: any; answer?: any }>)
+    : typeof rawService?.faqs === "string"
+      ? (() => {
+        try {
+          return JSON.parse(rawService.faqs);
+        } catch {
+          return [];
+        }
+      })()
+      : [];
+
   const service = rawService
     ? {
-        ...rawService,
-        name: localize(rawService.name),
-        header: rawService.header ? localize(rawService.header) : undefined,
-        short_description: rawService.short_description ? localize(rawService.short_description) : undefined,
-        description: rawService.description ? localize(rawService.description) : undefined,
-        serviceListMains: rawService.serviceListMains?.map((item) => ({
-          ...item,
-          description: localize(item.description),
-        })),
-        faqs: rawService.faqs?.map((faq) => ({
-          question: localize(faq.question),
-          answer: localize(faq.answer),
-        })),
-      }
+      ...rawService,
+      name: localize(rawService.name),
+      header: rawService.header ? localize(rawService.header) : undefined,
+      short_description: rawService.short_description ? localize(rawService.short_description) : undefined,
+      description: rawService.description ? localize(rawService.description) : undefined,
+      serviceListMains: rawService.serviceListMains?.map((item) => ({
+        ...item,
+        description: localize(item.description),
+      })),
+      faqs: rawFaqs.map(
+        (faq: { question?: any; answer?: any }): ServiceFaq => ({
+          question: localize(faq?.question),
+          answer: localize(faq?.answer),
+        })
+      ),
+    }
     : null;
 
   const currentLang = lang || language || "id";
@@ -363,11 +383,10 @@ export function ServiceDetailPage() {
                             key={idx}
                             type="button"
                             onClick={() => setActiveImgIndex(idx)}
-                            className={`relative h-14 sm:h-18 w-20 sm:w-26 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
-                              activeImgIndex === idx
+                            className={`relative h-14 sm:h-18 w-20 sm:w-26 shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${activeImgIndex === idx
                                 ? "border-[#004AAD] shadow-md ring-2 ring-[#004AAD]/20"
                                 : "border-gray-200/80 opacity-60 hover:opacity-100"
-                            }`}
+                              }`}
                           >
                             <img
                               src={img}
@@ -432,38 +451,17 @@ export function ServiceDetailPage() {
 
                 {/* Service FAQ (Kesiapan GEO & AI) */}
                 {service.faqs && service.faqs.length > 0 && (
-                  <div className="rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-glass">
-                    <div className="flex items-center gap-2 mb-6">
-                      <span className="grid h-8 w-8 place-items-center rounded-xl bg-amber-50 text-amber-600">
-                        <HelpCircle className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <h2 className="font-display text-xl sm:text-2xl font-bold text-gray-900">
-                          {currentLang === "en" ? "Frequently Asked Questions" : "Pertanyaan Seputar Layanan Ini"}
-                        </h2>
-                        <p className="text-xs sm:text-sm text-gray-500">
-                          {currentLang === "en"
-                            ? "Answers to frequently asked technical and practical questions"
-                            : "Jawaban atas pertanyaan teknis dan operasional yang sering diajukan"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {service.faqs.map((faq, index) => (
-                        <div
-                          key={index}
-                          className="rounded-2xl border border-gray-200/70 bg-gray-50/60 p-4 sm:p-5"
-                        >
-                          <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-2">
-                            {faq.question}
-                          </h3>
-                          <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                  <div className=" p-6 sm:p-8 ">
+                    <FAQSection
+                      title={currentLang === "en" ? "Frequently Asked Questions (FAQ)" : "Pertanyaan Seputar Layanan Ini"}
+                      description={
+                        currentLang === "en"
+                          ? "Answers to frequently asked technical and practical questions"
+                          : "Jawaban atas pertanyaan teknis dan operasional seputar layanan ini"
+                      }
+                      faqs={service.faqs}
+                      className="!my-0"
+                    />
                   </div>
                 )}
               </div>

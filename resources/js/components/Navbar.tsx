@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useLandingData } from "../hooks/useLandingData";
 import { useTranslation } from "../i18n/useTranslation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -799,57 +800,55 @@ export function Navbar() {
         </div>
 
         {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="xl:hidden fixed inset-0 top-[90px] bg-white z-40 p-6 flex flex-col justify-between shadow-2xl border-t border-gray-100 overflow-y-auto animate-in slide-in-from-top duration-200">
-            <div className="space-y-4">
-              <a
-                href={`/${language}/`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
-              >
-                {t("nav.home")}
-              </a>
-              <a
-                href={`/${language}/#layanan`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
-              >
-                {t("nav.services")}
-              </a>
-              <a
-                href={`/${language}/#portofolio`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
-              >
-                {t("nav.portfolio")}
-              </a>
-              <a
-                href={`/${language}/discover`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
-              >
-                {t("nav.discover")}
-              </a>
-              <a
-                href={`/${language}/blog`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
-              >
-                {t("nav.blog")}
-              </a>
-            </div>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              key="mobile-menu"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="xl:hidden fixed inset-0 top-[90px] bg-white z-40 p-6 flex flex-col justify-between shadow-2xl border-t border-gray-100 overflow-y-auto"
+            >
+              <div className="space-y-1">
+                {[
+                  { href: `/${language}/`, label: t("nav.home") },
+                  { href: `/${language}/#layanan`, label: t("nav.services") },
+                  { href: `/${language}/#portofolio`, label: t("nav.portfolio") },
+                  { href: `/${language}/discover`, label: t("nav.discover") },
+                  { href: `/${language}/blog`, label: t("nav.blog") },
+                ].map((item, i) => (
+                  <motion.a
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.22, delay: 0.06 + i * 0.045, ease: [0.22, 1, 0.36, 1] }}
+                    className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
+                  >
+                    {item.label}
+                  </motion.a>
+                ))}
+              </div>
 
-            <div className="pt-6 space-y-3">
-              <a
-                href={`/${language}/#kontak`}
-                onClick={scrollToContact}
-                className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md cursor-pointer"
+              <motion.div
+                className="pt-6 space-y-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.22, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                {t("nav.contact")}
-              </a>
-            </div>
-          </div>
-        )}
+                <a
+                  href={`/${language}/#kontak`}
+                  onClick={scrollToContact}
+                  className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md cursor-pointer"
+                >
+                  {t("nav.contact")}
+                </a>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

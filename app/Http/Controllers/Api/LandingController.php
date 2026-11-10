@@ -56,6 +56,7 @@ class LandingController extends Controller
                     ->values()
                     ->all(),
                 'serviceListMains' => $service->serviceListMains,
+                'faqs' => $service->faqs ?? [],
             ];
         });
 
