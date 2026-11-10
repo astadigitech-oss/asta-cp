@@ -1,15 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
+import { useNavigate, useParams, Link } from "@tanstack/react-router";
 import {
   Globe,
   ArrowRight,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLandingData } from "@/hooks/useLandingData";
 import { stripHtml } from "@/components/lib/utils";
@@ -23,10 +21,10 @@ const defaultServicesData: ServiceData[] = [
 ];
 
 export function Services() {
-  const { t, localize } = useTranslation();
+  const { t, localize, language } = useTranslation();
   const { data: landingData } = useLandingData();
-  const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
-  const [serviceImageIndex, setServiceImageIndex] = useState(0);
+  const navigate = useNavigate();
+  const params = useParams({ strict: false }) as Record<string, string>;
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredCardId, setHoveredCardId] = useState<number | string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -40,9 +38,7 @@ export function Services() {
   const scrollPosRef = useRef(0); // Subpixel accumulator for smooth slow speeds (< 0.5)
   const isDraggingRef = useRef(false);
 
-  useEffect(() => {
-    setServiceImageIndex(0);
-  }, [selectedService?.id]);
+
 
   const servicesList: ServiceData[] = (landingData?.services && landingData.services.length > 0)
     ? landingData.services.map((s: any) => ({
@@ -124,7 +120,7 @@ export function Services() {
     const speed = 0.15;
 
     const step = () => {
-      if (!isHovered && !isDownRef.current && !selectedService && slider) {
+      if (!isHovered && !isDownRef.current && slider) {
         scrollPosRef.current += speed;
 
         const oneThird = loopWidthRef.current;
@@ -142,7 +138,7 @@ export function Services() {
 
     animationFrameId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, selectedService, servicesList.length]);
+  }, [isHovered, servicesList.length]);
 
   // Mouse drag handlers (Desktop)
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -240,56 +236,9 @@ export function Services() {
 
   const handleCardClick = (s: ServiceData) => {
     if (isDraggingRef.current) return;
-    setSelectedService(s);
+    const lang = params?.lang || language || "id";
+    navigate({ to: "/$lang/services/$id", params: { lang, id: String(s.id) } });
   };
-
-  // Multiple image handling for modal
-  const serviceImages = selectedService ? getServiceImages(selectedService.image) : [];
-  const hasMultipleImages = serviceImages.length > 1;
-
-  const handlePrevImage = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    if (serviceImages.length <= 1) return;
-    setServiceImageIndex((prev) => (prev - 1 + serviceImages.length) % serviceImages.length);
-  };
-
-  const handleNextImage = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    if (serviceImages.length <= 1) return;
-    setServiceImageIndex((prev) => (prev + 1) % serviceImages.length);
-  };
-
-  const modalTouchStartX = useRef<number | null>(null);
-
-  const handleModalTouchStart = (e: React.TouchEvent) => {
-    modalTouchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleModalTouchEnd = (e: React.TouchEvent) => {
-    if (modalTouchStartX.current === null || serviceImages.length <= 1) return;
-    const diffX = e.changedTouches[0].clientX - modalTouchStartX.current;
-    if (Math.abs(diffX) > 40) {
-      if (diffX < 0) {
-        setServiceImageIndex((prev) => (prev + 1) % serviceImages.length);
-      } else {
-        setServiceImageIndex((prev) => (prev - 1 + serviceImages.length) % serviceImages.length);
-      }
-    }
-    modalTouchStartX.current = null;
-  };
-
-  useEffect(() => {
-    if (!selectedService || serviceImages.length <= 1) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setServiceImageIndex((prev) => (prev - 1 + serviceImages.length) % serviceImages.length);
-      } else if (e.key === "ArrowRight") {
-        setServiceImageIndex((prev) => (prev + 1) % serviceImages.length);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedService, serviceImages.length]);
 
   const renderServiceCard = (s: ServiceData, index: number) => {
     const images = getServiceImages(s.image);
@@ -446,182 +395,26 @@ export function Services() {
           </div>
         </div>
 
+        {/* View All Services Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-8 sm:mt-10 text-center"
+        >
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full bg-[#004AAD] hover:bg-blue-800 text-white font-semibold px-8 h-12 shadow-md cursor-pointer transition-all hover:scale-105 inline-flex items-center gap-2"
+          >
+            <Link to="/$lang/services" params={{ lang: params?.lang || language || "id" }}>
+              <span>{t("nav.all_services")}</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </motion.div>
 
-        {/* Service Detail Dialog */}
-        <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
-          <DialogContent showClose={false} className="w-[94vw] sm:w-full max-w-3xl overflow-hidden rounded-[24px] sm:rounded-3xl bg-white p-0 border border-gray-100/80 shadow-2xl focus:outline-none">
-            {selectedService && (
-              <div className="flex flex-col max-h-[88dvh] sm:max-h-[90vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {/* Banner Header Image with Slider Controls */}
-                <div
-                  onTouchStart={handleModalTouchStart}
-                  onTouchEnd={handleModalTouchEnd}
-                  className="relative h-52 sm:h-80 w-full overflow-hidden bg-gray-900 flex items-center justify-center shrink-0 select-none"
-                >
-                  {serviceImages.length > 0 ? (
-                    <img
-                      key={serviceImageIndex}
-                      src={serviceImages[serviceImageIndex]}
-                      alt={selectedService.name}
-                      width={1200}
-                      height={900}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover transition-opacity duration-300"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#004AAD] via-[#052848] to-[#02182d] p-8 flex flex-col justify-end">
-                      {selectedService.logo && (
-                        <img src={selectedService.logo} alt={selectedService.name} width={64} height={64} loading="lazy" decoding="async" className="w-16 h-16 object-contain mb-4" />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Gradient Overlay */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
-
-                  {/* Close Button Top Right */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedService(null)}
-                    className="absolute top-3.5 right-3.5 z-30 grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
-                    title={t("portfolio.modal.close")}
-                    aria-label={t("portfolio.modal.close")}
-                  >
-                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </button>
-
-                  {/* Image Counter Badge Top Left */}
-                  {hasMultipleImages && (
-                    <div className="absolute top-3.5 left-3.5 z-30 rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/20 shadow-md">
-                      {serviceImageIndex + 1} / {serviceImages.length}
-                    </div>
-                  )}
-
-                  {/* Pagination Dots at Top Center - never clashes with bottom text */}
-                  {hasMultipleImages && (
-                    <div className="absolute top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 shadow-sm">
-                      {serviceImages.map((_, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setServiceImageIndex(idx);
-                          }}
-                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                            serviceImageIndex === idx
-                              ? "w-5 bg-white shadow-sm"
-                              : "w-1.5 bg-white/40 hover:bg-white/70"
-                          }`}
-                          aria-label={`Go to image ${idx + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Navigation Arrows for Multiple Images */}
-                  {hasMultipleImages && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={handlePrevImage}
-                        className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 z-20 grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/50 hover:bg-black/80 text-white border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
-                        title="Previous Image"
-                        aria-label="Previous Image"
-                      >
-                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleNextImage}
-                        className="absolute right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 z-20 grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-black/50 hover:bg-black/80 text-white border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
-                        title="Next Image"
-                        aria-label="Next Image"
-                      >
-                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </button>
-                    </>
-                  )}
-
-                  {/* Title and Category at Bottom */}
-                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 pointer-events-none">
-                    <span className="inline-block rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-2.5 py-0.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider mb-1.5 sm:mb-2 backdrop-blur-sm">
-                      {selectedService.header || t("services.eyebrow")}
-                    </span>
-                    <DialogTitle className="font-display text-xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
-                      {selectedService.name}
-                    </DialogTitle>
-                  </div>
-                </div>
-
-                <div className="p-5 sm:p-8 space-y-5 sm:space-y-6">
-                  {selectedService.short_description && (
-                    <div className="bg-blue-50/70 border-l-4 border-[#004AAD] p-3.5 sm:p-4 rounded-r-xl">
-                      <div
-                        className="text-sm sm:text-base font-medium text-gray-800 leading-relaxed prose prose-sm sm:prose-base prose-blue max-w-none [&>p]:m-0"
-                        dangerouslySetInnerHTML={{ __html: selectedService.short_description }}
-                      />
-                    </div>
-                  )}
-
-                  {selectedService.description && (
-                    <div>
-                      <div
-                        className="portfolio-content text-sm sm:text-base text-gray-700 leading-relaxed space-y-2 prose prose-sm sm:prose-base prose-blue max-w-none"
-                        dangerouslySetInnerHTML={{ __html: selectedService.description }}
-                      />
-                    </div>
-                  )}
-
-                  {selectedService.serviceListMains && selectedService.serviceListMains.length > 0 && (
-                    <div className="pt-2 sm:pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#004AAD]" />
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#004AAD]">
-                          {t("services.modal.features")}
-                        </h4>
-                      </div>
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                        {selectedService.serviceListMains.map((item) => (
-                          <li key={item.id} className="flex items-start gap-2.5 bg-blue-50/60 p-3 rounded-xl border border-blue-100/60 text-xs sm:text-sm font-medium text-gray-800">
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#004AAD] mt-0.5" />
-                            <span className="leading-snug">{stripHtml(item.description)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="pt-4 sm:pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                    <div>
-                      <p className="text-xs sm:text-sm font-bold text-gray-900">{t("services.modal.cta")}</p>
-                      <p className="text-[11px] sm:text-xs text-gray-500 hidden sm:block">Konsultasikan kebutuhan proyek Anda dengan tim kami</p>
-                    </div>
-                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                      <Button
-                        variant="outline"
-                        onClick={() => setSelectedService(null)}
-                        className="flex-1 sm:flex-initial rounded-full border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm px-4 h-11"
-                      >
-                        {t("portfolio.modal.close")}
-                      </Button>
-                      <Button
-                        asChild
-                        onClick={() => setSelectedService(null)}
-                        className="flex-1 sm:flex-initial rounded-full bg-[#004AAD] text-white hover:bg-blue-800 px-6 h-11 font-semibold shadow-md text-xs sm:text-sm"
-                      >
-                        <a href="#kontak">
-                          {t("contact.form.submit")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </section>
   );

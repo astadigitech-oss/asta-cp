@@ -183,7 +183,15 @@ class LandingController extends Controller
      */
     public function getPortfolioDetail($id)
     {
-        $portfolio = Portfolio::find($id);
+        $decoded = urldecode((string) $id);
+        $portfolio = Portfolio::where(function ($q) use ($id, $decoded) {
+            if (is_numeric($id)) {
+                $q->where('id', (int) $id);
+            } else {
+                $q->where('id', $id)
+                  ->orWhere('name', 'like', "%{$decoded}%");
+            }
+        })->first();
 
         if (!$portfolio) {
             return response()->json([
@@ -192,16 +200,52 @@ class LandingController extends Controller
             ], 404);
         }
 
+        $formattedImage = $this->formatImageUrl($portfolio->image, 'portfolio-card');
+        $formattedThumb = $this->formatImageUrl($portfolio->image, 'portfolio-thumb');
+
+        // Other related portfolios
+        $otherPortfolios = Portfolio::where('id', '!=', $portfolio->id)
+            ->orderBy('sort', 'asc')
+            ->limit(3)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'type' => $item->type,
+                    'category' => $item->type === 'mobile' ? 'Mobile' : 'Desktop',
+                    'image' => $this->formatImageUrl($item->image, 'portfolio-thumb'),
+                    'demo_url' => $item->demo_url,
+                ];
+            });
+
+        $cleanDesc = strip_tags($portfolio->description ?? '');
+        $metaDesc = \Illuminate\Support\Str::limit($cleanDesc, 160) ?: "Portofolio proyek {$portfolio->name} oleh ASTA Digital Agency.";
+
         return response()->json([
             'id' => $portfolio->id,
             'name' => $portfolio->name,
             'description' => $portfolio->description,
             'type' => $portfolio->type,
-            'category' => $portfolio->type,
-            'image' => $this->formatImageUrl($portfolio->image, 'portfolio-card'),
-            'image_small' => $this->formatImageUrl($portfolio->image, 'portfolio-thumb'),
+            'category' => $portfolio->type === 'mobile' ? 'Mobile' : 'Desktop',
+            'image' => $formattedImage,
+            'image_small' => $formattedThumb,
             'demo_url' => $portfolio->demo_url,
             'created_at' => $portfolio->created_at ? $portfolio->created_at->format('d M Y') : null,
+            'updated_at' => $portfolio->updated_at ? $portfolio->updated_at->toISOString() : null,
+            'other_portfolios' => $otherPortfolios,
+            'seo' => [
+                'meta_title' => "{$portfolio->name} — Portofolio ASTA Digital Agency",
+                'meta_description' => $metaDesc,
+                'og_title' => "{$portfolio->name} — Portofolio ASTA Digital Agency",
+                'og_description' => $metaDesc,
+                'og_image' => $formattedImage,
+                'og_type' => 'website',
+                'twitter_card' => 'summary_large_image',
+                'twitter_title' => "{$portfolio->name} — Portofolio ASTA Digital Agency",
+                'twitter_description' => $metaDesc,
+                'twitter_image' => $formattedImage,
+            ],
         ]);
     }
 
@@ -210,7 +254,17 @@ class LandingController extends Controller
      */
     public function getServiceDetail($id)
     {
-        $service = Service::with('serviceListMains')->find($id);
+        $decoded = urldecode((string) $id);
+        $service = Service::with(['serviceListMains' => function ($query) {
+            $query->orderBy('sort', 'asc');
+        }])->where(function ($q) use ($id, $decoded) {
+            if (is_numeric($id)) {
+                $q->where('id', (int) $id);
+            } else {
+                $q->where('id', $id)
+                  ->orWhere('name', 'like', "%{$decoded}%");
+            }
+        })->first();
 
         if (!$service) {
             return response()->json([
@@ -218,6 +272,18 @@ class LandingController extends Controller
                 'message' => 'Service not found',
             ], 404);
         }
+
+        try {
+            $seo = $service->seoData();
+        } catch (\Throwable $e) {
+            $seo = null;
+        }
+
+        $formattedImages = collect($service->image ?? [])
+            ->map(fn (string $image) => $this->formatImageUrl($image, 'service-detail'))
+            ->filter()
+            ->values()
+            ->all();
 
         return response()->json([
             'id' => $service->id,
@@ -228,12 +294,25 @@ class LandingController extends Controller
             'short_description' => $service->short_description,
             'logo' => $this->formatImageUrl($service->logo, 'service-logo'),
             'cover_image' => $this->formatImageUrl($service->cover_image, 'service-cover'),
-            'image' => collect($service->image ?? [])
-                ->map(fn (string $image) => $this->formatImageUrl($image, 'service-detail'))
-                ->filter()
-                ->values()
-                ->all(),
+            'image' => $formattedImages,
             'serviceListMains' => $service->serviceListMains,
+            'faqs' => $service->faqs ?? [],
+            'created_at' => $service->created_at ? $service->created_at->toISOString() : null,
+            'updated_at' => $service->updated_at ? $service->updated_at->toISOString() : null,
+            'seo' => [
+                'meta_title' => $seo?->title ?? (is_array($service->name) ? ($service->name['id'] ?? reset($service->name)) : $service->name),
+                'meta_description' => $seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description['id'] ?? reset($service->short_description)) : ($service->short_description ?? '')),
+                'canonical_url' => $seo?->canonical ?: url("/services/{$service->id}"),
+                'robots' => $seo?->robots ?? 'index, follow',
+                'og_title' => $seo?->ogTitle ?? ($seo?->title ?? (is_array($service->name) ? ($service->name['id'] ?? reset($service->name)) : $service->name)),
+                'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description['id'] ?? reset($service->short_description)) : ($service->short_description ?? ''))),
+                'og_image' => $seo?->ogImage ?? ($formattedImages[0] ?? $this->formatImageUrl($service->cover_image, 'service-cover') ?? $this->formatImageUrl($service->logo, 'service-logo')),
+                'og_type' => 'website',
+                'twitter_card' => 'summary_large_image',
+                'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? (is_array($service->name) ? ($service->name['id'] ?? reset($service->name)) : $service->name)),
+                'twitter_description' => $seo?->twitterDescription ?? ($seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description['id'] ?? reset($service->short_description)) : ($service->short_description ?? ''))),
+                'twitter_image' => $seo?->twitterImage ?? ($formattedImages[0] ?? null),
+            ],
         ]);
     }
 

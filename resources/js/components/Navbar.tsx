@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLandingData } from "../hooks/useLandingData";
 import { useTranslation } from "../i18n/useTranslation";
@@ -273,10 +274,11 @@ export function Navbar() {
                   <div className="grid grid-cols-3 gap-6">
                     {paginatedServices.length > 0 ? (
                       paginatedServices.map((service) => (
-                        <a
+                        <Link
                           key={service.id}
-                          href={`/${language}/#layanan`}
-                          onClick={(e) => scrollToSection(e, "layanan")}
+                          to="/$lang/services/$id"
+                          params={{ lang: language, id: String(service.id) }}
+                          onClick={() => setActiveDropdown(null)}
                           className="p-4 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 group/item cursor-pointer"
                         >
                           {service.logo && (
@@ -288,7 +290,7 @@ export function Navbar() {
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                             {stripHtml(service.short_description) || t("services.default_web_desc")}
                           </p>
-                        </a>
+                        </Link>
                       ))
                     ) : (
                       [
@@ -312,13 +314,14 @@ export function Navbar() {
                   </div>
 
                   <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <a
-                      href={`/${language}/#layanan`}
-                      onClick={(e) => scrollToSection(e, "layanan")}
+                    <Link
+                      to="/$lang/services"
+                      params={{ lang: language }}
+                      onClick={() => setActiveDropdown(null)}
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors cursor-pointer"
                     >
                       {t("nav.all_services")} <ArrowRight className="w-4 h-4" />
-                    </a>
+                    </Link>
 
                     {totalServicePages > 1 && (
                       <div className="flex items-center gap-1">
@@ -451,10 +454,11 @@ export function Navbar() {
                     <div className="grid grid-cols-2 gap-4">
                       {paginatedPortfolios.length > 0 ? (
                         paginatedPortfolios.map((p) => (
-                          <a
+                          <Link
                             key={p.id}
-                            href={`/${language}/#portofolio`}
-                            onClick={(e) => scrollToSection(e, "portofolio")}
+                            to="/$lang/portfolio/$id"
+                            params={{ lang: language, id: String(p.id) }}
+                            onClick={() => setActiveDropdown(null)}
                             className="flex gap-3 items-center p-2 rounded-lg hover:bg-blue-50 transition-colors group/item border border-transparent hover:border-blue-100 cursor-pointer"
                           >
                             {p.image ? (
@@ -468,7 +472,7 @@ export function Navbar() {
                               <p className="font-bold text-sm text-gray-900 group-hover/item:text-[#004AAD] truncate">{p.name}</p>
                               <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{stripHtml(p.description) || t("portfolio.view_project")}</p>
                             </div>
-                          </a>
+                          </Link>
                         ))
                       ) : (
                         <div className="col-span-2 text-sm text-gray-500 py-6 text-center">
@@ -479,13 +483,14 @@ export function Navbar() {
                   </div>
 
                   <div className="pt-4 border-t border-gray-100 mt-6 flex items-center justify-between">
-                    <a
-                      href={`/${language}/#portofolio`}
-                      onClick={(e) => scrollToSection(e, "portofolio")}
+                    <Link
+                      to="/$lang/portfolio"
+                      params={{ lang: language }}
+                      onClick={() => setActiveDropdown(null)}
                       className="inline-flex items-center gap-2 text-sm font-semibold text-[#004AAD] hover:text-[#38B6FF] transition-colors cursor-pointer"
                     >
                       {t("nav.all_portfolios")} <ArrowRight className="w-4 h-4" />
-                    </a>
+                    </Link>
                     {totalPortfolioPages > 1 && (
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] text-gray-400">

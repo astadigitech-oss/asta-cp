@@ -172,6 +172,8 @@ Route::get('/{any?}', function () {
 
     $isBlogPage = ($cleanPath === 'blog');
     $isDiscoverPage = ($cleanPath === 'discover');
+    $isServicesPage = ($cleanPath === 'services');
+    $isPortfolioPage = ($cleanPath === 'portfolio' || $cleanPath === 'portfolios');
     $isHomePage = ($cleanPath === '');
     $homeServices = null;
     $homeArticles = null;
@@ -183,11 +185,15 @@ Route::get('/{any?}', function () {
     $discoverItems = null;
     $article = null;
     $discover = null;
+    $service = null;
+    $portfolio = null;
     $seo = null;
     $initialData = [
         'locale' => $locale,
         'article' => null,
         'discover' => null,
+        'service' => null,
+        'portfolio' => null,
         'blogArticles' => null,
         'slug' => null,
         'id' => null,
@@ -299,7 +305,15 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             $discoverItems = collect();
         }
-    } elseif ($cleanPath && !in_array($cleanPath, ['', 'discover'])) {
+    } elseif ($isServicesPage || $isPortfolioPage) {
+        try {
+            $initialData['landing'] = Cache::remember('landing_api_cache', 30, function () {
+                return (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
+            });
+        } catch (\Throwable $e) {
+            $initialData['landing'] = null;
+        }
+    } elseif ($cleanPath && !in_array($cleanPath, ['', 'discover', 'services', 'portfolio', 'portfolios'])) {
         $decoded = urldecode($cleanPath);
         $slugified = \Illuminate\Support\Str::slug($decoded);
 
@@ -395,8 +409,156 @@ Route::get('/{any?}', function () {
                     ],
                 ];
             }
+        } elseif (str_starts_with($cleanPath, 'services/')) {
+            // 2. Cek apakah mengakses halaman detail service
+            $serviceParam = substr($cleanPath, strlen('services/'));
+            $decodedParam = urldecode($serviceParam);
+            $slugifiedParam = \Illuminate\Support\Str::slug($decodedParam);
+
+            try {
+                $service = Service::with(['serviceListMains' => function ($query) {
+                    $query->orderBy('sort', 'asc');
+                }])->where(function ($q) use ($serviceParam, $decodedParam, $slugifiedParam) {
+                    if (is_numeric($serviceParam)) {
+                        $q->where('id', (int) $serviceParam);
+                    } else {
+                        $q->where('id', $serviceParam)
+                          ->orWhere('name', 'like', "%{$decodedParam}%");
+                    }
+                })->first();
+            } catch (\Throwable $e) {
+                $service = null;
+            }
+
+            if ($service) {
+                try {
+                    $seo = $service->seoData();
+                } catch (\Throwable $e) {
+                    // Fallback
+                }
+
+                $rawImages = collect($service->image ?? [])->all();
+                $formattedImages = collect($rawImages)->map(function ($img) {
+                    if (!$img) return null;
+                    return OptimizedImage::url($img, 'service-detail');
+                })->filter()->values()->all();
+
+                $serviceOgImage = $seo?->ogImage ?: (isset($rawImages[0]) && $rawImages[0]
+                    ? (str_starts_with($rawImages[0], 'http') ? $rawImages[0] : asset('storage/' . ltrim($rawImages[0], '/')))
+                    : (OptimizedImage::url($service->cover_image, 'service-cover') ?: OptimizedImage::url($service->logo, 'service-logo')));
+
+                $initialData['id'] = $serviceParam;
+                $serviceNameRaw = is_array($service->name) ? ($service->name[$locale] ?? reset($service->name)) : $service->name;
+                $serviceDescRaw = $seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description[$locale] ?? reset($service->short_description)) : ($service->short_description ?? ''));
+                $serviceLocalizedDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($serviceDescRaw, $locale, $serviceNameRaw, 'service');
+
+                $initialData['service'] = [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'show_name' => $service->show_name,
+                    'header' => $service->header,
+                    'description' => $service->description,
+                    'short_description' => $service->short_description,
+                    'logo' => OptimizedImage::url($service->logo, 'service-logo'),
+                    'cover_image' => OptimizedImage::url($service->cover_image, 'service-cover'),
+                    'image' => $formattedImages,
+                    'created_at' => $service->created_at ? $service->created_at->toISOString() : null,
+                    'updated_at' => $service->updated_at ? $service->updated_at->toISOString() : null,
+                    'serviceListMains' => $service->serviceListMains,
+                    'faqs' => $service->faqs ?? [],
+                    'seo' => [
+                        'meta_title' => $seo?->title ?? $service->name,
+                        'meta_description' => $serviceLocalizedDesc,
+                        'canonical_url' => $seo?->canonical ?: url("/{$locale}/services/{$service->id}"),
+                        'robots' => $seo?->robots ?? 'index, follow',
+                        'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $service->name),
+                        'og_description' => $serviceLocalizedDesc,
+                        'og_image' => $serviceOgImage,
+                        'og_type' => 'website',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => $seo?->twitterTitle ?? ($seo?->title ?? $service->name),
+                        'twitter_description' => $serviceLocalizedDesc,
+                        'twitter_image' => $serviceOgImage,
+                    ],
+                ];
+            }
+        } elseif (str_starts_with($cleanPath, 'portfolio/') || str_starts_with($cleanPath, 'portfolios/')) {
+            // Cek apakah mengakses halaman detail portfolio
+            $portfolioParam = str_starts_with($cleanPath, 'portfolio/')
+                ? substr($cleanPath, strlen('portfolio/'))
+                : substr($cleanPath, strlen('portfolios/'));
+            $decodedParam = urldecode($portfolioParam);
+
+            try {
+                $portfolio = Portfolio::where(function ($q) use ($portfolioParam, $decodedParam) {
+                    if (is_numeric($portfolioParam)) {
+                        $q->where('id', (int) $portfolioParam);
+                    } else {
+                        $q->where('id', $portfolioParam)
+                          ->orWhere('name', 'like', "%{$decodedParam}%");
+                    }
+                })->first();
+            } catch (\Throwable $e) {
+                $portfolio = null;
+            }
+
+            if ($portfolio) {
+                $formattedImage = OptimizedImage::url($portfolio->image, 'portfolio-card');
+                $formattedThumb = OptimizedImage::url($portfolio->image, 'portfolio-thumb');
+                $portfolioOgImage = $formattedImage ?: ($portfolio->image ? (str_starts_with($portfolio->image, 'http') ? $portfolio->image : asset('storage/' . ltrim($portfolio->image, '/'))) : null);
+
+                $initialData['id'] = $portfolioParam;
+                $portfolioNameRaw = $portfolio->name;
+                $portfolioDescRaw = strip_tags($portfolio->description ?? '');
+                $portfolioLocalizedDesc = \App\Support\ContentSanitizer::resolveLocalizedDescription($portfolioDescRaw, $locale, $portfolioNameRaw, 'portfolio');
+
+                $otherPortfolios = Portfolio::where('id', '!=', $portfolio->id)
+                    ->orderBy('sort', 'asc')
+                    ->limit(3)
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'type' => $item->type,
+                            'category' => $item->type === 'mobile' ? 'Mobile' : 'Desktop',
+                            'image' => OptimizedImage::url($item->image, 'portfolio-thumb'),
+                            'demo_url' => $item->demo_url,
+                        ];
+                    });
+
+                $canonicalUrl = url("/{$locale}/portfolio/{$portfolio->id}");
+
+                $initialData['portfolio'] = [
+                    'id' => $portfolio->id,
+                    'name' => $portfolio->name,
+                    'description' => $portfolio->description,
+                    'type' => $portfolio->type,
+                    'category' => $portfolio->type === 'mobile' ? 'Mobile' : 'Desktop',
+                    'image' => $formattedImage,
+                    'image_small' => $formattedThumb,
+                    'demo_url' => $portfolio->demo_url,
+                    'created_at' => $portfolio->created_at ? $portfolio->created_at->format('d M Y') : null,
+                    'updated_at' => $portfolio->updated_at ? $portfolio->updated_at->toISOString() : null,
+                    'other_portfolios' => $otherPortfolios,
+                    'seo' => [
+                        'meta_title' => "{$portfolio->name} — ASTA Digital Agency",
+                        'meta_description' => $portfolioLocalizedDesc,
+                        'canonical_url' => $canonicalUrl,
+                        'robots' => 'index, follow',
+                        'og_title' => "{$portfolio->name} — ASTA Digital Agency",
+                        'og_description' => $portfolioLocalizedDesc,
+                        'og_image' => $portfolioOgImage,
+                        'og_type' => 'website',
+                        'twitter_card' => 'summary_large_image',
+                        'twitter_title' => "{$portfolio->name} — ASTA Digital Agency",
+                        'twitter_description' => $portfolioLocalizedDesc,
+                        'twitter_image' => $portfolioOgImage,
+                    ],
+                ];
+            }
         } else {
-            // 2. Cek apakah mengakses artikel
+            // 3. Cek apakah mengakses artikel
             try {
                 $article = Article::where('is_published', true)
                     ->where(function ($q) use ($cleanPath, $decoded, $slugified) {
@@ -512,7 +674,7 @@ Route::get('/{any?}', function () {
         }
     }
 
-    $isNotFound = (!$isHomePage && !$isBlogPage && !$isDiscoverPage && !$article && !$discover);
+    $isNotFound = (!$isHomePage && !$isBlogPage && !$isDiscoverPage && !$isServicesPage && !$isPortfolioPage && !$article && !$discover && !$service && !$portfolio);
     $statusCode = $isNotFound ? 404 : 200;
 
     return response()->view('layouts.app', [
@@ -520,9 +682,13 @@ Route::get('/{any?}', function () {
         'article' => $article,
         'recommendedArticles' => $recommendedArticles ?? collect(),
         'discover' => $discover,
+        'service' => $service,
+        'portfolio' => $portfolio,
         'blogArticles' => $blogArticles,
         'isBlogPage' => $isBlogPage,
         'isDiscoverPage' => $isDiscoverPage,
+        'isServicesPage' => $isServicesPage,
+        'isPortfolioPage' => $isPortfolioPage,
         'discoverItems' => $discoverItems,
         'isHomePage' => $isHomePage,
         'isNotFound' => $isNotFound,

@@ -35,8 +35,13 @@ export interface ServiceItem {
   description?: string;
   short_description?: string;
   logo?: string;
+  cover_image?: string;
   image?: string | string[];
-  serviceListMains?: { id: number; description: string }[];
+  serviceListMains?: { id: number; description: string; sort?: number }[];
+  faqs?: { question: string; answer: string }[];
+  created_at?: string;
+  updated_at?: string;
+  seo?: any;
 }
 
 export interface PortfolioItem {

@@ -30,8 +30,12 @@ export interface ServiceData {
   logo?: string;
   cover_image?: string;
   image?: string | string[];
-  serviceListMains?: { id: number; description: string }[];
+  serviceListMains?: { id: number; description: string; sort?: number }[];
+  faqs?: { question: string; answer: string }[];
   span?: string;
+  created_at?: string;
+  updated_at?: string;
+  seo?: any;
 }
 
 export interface PortfolioProject {
@@ -43,6 +47,28 @@ export interface PortfolioProject {
   description: string;
   span: string;
   demo_url?: string;
+}
+
+export interface PortfolioData {
+  id: number | string;
+  name: string;
+  description?: string;
+  type?: "mobile" | "desktop" | string;
+  category?: string;
+  image?: string;
+  image_small?: string;
+  demo_url?: string;
+  created_at?: string;
+  updated_at?: string;
+  other_portfolios?: Array<{
+    id: number | string;
+    name: string;
+    type?: string;
+    category?: string;
+    image?: string;
+    demo_url?: string;
+  }>;
+  seo?: any;
 }
 
 export function getDiscoverImages(image?: string | string[]): string[] {
