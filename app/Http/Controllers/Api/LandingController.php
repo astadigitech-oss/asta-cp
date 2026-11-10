@@ -38,7 +38,8 @@ class LandingController extends Controller
      */
     public function getLandingData()
     {
-        $services = Service::with(['serviceListMains' => function ($query) {
+        $payload = \Illuminate\Support\Facades\Cache::remember('landing_api_cache', 120, function () {
+            $services = Service::with(['serviceListMains' => function ($query) {
             $query->orderBy('sort', 'asc');
         }])->orderBy('sort', 'asc')->get()->map(function ($service) {
             return [
@@ -169,14 +170,17 @@ class LandingController extends Controller
                 ];
             });
 
-        return response()->json([
-            'services' => $services,
-            'portfolios' => $portfolios,
-            'clients' => $clients,
-            'discovers' => $discovers,
-            'testimonials' => $testimonials,
-            'articles' => $articles,
-        ]);
+            return [
+                'services' => $services,
+                'portfolios' => $portfolios,
+                'clients' => $clients,
+                'discovers' => $discovers,
+                'testimonials' => $testimonials,
+                'articles' => $articles,
+            ];
+        });
+
+        return response()->json($payload);
     }
 
     /**

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -107,80 +107,107 @@ export function Navbar() {
   };
 
   const rawServices = (landingData?.services || []) as ServiceItem[];
-  const services: ServiceItem[] = rawServices.map((s) => ({
-    ...s,
-    name: localize(s.name),
-    short_description: s.short_description ? localize(s.short_description) : undefined,
-  }));
+  const services: ServiceItem[] = useMemo(
+    () =>
+      rawServices.map((s) => ({
+        ...s,
+        name: localize(s.name),
+        short_description: s.short_description ? localize(s.short_description) : undefined,
+      })),
+    [rawServices, localize]
+  );
   const SERVICES_PER_PAGE = 6;
   const [servicePage, setServicePage] = useState(1);
   const totalServicePages = Math.ceil(services.length / SERVICES_PER_PAGE) || 1;
-  const paginatedServices = services.slice(
-    (servicePage - 1) * SERVICES_PER_PAGE,
-    servicePage * SERVICES_PER_PAGE
+  const paginatedServices = useMemo(
+    () => services.slice((servicePage - 1) * SERVICES_PER_PAGE, servicePage * SERVICES_PER_PAGE),
+    [services, servicePage]
   );
+
   const rawPortfolios = (landingData?.portfolios || []) as PortfolioItem[];
-  const allPortfolios: PortfolioItem[] = rawPortfolios.map((p) => ({
-    ...p,
-    name: localize(p.name),
-    description: p.description ? localize(p.description) : undefined,
-  }));
-  const mobiles = allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile");
-  const desktops = allPortfolios.filter((p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web");
+  const allPortfolios: PortfolioItem[] = useMemo(
+    () =>
+      rawPortfolios.map((p) => ({
+        ...p,
+        name: localize(p.name),
+        description: p.description ? localize(p.description) : undefined,
+      })),
+    [rawPortfolios, localize]
+  );
+  const mobiles = useMemo(
+    () => allPortfolios.filter((p) => p.category?.toLowerCase() === "mobile"),
+    [allPortfolios]
+  );
+  const desktops = useMemo(
+    () =>
+      allPortfolios.filter(
+        (p) => p.category?.toLowerCase() === "desktop" || p.category?.toLowerCase() === "web"
+      ),
+    [allPortfolios]
+  );
   const activePortfolios = portfolioTab === "Mobile" ? mobiles : desktops;
   const PORTFOLIO_PER_PAGE = 4;
   const [portfolioPage, setPortfolioPage] = useState(1);
   const totalPortfolioPages = Math.ceil(activePortfolios.length / PORTFOLIO_PER_PAGE) || 1;
-  const paginatedPortfolios = activePortfolios.slice(
-    (portfolioPage - 1) * PORTFOLIO_PER_PAGE,
-    portfolioPage * PORTFOLIO_PER_PAGE
+  const paginatedPortfolios = useMemo(
+    () =>
+      activePortfolios.slice((portfolioPage - 1) * PORTFOLIO_PER_PAGE, portfolioPage * PORTFOLIO_PER_PAGE),
+    [activePortfolios, portfolioPage]
   );
 
   const rawDiscovers = (landingData?.discovers || []) as DiscoverItem[];
-  const discovers: DiscoverItem[] = rawDiscovers.map((d) => ({
-    ...d,
-    name: localize(d.name),
-    short_description: d.short_description ? localize(d.short_description) : undefined,
-  }));
+  const discovers: DiscoverItem[] = useMemo(
+    () =>
+      rawDiscovers.map((d) => ({
+        ...d,
+        name: localize(d.name),
+        short_description: d.short_description ? localize(d.short_description) : undefined,
+      })),
+    [rawDiscovers, localize]
+  );
   const DISCOVERS_PER_PAGE = 4;
   const [discoverPage, setDiscoverPage] = useState(1);
   const totalDiscoverPages = Math.ceil(discovers.length / DISCOVERS_PER_PAGE) || 1;
-  const paginatedDiscovers = discovers.slice(
-    (discoverPage - 1) * DISCOVERS_PER_PAGE,
-    discoverPage * DISCOVERS_PER_PAGE
+  const paginatedDiscovers = useMemo(
+    () => discovers.slice((discoverPage - 1) * DISCOVERS_PER_PAGE, discoverPage * DISCOVERS_PER_PAGE),
+    [discovers, discoverPage]
   );
 
   // Keep pinned discoveries first, then show the newest discoveries.
-  const discoversWithImages = discovers.filter((d) => {
-    if (!d.image) return false;
-    if (Array.isArray(d.image)) return d.image.length > 0;
-    return Boolean(d.image);
-  });
-  const newsItems = discoversWithImages.length > 0
-    ? [...discoversWithImages].sort((a, b) => {
-        if (a.is_pinned !== b.is_pinned) {
-          return Number(b.is_pinned) - Number(a.is_pinned);
-        }
-        if (a.created_at && b.created_at) {
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        }
-        const aId = typeof a.id === "number" ? a.id : Number.parseInt(String(a.id), 10) || 0;
-        const bId = typeof b.id === "number" ? b.id : Number.parseInt(String(b.id), 10) || 0;
-        return bId - aId;
-      })
-    : defaultNewsItems;
+  const newsItems = useMemo(() => {
+    const discoversWithImages = discovers.filter((d) => {
+      if (!d.image) return false;
+      if (Array.isArray(d.image)) return d.image.length > 0;
+      return Boolean(d.image);
+    });
+
+    return discoversWithImages.length > 0
+      ? [...discoversWithImages].sort((a, b) => {
+          if (a.is_pinned !== b.is_pinned) {
+            return Number(b.is_pinned) - Number(a.is_pinned);
+          }
+          if (a.created_at && b.created_at) {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          }
+          const aId = typeof a.id === "number" ? a.id : Number.parseInt(String(a.id), 10) || 0;
+          const bId = typeof b.id === "number" ? b.id : Number.parseInt(String(b.id), 10) || 0;
+          return bId - aId;
+        })
+      : defaultNewsItems;
+  }, [discovers]);
 
   const totalSlides = 1 + newsItems.length;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (isPaused || totalSlides <= 1) return;
+    // Only run interval when discover dropdown is open to prevent idle re-renders
+    if (isPaused || totalSlides <= 1 || activeDropdown !== "discover") return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused, totalSlides]);
+  }, [isPaused, totalSlides, activeDropdown]);
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -188,23 +215,30 @@ export function Navbar() {
         <div className="w-full max-w-[1800px] 3xl:max-w-[2100px] 4xl:max-w-[2400px] items-center h-[90px] flex justify-between px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 3xl:px-24">
           
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
+          <Link
+            to="/$lang"
+            params={{ lang: language }}
+            preload="intent"
+            className="flex items-center gap-2.5 transition-transform hover:scale-105"
+          >
             <ResponsiveImage source="logo/Logo-Hitam-230.webp" sizes="115px" alt="Asta Digital Agency" width={230} height={230} decoding="async" className="w-[115px] mt-2 h-auto" onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }} />
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center gap-[40px] h-full">
             {/* Home */}
-            <a
-              href="/"
+            <Link
+              to="/$lang"
+              params={{ lang: language }}
+              preload="intent"
               className="relative text-[18px] font-medium text-gray-700 hover:text-[#004AAD] transition-colors py-8
                 after:content-[''] after:absolute after:left-0 after:bottom-4 after:w-full after:h-[2px] after:bg-[#004AAD]
                 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
             >
               {t("nav.home")}
-            </a>
+            </Link>
 
             {/* Product & Services Dropdown */}
             <div className="relative group mega-dropdown-wrapper h-full flex items-center">
@@ -752,26 +786,30 @@ export function Navbar() {
                       </div>
                     </div>
 
-                    <a
-                      href={`/${language}/discover`}
+                    <Link
+                      to="/$lang/discover"
+                      params={{ lang: language }}
+                      preload="intent"
                       className="inline-flex items-center justify-between text-xs font-semibold text-white bg-[#004AAD] px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors mt-4 shadow-sm"
                     >
                       {t("nav.learn_more")} <ArrowRight className="w-3.5 h-3.5" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Blog */}
-            <a
-              href={`/${language}/blog`}
+            <Link
+              to="/$lang/blog"
+              params={{ lang: language }}
+              preload="intent"
               className="relative text-[18px] font-medium text-gray-700 hover:text-[#004AAD] transition-colors py-8
                 after:content-[''] after:absolute after:left-0 after:bottom-4 after:w-full after:h-[2px] after:bg-[#004AAD]
                 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
             >
               {t("nav.blog")}
-            </a>
+            </Link>
           </nav>
 
           {/* Right Section: Language Switcher & Contact Button */}
@@ -812,23 +850,28 @@ export function Navbar() {
             >
               <div className="space-y-1">
                 {[
-                  { href: `/${language}/`, label: t("nav.home") },
-                  { href: `/${language}/#layanan`, label: t("nav.services") },
-                  { href: `/${language}/#portofolio`, label: t("nav.portfolio") },
-                  { href: `/${language}/discover`, label: t("nav.discover") },
-                  { href: `/${language}/blog`, label: t("nav.blog") },
+                  { to: "/$lang", label: t("nav.home") },
+                  { to: "/$lang/services", label: t("nav.services") },
+                  { to: "/$lang/portfolio", label: t("nav.portfolio") },
+                  { to: "/$lang/discover", label: t("nav.discover") },
+                  { to: "/$lang/blog", label: t("nav.blog") },
                 ].map((item, i) => (
-                  <motion.a
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                  <motion.div
+                    key={item.to}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.22, delay: 0.06 + i * 0.045, ease: [0.22, 1, 0.36, 1] }}
-                    className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] border-b border-gray-100"
+                    transition={{ duration: 0.22, delay: 0.05 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {item.label}
-                  </motion.a>
+                    <Link
+                      to={item.to}
+                      params={{ lang: language }}
+                      preload="intent"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] active:text-[#004AAD] border-b border-gray-100"
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
 

@@ -301,6 +301,7 @@ export function ServicesListPage() {
                         <Link
                           to="/$lang/services/$id"
                           params={{ lang, id: String(service.id) }}
+                          preload="intent"
                         >
                           {t("services.view_detail")}
                           <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />

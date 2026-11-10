@@ -186,7 +186,7 @@ export function Portfolio() {
             size="lg"
             className="rounded-full bg-[#004AAD] hover:bg-blue-800 text-white font-semibold px-8 h-12 shadow-md cursor-pointer transition-all hover:scale-105 inline-flex items-center gap-2"
           >
-            <Link to="/$lang/portfolio" params={{ lang: params?.lang || language || "id" }}>
+            <Link to="/$lang/portfolio" params={{ lang: params?.lang || language || "id" }} preload="intent">
               <span>{t("nav.all_portfolios")}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>

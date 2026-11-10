@@ -530,6 +530,7 @@ export function ServiceDetailPage() {
                           key={other.id}
                           to="/$lang/services/$id"
                           params={{ lang: currentLang, id: String(other.id) }}
+                          preload="intent"
                           className="group flex items-start gap-3 rounded-2xl border border-gray-100 p-3 hover:border-blue-200 hover:bg-blue-50/50 transition-all cursor-pointer"
                         >
                           {other.logo ? (

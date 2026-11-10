@@ -46,19 +46,19 @@ export function PortfolioDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [mountedAt] = useState(() => Date.now());
 
-  // Try finding from cached landingData first
+  // Try finding from cached landingData first for instant render (0ms wait)
   const allPortfolios = (landingData?.portfolios || []) as any[];
   const cachedItem = allPortfolios.find((item) => String(item.id) === String(id));
 
-  // Fallback direct query if not in cache (e.g. direct load)
+  // Query single portfolio detail to ensure full and fresh data
   const { data: fetchedItem, isLoading, isError } = useQuery<PortfolioData>({
     queryKey: ["portfolio", id],
     queryFn: () => axios.get<PortfolioData>(`/api/portfolios/${id}`).then((res) => res.data),
-    enabled: !cachedItem && Boolean(id),
-    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(id),
+    staleTime: 60 * 1000,
   });
 
-  const rawPortfolio = (cachedItem || fetchedItem) as PortfolioData | undefined;
+  const rawPortfolio = (fetchedItem || cachedItem) as PortfolioData | undefined;
 
   // Scroll to top on mount or portfolio change
   useEffect(() => {
@@ -495,6 +495,7 @@ export function PortfolioDetailPage() {
                         key={item.id}
                         to="/$lang/portfolio/$id"
                         params={{ lang: currentLang, id: String(item.id) }}
+                        preload="intent"
                         className="group flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-blue-50/60 border border-transparent hover:border-blue-100 transition-all cursor-pointer"
                       >
                         <div className="h-12 w-12 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200/60">

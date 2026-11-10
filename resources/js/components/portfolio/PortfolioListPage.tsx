@@ -245,98 +245,99 @@ export function PortfolioListPage() {
                 const isMobile = p.type === "mobile";
                 const displayImage = p.image || p.image_small;
                 return (
-                  <motion.article
+                  <motion.div
                     key={p.id}
                     initial={{ opacity: 0, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ duration: 0.45, delay: (index % 3) * 0.08 }}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-gray-100/90 bg-white shadow-glass transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-200 cursor-pointer"
-                    onClick={() => {
-                      navigate({
-                        to: "/$lang/portfolio/$id",
-                        params: { lang, id: String(p.id) },
-                      });
-                    }}
                   >
-                    <div>
-                      {/* Image Thumbnail Container */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-900">
-                        {displayImage ? (
-                          <img
-                            src={displayImage}
-                            alt={p.name}
-                            width={640}
-                            height={400}
-                            loading="lazy"
-                            decoding="async"
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-[#004AAD] to-[#38B6FF] text-white font-bold text-xl">
-                            {p.name.charAt(0)}
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <Link
+                      to="/$lang/portfolio/$id"
+                      params={{ lang, id: String(p.id) }}
+                      preload="intent"
+                      className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-gray-100/90 bg-white shadow-glass transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-200 cursor-pointer h-full"
+                    >
+                      <div>
+                        {/* Image Thumbnail Container */}
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-900">
+                          {displayImage ? (
+                            <img
+                              src={displayImage}
+                              alt={p.name}
+                              width={640}
+                              height={400}
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-[#004AAD] to-[#38B6FF] text-white font-bold text-xl">
+                              {p.name.charAt(0)}
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
-                        {/* Category Badge */}
-                        <div className="absolute top-3 left-3 z-10">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-[#004AAD] shadow-xs">
-                            {isMobile ? (
-                              <Smartphone className="h-3 w-3" />
-                            ) : (
-                              <Monitor className="h-3 w-3" />
-                            )}
-                            {p.category}
-                          </span>
-                        </div>
-
-                        {/* Live Demo badge if available */}
-                        {p.demo_url && (
-                          <div className="absolute top-3 right-3 z-10">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/90 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-semibold text-white shadow-xs">
-                              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                              Demo
+                          {/* Category Badge */}
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-[#004AAD] shadow-xs">
+                              {isMobile ? (
+                                <Smartphone className="h-3 w-3" />
+                              ) : (
+                                <Monitor className="h-3 w-3" />
+                              )}
+                              {p.category}
                             </span>
                           </div>
+
+                          {/* Live Demo badge if available */}
+                          {p.demo_url && (
+                            <div className="absolute top-3 right-3 z-10">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/90 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-semibold text-white shadow-xs">
+                                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                                Demo
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content Info */}
+                        <div className="p-6">
+                          <h3 className="font-display text-lg sm:text-xl font-bold text-gray-900 group-hover:text-[#004AAD] transition-colors line-clamp-1">
+                            {p.name}
+                          </h3>
+                          <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">
+                            {stripHtml(p.description) ||
+                              (lang === "en"
+                                ? "Engineered tailored software solution by ASTA Digital."
+                                : "Solusi sistem perangkat lunak terintegrasi dari ASTA Digital.")}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Bottom Action Footer */}
+                      <div className="px-6 pb-6 pt-3 flex items-center justify-between border-t border-gray-100">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#004AAD] group-hover:gap-2 transition-all">
+                          <span>{t("services.view_detail")}</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+
+                        {p.demo_url && (
+                          <span
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.open(p.demo_url, "_blank", "noopener,noreferrer");
+                            }}
+                            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1 text-xs font-medium transition-colors"
+                          >
+                            <span>{t("portfolio.live_demo")}</span>
+                            <ExternalLink className="h-3 w-3" />
+                          </span>
                         )}
                       </div>
-
-                      {/* Content Info */}
-                      <div className="p-6">
-                        <h3 className="font-display text-lg sm:text-xl font-bold text-gray-900 group-hover:text-[#004AAD] transition-colors line-clamp-1">
-                          {p.name}
-                        </h3>
-                        <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">
-                          {stripHtml(p.description) ||
-                            (lang === "en"
-                              ? "Engineered tailored software solution by ASTA Digital."
-                              : "Solusi sistem perangkat lunak terintegrasi dari ASTA Digital.")}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Bottom Action Footer */}
-                    <div className="px-6 pb-6 pt-3 flex items-center justify-between border-t border-gray-100">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#004AAD] group-hover:gap-2 transition-all">
-                        <span>{t("services.view_detail")}</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
-
-                      {p.demo_url && (
-                        <a
-                          href={p.demo_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1 text-xs font-medium transition-colors"
-                        >
-                          <span>{t("portfolio.live_demo")}</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  </motion.article>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
