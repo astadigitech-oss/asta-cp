@@ -301,6 +301,7 @@ export function ServicesListPage() {
                         <Link
                           to="/$lang/services/$id"
                           params={{ lang, id: String(service.id) }}
+                          aria-label={`${t("services.view_detail")}: ${service.name}`}
                           preload="intent"
                         >
                           {t("services.view_detail")}
@@ -313,6 +314,7 @@ export function ServicesListPage() {
                         onClick={() => handleOpenContact(service.name)}
                         className="rounded-full border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-[#004AAD] h-11 px-4 text-xs font-semibold"
                         title={lang === "en" ? "Consult" : "Konsultasi"}
+                        aria-label={`${lang === "en" ? "Consult about" : "Konsultasi tentang"} ${service.name}`}
                       >
                         <MessageSquare className="h-4 w-4" />
                       </Button>

@@ -255,6 +255,7 @@ export function PortfolioListPage() {
                     <Link
                       to="/$lang/portfolio/$id"
                       params={{ lang, id: String(p.id) }}
+                      aria-label={p.name}
                       preload="intent"
                       className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-gray-100/90 bg-white shadow-glass transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-blue-200 cursor-pointer h-full"
                     >
