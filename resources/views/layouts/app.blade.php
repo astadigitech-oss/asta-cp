@@ -784,7 +784,7 @@
                                     $recSlug = method_exists($rec, 'getLocalizedSlug') ? $rec->getLocalizedSlug($currentLocale) : $rec->slug;
                                     $recThumbnail = \App\Support\OptimizedImage::url($rec->thumbnail, 'article-thumb');
                                 @endphp
-                                <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
+                                <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" aria-label="{{ localizeTextPhp($rec->title, $currentLocale) }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
                                     @if ($recThumbnail)
                                         <div class="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
                                             <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!} loading="lazy" decoding="async" class="h-full w-full object-cover" />
@@ -1240,7 +1240,7 @@
                             @endphp
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if ($dImg)
-                                    <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                    <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
                                         <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
@@ -1264,8 +1264,8 @@
                                         @endif
                                     </div>
                                     <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                                        <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                                            <span>{{ $currentLocale === 'en' ? 'Read More' : 'Pelajari Selengkapnya' }}</span>
+                                        <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ ($currentLocale === 'en' ? 'Read story: ' : 'Pelajari selengkapnya: ') . localizeTextPhp($dName, $currentLocale) }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                                            <span>{{ $currentLocale === 'en' ? 'Read Story' : 'Pelajari Selengkapnya' }}</span>
                                             <span>→</span>
                                         </a>
                                     </div>
@@ -1728,8 +1728,8 @@
                                     {{ transKey($transDict, 'discover.description') }}
                                 </p>
                             </div>
-                            <a href="/{{ $currentLocale }}/discover" class="hidden sm:inline-block text-sm font-semibold text-blue-600 hover:underline shrink-0">
-                                {{ $currentLocale === 'en' ? 'View All →' : 'Lihat Semua →' }}
+                            <a href="/{{ $currentLocale }}/discover" aria-label="{{ $currentLocale === 'en' ? 'View all stories and case studies' : 'Lihat semua cerita dan studi kasus' }}" class="hidden sm:inline-block text-sm font-semibold text-blue-600 hover:underline shrink-0">
+                                {{ $currentLocale === 'en' ? 'View All Stories & Studies →' : 'Lihat Semua Studi & Cerita →' }}
                             </a>
                         </div>
 
@@ -1749,7 +1749,7 @@
                                 @endphp
                                 <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                     @if ($dImg)
-                                        <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                        <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
                                             <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                         </a>
                                     @endif
@@ -1773,7 +1773,7 @@
                                             @endif
                                         </div>
                                         <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                                            <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                                            <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ ($currentLocale === 'en' ? 'Read story: ' : 'Pelajari selengkapnya: ') . localizeTextPhp($dName, $currentLocale) }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
                                                 <span>{{ $currentLocale === 'en' ? 'Read Story' : 'Pelajari Selengkapnya' }}</span>
                                                 <span>→</span>
                                             </a>
@@ -1882,7 +1882,7 @@
                                     {{ transKey($transDict, 'blog.description') }}
                                 </p>
                             </div>
-                            <a href="/{{ $currentLocale }}/blog" class="text-sm font-semibold text-blue-600 hover:underline shrink-0">
+                            <a href="/{{ $currentLocale }}/blog" aria-label="{{ $currentLocale === 'en' ? 'View all blog articles' : 'Lihat semua artikel blog' }}" class="text-sm font-semibold text-blue-600 hover:underline shrink-0">
                                 {{ transKey($transDict, 'blog.view_all', 'Lihat Semua Artikel') }} →
                             </a>
                         </div>

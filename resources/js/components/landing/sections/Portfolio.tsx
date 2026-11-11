@@ -130,6 +130,15 @@ export function Portfolio() {
                   }}
                   className={`group relative aspect-[4/5] w-[85%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-primary shadow-glass sm:aspect-auto sm:w-auto sm:shrink cursor-pointer transition-all duration-300 hover:shadow-2xl ${p.span}`}
                 >
+                  <Link
+                    to="/$lang/portfolio/$id"
+                    params={{ lang: params?.lang || language || "id", id: String(p.id) }}
+                    aria-label={p.title}
+                    className="absolute inset-0 z-20"
+                    tabIndex={0}
+                  >
+                    <span className="sr-only">{p.title}</span>
+                  </Link>
                   {p.img ? (
                     <ResponsiveImage
                       source={p.img}

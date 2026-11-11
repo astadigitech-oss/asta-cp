@@ -600,6 +600,7 @@ export function DiscoverDetailPage() {
                 <Link
                   to="/$lang/discover/$id"
                   params={{ id: String(nextItem.id), lang: lang || "id" }}
+                  aria-label={`${t("common.next_article")}: ${nextItem.name}`}
                   className="group flex flex-col p-4 rounded-2xl border border-gray-200/80 bg-white hover:bg-blue-50/50 hover:border-blue-200 transition-all text-right sm:text-right"
                 >
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-end gap-1 group-hover:text-[#004AAD]">
@@ -626,7 +627,11 @@ export function DiscoverDetailPage() {
                   </p>
                 </div>
                 <Button asChild variant="outline" className="rounded-full border-gray-200 text-xs font-semibold">
-                  <Link to="/$lang/discover" params={{ lang: lang || "id" }}>
+                  <Link
+                    to="/$lang/discover"
+                    params={{ lang: lang || "id" }}
+                    aria-label={lang === "en" ? "View all stories and case studies" : "Lihat semua studi kasus dan cerita"}
+                  >
                     {t("common.view_all")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                   </Link>
                 </Button>
@@ -640,6 +645,7 @@ export function DiscoverDetailPage() {
                       key={item.id}
                       to="/$lang/discover/$id"
                       params={{ id: String(item.id), lang: lang || "id" }}
+                      aria-label={item.name}
                       className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
                     >
                       <div>

@@ -293,6 +293,7 @@ export function DiscoverListPage() {
                     <Link
                       to="/$lang/discover/$id"
                       params={{ id: localize(item.slug) || String(item.id), lang }}
+                      aria-label={item.name}
                       className="block cursor-pointer"
                     >
                       <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-gray-100 relative">
@@ -347,6 +348,7 @@ export function DiscoverListPage() {
                       <Link
                         to="/$lang/discover/$id"
                         params={{ id: localize(item.slug) || String(item.id), lang }}
+                        aria-label={`${t("discover.read_more")}: ${item.name}`}
                         className="inline-flex items-center gap-1.5 hover:underline"
                       >
                         <span>{t("discover.read_more")}</span>

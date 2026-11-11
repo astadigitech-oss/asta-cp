@@ -93,6 +93,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                   <Link
                     to="/$lang/$slug"
                     params={{ slug: localize(article.slug), lang }}
+                    aria-label={localizedTitle}
                     className="block aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100 relative mb-4 cursor-pointer"
                   >
                     {article.thumbnail ? (
@@ -152,6 +153,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                   <Link
                     to="/$lang/$slug"
                     params={{ slug: localize(article.slug), lang }}
+                    aria-label={`${t("blog.read_more")}: ${localizedTitle}`}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-[#004AAD] group-hover:gap-2.5 transition-all cursor-pointer"
                   >
                     <span>{t("blog.read_more")}</span>

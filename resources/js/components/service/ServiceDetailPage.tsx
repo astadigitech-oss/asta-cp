@@ -526,9 +526,10 @@ export function ServiceDetailPage() {
                       <Link
                         to="/$lang/services"
                         params={{ lang: currentLang }}
+                        aria-label={currentLang === "en" ? "View all digital services and solutions" : "Lihat semua layanan dan solusi digital"}
                         className="text-xs font-semibold text-[#004AAD] hover:underline"
                       >
-                        {currentLang === "en" ? "View All" : "Lihat Semua"}
+                        {currentLang === "en" ? "View All Services →" : "Lihat Semua Layanan →"}
                       </Link>
                     </div>
                     <div className="space-y-3">
@@ -537,13 +538,14 @@ export function ServiceDetailPage() {
                           key={other.id}
                           to="/$lang/services/$id"
                           params={{ lang: currentLang, id: String(other.id) }}
+                          aria-label={localize(other.name)}
                           preload="intent"
                           className="group flex items-start gap-3 rounded-2xl border border-gray-100 p-3 hover:border-blue-200 hover:bg-blue-50/50 transition-all cursor-pointer"
                         >
                           {other.logo ? (
                             <img
                               src={other.logo}
-                              alt=""
+                              alt={localize(other.name)}
                               width={40}
                               height={40}
                               loading="lazy"

@@ -312,17 +312,16 @@ export function Services() {
           </div>
 
           <div className="pt-4 border-t border-primary/5 sm:group-hover:border-white/20 transition-colors">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCardClick(s);
-              }}
+            <Link
+              to="/$lang/services/$id"
+              params={{ lang: params?.lang || language || "id", id: String(s.id) }}
+              aria-label={`${t("services.view_detail")}: ${s.name}`}
+              onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-secondary sm:group-hover:text-cyan-300 transition-colors cursor-pointer"
             >
               {t("services.view_detail")}
               <ArrowRight className="h-4 w-4 transition-transform sm:group-hover:translate-x-1.5" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

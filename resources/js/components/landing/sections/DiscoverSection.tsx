@@ -159,6 +159,7 @@ export function DiscoverSection({ discoversList = [] }: { discoversList?: Discov
                   <Link
                     to="/$lang/discover/$id"
                     params={{ id: localize(item.slug) || String(item.id), lang }}
+                    aria-label={item.name}
                     className="block cursor-pointer"
                   >
                     <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3.5 bg-gray-100 relative">
@@ -223,7 +224,11 @@ export function DiscoverSection({ discoversList = [] }: { discoversList?: Discov
                       asChild
                       className="w-full rounded-xl gradient-accent hover:bg-gradient-accent text-white font-semibold text-xs sm:text-sm py-2.5 sm:py-3 transition-all shadow-sm cursor-pointer"
                     >
-                      <Link to="/$lang/discover/$id" params={{ id: localize(item.slug) || String(item.id), lang }}>
+                      <Link
+                        to="/$lang/discover/$id"
+                        params={{ id: localize(item.slug) || String(item.id), lang }}
+                        aria-label={`${t("discover.read_more")}: ${item.name}`}
+                      >
                         {t("discover.read_more")} <ArrowRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </Button>

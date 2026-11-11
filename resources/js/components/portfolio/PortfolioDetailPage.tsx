@@ -497,6 +497,7 @@ export function PortfolioDetailPage() {
                         key={item.id}
                         to="/$lang/portfolio/$id"
                         params={{ lang: currentLang, id: String(item.id) }}
+                        aria-label={item.name}
                         preload="intent"
                         className="group flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-blue-50/60 border border-transparent hover:border-blue-100 transition-all cursor-pointer"
                       >

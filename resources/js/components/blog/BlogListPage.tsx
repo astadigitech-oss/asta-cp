@@ -286,6 +286,7 @@ export function BlogListPage() {
                   <Link
                     to="/$lang/$slug"
                     params={{ slug: localize(article.slug), lang }}
+                    aria-label={localize(article.title)}
                     className="block cursor-pointer w-full min-w-0"
                   >
                     {/* Thumbnail */}
@@ -345,6 +346,7 @@ export function BlogListPage() {
                     <Link
                       to="/$lang/$slug"
                       params={{ slug: localize(article.slug), lang }}
+                      aria-label={`${lang === "en" ? "Read Article" : "Baca Artikel"}: ${localize(article.title)}`}
                       className="inline-flex items-center gap-1.5 hover:underline"
                     >
                       <span>{lang === "en" ? "Read Article" : "Baca Artikel"}</span>

@@ -16,7 +16,7 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/main.tsx'],
             refresh: true,
-        }),
+        }), 
         react(),
         tailwindcss(),
     ],
