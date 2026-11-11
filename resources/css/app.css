@@ -236,14 +236,17 @@ a {
 
 .floating {
   animation: float 4s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translate3d(0, -6px, 0);
   }
 }
 
@@ -491,10 +494,10 @@ a {
 
 @keyframes marquee {
   0% {
-    transform: translateX(0%);
+    transform: translate3d(0%, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -503,6 +506,8 @@ a {
   width: max-content;
   animation: marquee 30s linear infinite;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .animate-marquee:hover {
@@ -514,6 +519,13 @@ a {
   width: max-content;
   animation: marquee 50s linear infinite;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.animate-spin {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .animate-marquee-slow:hover,

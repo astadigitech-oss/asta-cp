@@ -94,10 +94,10 @@ export function Footer() {
               <address className="mt-4 text-xs leading-relaxed text-white/80 not-italic">
                 {t("contact.info_office_address")}
               </address>
-              <a href="tel:+6281578223564" className="mt-2 block text-xs text-white/80 hover:text-white">
+              <a href="tel:+6281578223564" className="mt-2 inline-flex items-center min-h-[44px] py-1 text-xs text-white/80 hover:text-white transition-colors">
                 +62 815 7822 3564
               </a>
-              <a href="mailto:cs@astadigitalagency.com" className="mt-1 block text-xs text-white/80 hover:text-white">
+              <a href="mailto:cs@astadigitalagency.com" className="mt-1 inline-flex items-center min-h-[44px] py-1 text-xs text-white/80 hover:text-white transition-colors">
                 cs@astadigitalagency.com
               </a>
             </div>

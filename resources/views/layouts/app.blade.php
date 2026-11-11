@@ -1398,10 +1398,12 @@
                                     <div class="flex flex-wrap items-center gap-5">
                                         @foreach ($homeClients as $client)
                                             @if ($client->image)
-                                                <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
-                                                     alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
-                                                     width="112" height="44" loading="lazy" decoding="async"
-                                                     class="max-h-10 max-w-28 object-contain opacity-75" />
+                                                <div class="flex shrink-0 items-center justify-center h-12 px-2">
+                                                    <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
+                                                         alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
+                                                         width="130" height="44" loading="lazy" decoding="async"
+                                                         class="max-h-11 max-w-[130px] w-auto h-auto object-contain opacity-75" />
+                                                </div>
                                             @else
                                                 <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
                                             @endif
@@ -2092,9 +2094,9 @@
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.contact_title', 'Hubungi Kami') }}</span>
                             <!--email_off-->
-                            <p class="text-xs">Email: <a href="mailto:cs@astadigitalagency.com" class="text-blue-600 hover:underline">cs@astadigitalagency.com</a></p>
+                            <p class="text-xs">Email: <a href="mailto:cs@astadigitalagency.com" class="inline-flex items-center min-h-[44px] py-1 text-blue-600 hover:underline">cs@astadigitalagency.com</a></p>
                             <!--email_on-->
-                            <p class="text-xs">{{ transKey($transDict, 'contact.info_phone', 'Telepon') }}: <a href="tel:+6281578223564" class="text-blue-600 hover:underline">+62 815 7822 3564</a></p>
+                            <p class="text-xs">{{ transKey($transDict, 'contact.info_phone', 'Telepon') }}: <a href="tel:+6281578223564" class="inline-flex items-center min-h-[44px] py-1 text-blue-600 hover:underline">+62 815 7822 3564</a></p>
                         </div>
                         <div class="space-y-2">
                             <span class="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider">{{ transKey($transDict, 'footer.hours_title', 'Jam Kerja') }}</span>
