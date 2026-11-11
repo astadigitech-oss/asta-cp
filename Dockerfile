@@ -58,7 +58,7 @@ COPY --from=frontend /app/public/build ./public/build
 COPY --from=frontend /app/public/images/optimized ./public/images/optimized
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Setup Nginx & Entrypoint
 RUN mkdir -p /run/nginx
