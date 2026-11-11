@@ -197,6 +197,216 @@ class ImageOptimizer
     }
 
     /**
+     * Create an optimized WebP variant for an image on public storage.
+     */
+    public static function createWebpVariant(
+        string $sourceRelativePath,
+        string $variantRelativePath,
+        int $targetWidth,
+        int $targetHeight,
+        bool $contain = false,
+        int $quality = 78
+    ): bool {
+        if (! function_exists('imagewebp')) {
+            return false;
+        }
+
+        $disk = Storage::disk('public');
+        if (! $disk->exists($sourceRelativePath)) {
+            return false;
+        }
+
+        $sourceFullPath = $disk->path($sourceRelativePath);
+        $imageInfo = @getimagesize($sourceFullPath);
+        if ($imageInfo === false) {
+            return false;
+        }
+
+        $sourceWidth = $imageInfo[0];
+        $sourceHeight = $imageInfo[1];
+        $imageType = $imageInfo[2];
+
+        if (! in_array($imageType, [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) {
+            return false;
+        }
+
+        if (! self::isSafeToDecode($sourceWidth, $sourceHeight, false)) {
+            return false;
+        }
+
+        $source = match ($imageType) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($sourceFullPath),
+            IMAGETYPE_PNG => @imagecreatefrompng($sourceFullPath),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($sourceFullPath) : false,
+            default => false,
+        };
+
+        if ($source === false) {
+            return false;
+        }
+
+        $destinationFullPath = $disk->path($variantRelativePath);
+        $destinationDir = dirname($destinationFullPath);
+        if (! is_dir($destinationDir) && ! @mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
+            imagedestroy($source);
+            return false;
+        }
+
+        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        if ($canvas === false) {
+            imagedestroy($source);
+            return false;
+        }
+
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+        imagefill($canvas, 0, 0, $transparent);
+
+        if ($contain) {
+            $scale = min($targetWidth / $sourceWidth, $targetHeight / $sourceHeight);
+            $newW = max(1, (int) round($sourceWidth * $scale));
+            $newH = max(1, (int) round($sourceHeight * $scale));
+            $dstX = (int) floor(($targetWidth - $newW) / 2);
+            $dstY = (int) floor(($targetHeight - $newH) / 2);
+
+            imagecopyresampled(
+                $canvas,
+                $source,
+                $dstX,
+                $dstY,
+                0,
+                0,
+                $newW,
+                $newH,
+                $sourceWidth,
+                $sourceHeight
+            );
+        } else {
+            $targetRatio = $targetWidth / $targetHeight;
+            $sourceRatio = $sourceWidth / $sourceHeight;
+
+            if ($sourceRatio > $targetRatio) {
+                $cropWidth = (int) round($sourceHeight * $targetRatio);
+                $srcX = (int) floor(($sourceWidth - $cropWidth) / 2);
+                $srcY = 0;
+                $cropHeight = $sourceHeight;
+            } else {
+                $cropWidth = $sourceWidth;
+                $srcX = 0;
+                $cropHeight = (int) round($sourceWidth / $targetRatio);
+                $srcY = (int) floor(($sourceHeight - $cropHeight) / 2);
+            }
+
+            imagecopyresampled(
+                $canvas,
+                $source,
+                0,
+                0,
+                $srcX,
+                $srcY,
+                $targetWidth,
+                $targetHeight,
+                $cropWidth,
+                $cropHeight
+            );
+        }
+
+        $tempPath = $destinationFullPath . '.tmp.' . bin2hex(random_bytes(4));
+        $saved = @imagewebp($canvas, $tempPath, $quality);
+
+        imagedestroy($source);
+        imagedestroy($canvas);
+
+        if ($saved && file_exists($tempPath)) {
+            @chmod($tempPath, 0644);
+            return @rename($tempPath, $destinationFullPath);
+        }
+
+        if (file_exists($tempPath)) {
+            @unlink($tempPath);
+        }
+
+        return false;
+    }
+
+    /**
+     * Inspect SVG file: if it contains an embedded raster base64 bitmap that makes it bloated (>100KB),
+     * extract, downscale, compress, and re-embed it.
+     */
+    public static function optimizeSvgIfBloated(string $relativeSvgPath, int $maxDimension = 520): bool
+    {
+        $disk = Storage::disk('public');
+        if (! $disk->exists($relativeSvgPath)) {
+            return false;
+        }
+
+        $fullPath = $disk->path($relativeSvgPath);
+        $size = @filesize($fullPath);
+        if ($size === false || $size < 100_000) {
+            return false;
+        }
+
+        $content = @file_get_contents($fullPath);
+        if (! $content) {
+            return false;
+        }
+
+        if (preg_match('/data:image\/(png|jpeg|jpg);base64,([A-Za-z0-9+\/=\s]+)/i', $content, $matches)) {
+            $rawBase64 = preg_replace('/\s+/', '', $matches[2]);
+            $decoded = @base64_decode($rawBase64);
+            if (! $decoded) {
+                return false;
+            }
+
+            if (! function_exists('imagecreatefromstring')) {
+                return false;
+            }
+
+            $gd = @imagecreatefromstring($decoded);
+            if (! $gd) {
+                return false;
+            }
+
+            $origW = imagesx($gd);
+            $origH = imagesy($gd);
+
+            if ($origW <= $maxDimension && $origH <= $maxDimension && strlen($decoded) < 150_000) {
+                imagedestroy($gd);
+                return false;
+            }
+
+            $scale = min($maxDimension / $origW, $maxDimension / $origH, 1.0);
+            $newW = max(1, (int) round($origW * $scale));
+            $newH = max(1, (int) round($origH * $scale));
+
+            $canvas = imagecreatetruecolor($newW, $newH);
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $transparent);
+
+            imagecopyresampled($canvas, $gd, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+            ob_start();
+            imagepng($canvas, null, 8);
+            $compressed = ob_get_clean();
+
+            imagedestroy($gd);
+            imagedestroy($canvas);
+
+            if ($compressed && strlen($compressed) < strlen($decoded)) {
+                $newBase64 = base64_encode($compressed);
+                $newContent = str_replace($matches[0], "data:image/png;base64," . $newBase64, $content);
+                @file_put_contents($fullPath, $newContent);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Purge cached variants in storage/optimized for a given relative path
      */
     public static function purgeVariantsForPath(string $relativePath): void

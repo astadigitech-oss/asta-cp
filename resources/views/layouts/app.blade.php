@@ -183,11 +183,11 @@
     if ($service) {
         $firstImg = is_array($service->image) ? ($service->image[0] ?? null) : $service->image;
         if ($firstImg) {
-            $serviceImg = str_starts_with($firstImg, 'http') ? $firstImg : asset('storage/' . ltrim($firstImg, '/'));
+            $serviceImg = \App\Support\OptimizedImage::url($firstImg, 'service-detail') ?: (str_starts_with($firstImg, 'http') ? $firstImg : asset('storage/' . ltrim($firstImg, '/')));
         } elseif (!empty($service->cover_image)) {
-            $serviceImg = str_starts_with($service->cover_image, 'http') ? $service->cover_image : asset('storage/' . ltrim($service->cover_image, '/'));
+            $serviceImg = \App\Support\OptimizedImage::url($service->cover_image, 'service-cover') ?: (str_starts_with($service->cover_image, 'http') ? $service->cover_image : asset('storage/' . ltrim($service->cover_image, '/')));
         } elseif (!empty($service->logo)) {
-            $serviceImg = str_starts_with($service->logo, 'http') ? $service->logo : asset('storage/' . ltrim($service->logo, '/'));
+            $serviceImg = \App\Support\OptimizedImage::url($service->logo, 'service-logo') ?: (str_starts_with($service->logo, 'http') ? $service->logo : asset('storage/' . ltrim($service->logo, '/')));
         }
     }
 
@@ -975,6 +975,8 @@
                         <div class="mt-6 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
                             <img src="{{ $serviceImg }}"
                                  alt="{{ localizeTextPhp(is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name, $currentLocale) }}"
+                                 width="1280" height="720"
+                                 loading="lazy" decoding="async"
                                  class="w-full max-h-[480px] object-cover">
                         </div>
                     @endif
@@ -1068,6 +1070,8 @@
                         <div class="mt-6 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-900">
                             <img src="{{ $portfolioImg }}"
                                  alt="{{ $portfolio->name }}"
+                                 width="800" height="1000"
+                                 loading="lazy" decoding="async"
                                  class="w-full max-h-[520px] object-cover">
                         </div>
                     @endif

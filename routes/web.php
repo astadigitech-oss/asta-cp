@@ -132,13 +132,18 @@ Route::get('/media/{preset}/{path}', OptimizedImageController::class)
     ->where('path', '.+')
     ->name('media.optimized');
 
+Route::get('/storage/optimized/{preset}/{filename}', [OptimizedImageController::class, 'serveOptimizedStorage'])
+    ->where('filename', '[a-zA-Z0-9_\-\.]+')
+    ->name('storage.optimized');
+
 // Redirect Cloudflare email protection link jika di-crawl oleh SEO bot (mencegah 404 broken link)
 Route::get('/cdn-cgi/l/email-protection', function () {
     $locale = request()->cookie('asta_lang') ?: (app()->getLocale() ?: 'id');
     return redirect("/{$locale}#kontak", 301);
 });
 
-// Locale root menggunakan SSR langsung; halaman localized menggunakan React untuk fitur SPA.
+// Halaman utama (root /) dan halaman localized (/{locale}) langsung melayani SSR tanpa redirect ganda,
+// mencegah penalti "Hindari pengalihan halaman ganda" (Multiple Page Redirects) di Google PageSpeed Insights.
 Route::get('/{any?}', function () {
     $path = trim(request()->path(), '/');
     $locale = 'id'; // default
@@ -148,7 +153,7 @@ Route::get('/{any?}', function () {
         if (in_array($preferredLocale, ['id', 'en'], true)) {
             $locale = $preferredLocale;
         }
-        return redirect("/{$locale}", 301);
+        // Jangan redirect ke /{locale}! Sajikan langsung dengan status 200 OK untuk menghindari redirect chain.
     } elseif (str_starts_with($path, 'en/') || $path === 'en') {
         $locale = 'en';
     } elseif (str_starts_with($path, 'id/') || $path === 'id') {

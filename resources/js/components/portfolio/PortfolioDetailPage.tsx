@@ -321,6 +321,8 @@ export function PortfolioDetailPage() {
                       alt={portfolio.name}
                       width={1200}
                       height={750}
+                      loading="eager"
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     />
                     {/* Gradient Overlay for subtle contrast */}
@@ -500,7 +502,7 @@ export function PortfolioDetailPage() {
                       >
                         <div className="h-12 w-12 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200/60">
                           {item.image ? (
-                            <img src={item.image} alt={item.name} width={48} height={48} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                            <img src={item.image} alt={item.name} width={48} height={48} loading="lazy" decoding="async" className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                           ) : (
                             <div className="h-full w-full grid place-items-center bg-blue-100 text-[#004AAD] font-bold text-xs">
                               {item.name.charAt(0)}
