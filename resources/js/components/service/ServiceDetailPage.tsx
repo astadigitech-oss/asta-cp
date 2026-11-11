@@ -275,6 +275,8 @@ export function ServiceDetailPage() {
                       alt={service.name}
                       width={56}
                       height={56}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-contain"
                     />
                   </div>
@@ -324,6 +326,8 @@ export function ServiceDetailPage() {
                         key={activeImgIndex}
                         src={serviceImages[activeImgIndex]}
                         alt={`${service.name} preview ${activeImgIndex + 1}`}
+                        width={1280}
+                        height={720}
                         className="h-full w-full object-cover transition-opacity duration-300"
                         loading="eager"
                         decoding="async"
@@ -391,8 +395,11 @@ export function ServiceDetailPage() {
                             <img
                               src={img}
                               alt=""
+                              width={104}
+                              height={72}
                               className="h-full w-full object-cover"
                               loading="lazy"
+                              decoding="async"
                             />
                           </button>
                         ))}
@@ -537,6 +544,10 @@ export function ServiceDetailPage() {
                             <img
                               src={other.logo}
                               alt=""
+                              width={40}
+                              height={40}
+                              loading="lazy"
+                              decoding="async"
                               className="h-10 w-10 rounded-xl object-contain bg-gray-50 p-1.5 border border-gray-100"
                             />
                           ) : (

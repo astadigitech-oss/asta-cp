@@ -33,6 +33,8 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       if (newPath !== currentPath) {
         router.navigate({ to: newPath, replace: false });
       }
+    } else {
+      router.navigate({ to: `/${lang}`, replace: false });
     }
   };
 
