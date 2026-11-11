@@ -8,8 +8,8 @@ use Throwable;
 class ImageOptimizer
 {
     public const MAX_SAFE_WEB_PIXELS = 10_000_000; // ~10 MP max on-the-fly in PHP-FPM
-    public const MAX_SAFE_CLI_PIXELS = 25_000_000; // ~25 MP max in CLI
-    public const MAX_SAFE_DIMENSION = 8_000;        // Max width or height for safe GD decode
+    public const MAX_SAFE_CLI_PIXELS = 200_000_000; // ~200 MP max in CLI / background downscale (covers up to 35k x 5.5k images)
+    public const MAX_SAFE_DIMENSION = 35_000;       // Max width or height for safe GD decode in CLI / downscale
     public const MAX_WEB_DIMENSION = 5_000;         // Max width or height in web requests
 
     /**
@@ -39,8 +39,8 @@ class ImageOptimizer
         if ($memoryLimit > 0) {
             $currentUsage = memory_get_usage(true);
             $availableMemory = $memoryLimit - $currentUsage;
-            // Prevent attempting decode if estimated requirement exceeds 70% of available memory
-            if ($estimatedBytes > ($availableMemory * 0.70)) {
+            // Prevent attempting decode if estimated requirement exceeds 85% of available memory
+            if ($estimatedBytes > ($availableMemory * 0.85)) {
                 return false;
             }
         }
@@ -107,14 +107,17 @@ class ImageOptimizer
             return false;
         }
 
-        // Safety guard: ensure decoding this image will not exhaust available memory
-        if (! self::isSafeToDecode($origWidth, $origHeight, false)) {
-            return false;
-        }
-
         // Temporarily raise memory limit for CLI or background processing of large images
         $currentLimit = ini_get('memory_limit');
-        @ini_set('memory_limit', '1024M');
+        @ini_set('memory_limit', '1536M');
+
+        // Safety guard: ensure decoding this image will not exhaust available memory
+        if (! self::isSafeToDecode($origWidth, $origHeight, false)) {
+            if ($currentLimit !== false) {
+                @ini_set('memory_limit', $currentLimit);
+            }
+            return false;
+        }
 
         try {
             $source = match ($imageType) {

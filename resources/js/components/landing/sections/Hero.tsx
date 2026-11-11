@@ -157,7 +157,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                               height={44}
                               loading="lazy"
                               decoding="async"
-                              className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
+                              className="max-h-11 max-w-[130px] w-auto h-auto object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
                               onError={(e) => {
                                 const target = e.target as HTMLElement;
                                 target.style.display = "none";
@@ -197,7 +197,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                           height={44}
                           loading="lazy"
                           decoding="async"
-                          className="max-h-11 max-w-[130px] object-contain filter opacity-75 hover:opacity-100 transition-all duration-300"
+                          className="max-h-11 max-w-[130px] w-auto h-auto object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
                           onError={(e) => {
                             const target = e.target as HTMLElement;
                             target.style.display = "none";

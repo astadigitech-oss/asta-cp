@@ -76,6 +76,7 @@ class DownscaleStorageImagesCommand extends Command
 
     public function handle(): int
     {
+        @ini_set('memory_limit', '1536M');
         $disk = Storage::disk('public');
         $this->info('Scanning public storage for image optimization...');
 
