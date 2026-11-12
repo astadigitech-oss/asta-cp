@@ -82,7 +82,8 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
             <div className="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] 2xl:max-w-[680px] 3xl:max-w-[760px] 4xl:max-w-[840px]">
               <div className="absolute inset-0 rounded-[42%_58%_45%_55%/55%_40%_60%_45%] gradient-mesh opacity-90 blur-[2px]" />
               <div className="absolute inset-6 rounded-[52%_48%_40%_60%/45%_55%_45%_55%] gradient-hero shadow-glass" />
-              <div className="absolute inset-0 animate-spin [animation-duration:40s]">
+              {/* Rotating dashed ring — pakai CSS transform-gpu agar composited layer di GPU */}
+              <div className="absolute inset-0 animate-spin [animation-duration:40s] transform-gpu will-change-transform">
                 <div className="absolute inset-2 rounded-full border border-dashed border-accent/40" />
               </div>
 
