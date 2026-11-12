@@ -26,35 +26,58 @@ export default defineConfig({
         },
     },
     build: {
-        // Target ES2020+ agar Vite tidak inject polyfill Array.at, findLast, dll
-        // yang sudah native di semua modern browser sejak 2022
+        // Target ES2020+ — tidak inject polyfill Array.at, findLast, dll
+        // yang sudah native di semua browser modern sejak 2022
         target: 'es2020',
         chunkSizeWarningLimit: 1000,
+        // Minify lebih agresif
+        minify: 'esbuild',
         rollupOptions: {
             output: {
+                // Nama file yang predictable untuk caching
+                chunkFileNames: 'assets/[name]-[hash].js',
+                entryFileNames: 'assets/[name]-[hash].js',
+                assetFileNames: 'assets/[name]-[hash][extname]',
                 manualChunks(id) {
-                    // Split motion/react menjadi chunk terpisah (lazy load friendly)
+                    // React core — paling critical, dimuat duluan
+                    if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+                        return 'vendor-react';
+                    }
+                    // Motion — lazy loaded via LazyMotion, boleh chunk tersendiri
                     if (id.includes('node_modules/motion')) {
                         return 'vendor-motion';
                     }
-                    // Split lucide icons
+                    // Lucide icons — sering dipakai tapi bisa split
                     if (id.includes('node_modules/lucide-react')) {
                         return 'vendor-icons';
                     }
-                    // Split tanstack router + query
+                    // TanStack (router + query)
                     if (id.includes('node_modules/@tanstack')) {
                         return 'vendor-tanstack';
                     }
-                    // Split radix UI
+                    // Radix UI
                     if (id.includes('node_modules/@radix-ui')) {
                         return 'vendor-radix';
                     }
-                    // React core
-                    if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-                        return 'vendor-react';
+                    // Axios
+                    if (id.includes('node_modules/axios')) {
+                        return 'vendor-axios';
+                    }
+                    // React Hook Form + resolvers
+                    if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/@hookform')) {
+                        return 'vendor-forms';
+                    }
+                    // Google Maps
+                    if (id.includes('node_modules/@googlemaps')) {
+                        return 'vendor-maps';
                     }
                 },
             },
         },
+    },
+    // Optimisasi deps yang sering berubah
+    optimizeDeps: {
+        include: ['react', 'react-dom', '@tanstack/react-router', '@tanstack/react-query'],
+        exclude: ['motion'],
     },
 });

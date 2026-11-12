@@ -612,19 +612,32 @@
         $gaId = config('services.google.analytics_id');
     @endphp
     @if (!empty($gaId))
-    <!-- Google tag (gtag.js) -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+    {{-- Google Analytics: load setelah halaman interactive (tidak block LCP/TBT) --}}
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', '{{ $gaId }}');
+        // Defer GA load sampai browser idle / setelah halaman visible
+        function _loadGA() {
+            var s = document.createElement('script');
+            s.src = 'https://www.googletagmanager.com/gtag/js?id={{ $gaId }}';
+            s.async = true;
+            document.head.appendChild(s);
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', '{{ $gaId }}', { 'send_page_view': true });
+        }
+        if (document.readyState === 'complete') {
+            setTimeout(_loadGA, 1500);
+        } else {
+            window.addEventListener('load', function(){ setTimeout(_loadGA, 1500); }, { once: true });
+        }
     </script>
     @endif
-    {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
+    {{-- Preconnect & Load Google Fonts: non-blocking swap untuk performa optimal --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional" media="print" onload="this.media='all'">
+    {{-- Load font utama (Inter + Space Grotesk) dengan display=swap agar text langsung tampil --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
     @php
@@ -645,6 +658,10 @@
         body{margin:0;min-width:320px;min-height:100vh;overflow-x:hidden;background:#f7fbff;color:#0b1f33;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
         #react-app{min-height:100vh;overflow-x:hidden}
         h1,h2,h3,p{margin-top:0}
+        /* Prevent layout shift dari nav & hero saat JS belum selesai */
+        nav{position:sticky;top:0;z-index:50}
+        /* Skeleton placeholder warna biar tidak blank putih total */
+        #react-app:empty::before{content:'';display:block;min-height:100vh;background:linear-gradient(135deg,#f7fbff 0%,#e8f4ff 100%)}
     </style>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])

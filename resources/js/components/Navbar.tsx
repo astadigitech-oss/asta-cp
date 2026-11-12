@@ -790,6 +790,7 @@ export function Navbar() {
                       to="/$lang/discover"
                       params={{ lang: language }}
                       preload="intent"
+                      aria-label={language === "en" ? "Explore all Discover stories, insights & case studies" : "Jelajahi semua cerita, wawasan & studi kasus Discover"}
                       className="inline-flex items-center justify-between text-xs font-semibold text-white bg-[#004AAD] px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors mt-4 shadow-sm"
                     >
                       {t("nav.learn_more")} <ArrowRight className="w-3.5 h-3.5" />
