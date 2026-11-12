@@ -205,68 +205,87 @@ Route::get('/{any?}', function () {
     ];
 
     if ($isHomePage) {
-        try {
-            $initialData['landing'] = Cache::remember('landing_api_cache', 30, function () {
-                return (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
-            });
-        } catch (\Throwable $e) {
-            $initialData['landing'] = null;
-        }
+        $homeCacheKey = "home_data_bundle_{$locale}";
+        $cachedHome = Cache::remember($homeCacheKey, 1800, function () {
+            try {
+                $landing = (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
+            } catch (\Throwable $e) {
+                $landing = null;
+            }
 
-        try {
-            $homeClients = Client::all();
-        } catch (QueryException $e) {
-            report($e);
-        }
+            try {
+                $clients = Client::all();
+            } catch (\Throwable $e) {
+                $clients = collect();
+            }
 
-        try {
-            $homeTestimonials = Testimonial::publiclyVerified()
-                ->orderBy('sort')
-                ->get()
-                ->filter(fn (Testimonial $testimonial) => Testimonial::hasPublicSource($testimonial->source_url))
-                ->values();
-        } catch (QueryException $e) {
-            report($e);
-        }
+            try {
+                $testimonials = Testimonial::publiclyVerified()
+                    ->orderBy('sort')
+                    ->get()
+                    ->filter(fn (Testimonial $testimonial) => Testimonial::hasPublicSource($testimonial->source_url))
+                    ->values();
+            } catch (\Throwable $e) {
+                $testimonials = collect();
+            }
 
-        try {
-            $homeServices = Service::with(['serviceListMains' => function ($q) {
-                $q->orderBy('sort', 'asc');
-            }])->orderBy('sort', 'asc')->get();
-        } catch (\Throwable $e) {
-            $homeServices = collect();
-        }
+            try {
+                $services = Service::with(['serviceListMains' => function ($q) {
+                    $q->orderBy('sort', 'asc');
+                }])->orderBy('sort', 'asc')->get();
+            } catch (\Throwable $e) {
+                $services = collect();
+            }
 
-        try {
-            $homeArticles = Article::where('is_published', true)
-                ->where(function ($q) {
-                    $q->whereNull('published_at')->orWhere('published_at', '<=', now());
-                })
-                ->latest('published_at')
-                ->limit(3)
+            try {
+                $articles = Article::where('is_published', true)
+                    ->where(function ($q) {
+                        $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+                    })
+                    ->latest('published_at')
+                    ->limit(3)
+                    ->get();
+            } catch (\Throwable $e) {
+                $articles = collect();
+            }
+
+            try {
+                $portfolios = Portfolio::orderBy('sort', 'asc')->limit(6)->get();
+            } catch (\Throwable $e) {
+                $portfolios = collect();
+            }
+
+            try {
+                $discovers = Discover::with(['DiscoverLists' => function ($query) {
+                    $query->where('is_active', true)->orderBy('sort', 'asc');
+                }])
+                ->orderByDesc('is_pinned')
+                ->orderByDesc('year')
+                ->orderByDesc('created_at')
+                ->limit(6)
                 ->get();
-        } catch (\Throwable $e) {
-            $homeArticles = collect();
-        }
+            } catch (\Throwable $e) {
+                $discovers = collect();
+            }
 
-        try {
-            $homePortfolios = Portfolio::orderBy('sort', 'asc')->limit(6)->get();
-        } catch (\Throwable $e) {
-            $homePortfolios = collect();
-        }
+            return [
+                'landing' => $landing,
+                'clients' => $clients,
+                'testimonials' => $testimonials,
+                'services' => $services,
+                'articles' => $articles,
+                'portfolios' => $portfolios,
+                'discovers' => $discovers,
+            ];
+        });
 
-        try {
-            $homeDiscovers = Discover::with(['DiscoverLists' => function ($query) {
-                $query->where('is_active', true)->orderBy('sort', 'asc');
-            }])
-            ->orderByDesc('is_pinned')
-            ->orderByDesc('year')
-            ->orderByDesc('created_at')
-            ->limit(6)
-            ->get();
-        } catch (\Throwable $e) {
-            $homeDiscovers = collect();
-        }
+        $initialData['landing'] = $cachedHome['landing'] ?? null;
+        $homeClients = $cachedHome['clients'] ?? collect();
+        $homeTestimonials = $cachedHome['testimonials'] ?? collect();
+        $homeServices = $cachedHome['services'] ?? collect();
+        $homeArticles = $cachedHome['articles'] ?? collect();
+        $homePortfolios = $cachedHome['portfolios'] ?? collect();
+        $homeDiscovers = $cachedHome['discovers'] ?? collect();
     } elseif ($isBlogPage) {
         try {
             $query = Article::where('is_published', true)
@@ -682,7 +701,7 @@ Route::get('/{any?}', function () {
     $isNotFound = (!$isHomePage && !$isBlogPage && !$isDiscoverPage && !$isServicesPage && !$isPortfolioPage && !$article && !$discover && !$service && !$portfolio);
     $statusCode = $isNotFound ? 404 : 200;
 
-    return response()->view('layouts.app', [
+    $response = response()->view('layouts.app', [
         'locale' => $locale,
         'article' => $article,
         'recommendedArticles' => $recommendedArticles ?? collect(),
@@ -706,4 +725,12 @@ Route::get('/{any?}', function () {
         'seo' => $seo,
         'initialData' => $initialData,
     ], $statusCode);
+
+    if ($statusCode === 200) {
+        // Berikan instruksi cache yang jelas ke browser & CDN Edge (Cloudflare):
+        // Browser: cache 120s, CDN/Cloudflare (s-maxage): cache 3600s (1 jam), stale-while-revalidate: 1 hari
+        $response->header('Cache-Control', 'public, max-age=120, s-maxage=3600, stale-while-revalidate=86400');
+    }
+
+    return $response;
 })->where('any', '^(?!dapur-belakang|admin|api|storage|sitemap\.xml|livewire).*');

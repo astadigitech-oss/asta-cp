@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from "react";
-import { LazyMotion } from "motion/react";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
@@ -7,9 +6,6 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
 import { HomeFAQ } from "./sections/HomeFAQ";
 import { Footer } from "./sections/Footer";
-
-// Load motion features async so they don't block initial JS parse on mobile
-const loadFeatures = () => import("motion/react").then(m => m.domAnimation);
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
@@ -144,7 +140,6 @@ export function LandingPage() {
   }, []);
 
   return (
-    <LazyMotion features={loadFeatures}>
     <div className="min-h-screen bg-background text-foreground selection:bg-accent/30 selection:text-accent font-sans">
       <Toaster position="top-right" />
       <Navbar />
@@ -296,7 +291,6 @@ export function LandingPage() {
       </main>
       <Footer />
     </div>
-    </LazyMotion>
   );
 }
 
