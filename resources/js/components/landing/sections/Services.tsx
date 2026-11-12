@@ -87,25 +87,30 @@ export function Services() {
   }, [servicesList.length]);
 
   // Seamless looping check when scrolling (works for native touch, drag, and auto-scroll)
+  // NOTE: Read scrollLeft once into local var before writing to avoid forced reflow
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
     const oneThird = loopWidthRef.current;
     if (oneThird > 0) {
-      if (slider.scrollLeft >= oneThird * 2) {
-        slider.scrollLeft -= oneThird;
-        scrollPosRef.current = slider.scrollLeft;
+      // Read layout property ONCE before any writes (prevents forced reflow)
+      const currentScrollLeft = slider.scrollLeft;
+      if (currentScrollLeft >= oneThird * 2) {
+        const next = currentScrollLeft - oneThird;
+        slider.scrollLeft = next;
+        scrollPosRef.current = next;
         if (isDownRef.current) {
           scrollLeftRef.current -= oneThird;
         }
-      } else if (slider.scrollLeft <= 5) {
-        slider.scrollLeft += oneThird;
-        scrollPosRef.current = slider.scrollLeft;
+      } else if (currentScrollLeft <= 5) {
+        const next = currentScrollLeft + oneThird;
+        slider.scrollLeft = next;
+        scrollPosRef.current = next;
         if (isDownRef.current) {
           scrollLeftRef.current += oneThird;
         }
       } else if (isDownRef.current) {
-        scrollPosRef.current = slider.scrollLeft;
+        scrollPosRef.current = currentScrollLeft;
       }
     }
   };
