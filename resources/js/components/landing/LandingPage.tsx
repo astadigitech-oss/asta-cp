@@ -55,7 +55,7 @@ function DeferredSection({
             observer?.disconnect();
           }
         },
-        { rootMargin: "250px 0px" },
+        { rootMargin: "1000px 0px" },
       );
       if (sectionRef.current) {
         observer.observe(sectionRef.current);
@@ -80,8 +80,7 @@ function DeferredSection({
   return (
     <div
       ref={sectionRef}
-      className={shouldLoad ? "w-full" : `w-full ${minHeight}`}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}
+      className={`w-full ${minHeight}`}
     >
       {shouldLoad ? (
         <Suspense fallback={<SectionFallback minHeight={minHeight} />}>
