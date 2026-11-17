@@ -612,24 +612,34 @@
               type="image/avif"
               fetchpriority="high">
         @php
-            $landingModulePreload = null;
+            $landingModulePreloads = [];
             $vite = app(\Illuminate\Foundation\Vite::class);
             if (!$vite->isRunningHot()) {
                 $viteManifestPath = public_path('build/manifest.json');
                 if (is_file($viteManifestPath)) {
                     $viteManifest = json_decode(file_get_contents($viteManifestPath), true, 512, JSON_THROW_ON_ERROR);
+                    $entryDependencies = ['resources/js/main.tsx'];
+                    foreach ($viteManifest['resources/js/main.tsx']['imports'] ?? [] as $entryDependency) {
+                        $entryDependencies[] = $entryDependency;
+                    }
+
                     foreach ($viteManifest as $manifestKey => $manifestChunk) {
                         if (($manifestChunk['name'] ?? null) === 'LandingPage') {
-                            $landingModulePreload = $vite->asset($manifestKey);
+                            $landingModulePreloads[] = $vite->asset($manifestKey);
+                            foreach ($manifestChunk['imports'] ?? [] as $dependencyKey) {
+                                if (!in_array($dependencyKey, $entryDependencies, true)) {
+                                    $landingModulePreloads[] = $vite->asset($dependencyKey);
+                                }
+                            }
                             break;
                         }
                     }
                 }
             }
         @endphp
-        @if ($landingModulePreload)
+        @foreach (array_unique($landingModulePreloads) as $landingModulePreload)
             <link rel="modulepreload" href="{{ $landingModulePreload }}">
-        @endif
+        @endforeach
     @endif
     @php
         $gaId = config('services.google.analytics_id');
