@@ -62,6 +62,12 @@ class OptimizedImage
             'height' => 360,
             'contain' => false,
         ],
+        'discover-thumb-medium' => [
+            'directories' => ['images/discovers', 'images/discover', 'discovers', 'discover'],
+            'width' => 432,
+            'height' => 243,
+            'contain' => false,
+        ],
         'discover-section' => [
             'directories' => ['images/elearning', 'images/discovers', 'elearning', 'discovers'],
             'width' => 1200,

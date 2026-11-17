@@ -628,8 +628,8 @@
     {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" media="print" onload="this.onload=null;this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional" media="print" onload="this.onload=null;this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional"></noscript>
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
     @php
         $clientInitialData = array_merge($initialData ?? ['locale' => $currentLocale], [
@@ -1235,17 +1235,26 @@
                                 $dDesc = is_array($item->short_description) ? ($item->short_description[$currentLocale] ?? reset($item->short_description)) : $item->short_description;
                                 $dSlug = method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id);
                                 $dImg = null;
+                                $dImgMedium = null;
                                 if (!empty($item->image)) {
                                     $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                     if ($first) {
                                         $dImg = \App\Support\OptimizedImage::url($first, 'discover-thumb');
+                                        if (!str_starts_with($first, 'http')) {
+                                            $dImgMedium = \App\Support\OptimizedImage::url($first, 'discover-thumb-medium');
+                                        }
                                     }
                                 }
                             @endphp
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if ($dImg)
                                     <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!}
+                                            @if ($dImgMedium)
+                                                srcset="{{ $dImgMedium }} 432w, {{ $dImg }} 640w"
+                                                sizes="(min-width: 1440px) 432px, (min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
+                                            @endif
+                                            class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
                                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -1406,7 +1415,7 @@
                                                     <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
                                                          alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
                                                          width="130" height="44" loading="lazy" decoding="async"
-                                                         class="max-h-11 max-w-[130px] w-auto h-auto object-contain opacity-75" />
+                                                         class="h-11 w-[130px] shrink-0 object-contain opacity-75" />
                                                 </div>
                                             @else
                                                 <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
@@ -1746,17 +1755,26 @@
                                     $dDesc = is_array($item->short_description) ? ($item->short_description[$currentLocale] ?? reset($item->short_description)) : $item->short_description;
                                     $dSlug = method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id);
                                     $dImg = null;
+                                    $dImgMedium = null;
                                     if (!empty($item->image)) {
                                         $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                         if ($first) {
                                             $dImg = \App\Support\OptimizedImage::url($first, 'discover-thumb');
+                                            if (!str_starts_with($first, 'http')) {
+                                                $dImgMedium = \App\Support\OptimizedImage::url($first, 'discover-thumb-medium');
+                                            }
                                         }
                                     }
                                 @endphp
                                 <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                     @if ($dImg)
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!}
+                                                @if ($dImgMedium)
+                                                    srcset="{{ $dImgMedium }} 432w, {{ $dImg }} 640w"
+                                                    sizes="(min-width: 1440px) 432px, (min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
+                                                @endif
+                                                class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                         </a>
                                     @endif
                                     <div class="p-6 flex-1 flex flex-col justify-between">
