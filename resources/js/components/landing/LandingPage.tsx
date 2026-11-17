@@ -55,7 +55,7 @@ function DeferredSection({
             observer?.disconnect();
           }
         },
-        { rootMargin: "250px 0px" },
+        { rootMargin: "2000px 0px" },
       );
       if (sectionRef.current) {
         observer.observe(sectionRef.current);
@@ -80,8 +80,7 @@ function DeferredSection({
   return (
     <div
       ref={sectionRef}
-      className={shouldLoad ? "w-full" : `w-full ${minHeight}`}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}
+      className={`w-full ${minHeight}`}
     >
       {shouldLoad ? (
         <Suspense fallback={<SectionFallback minHeight={minHeight} />}>
@@ -290,11 +289,11 @@ export function LandingPage() {
           <CTA />
         </DeferredSection>
 
-        <DeferredSection hashTarget="kontak" minHeight="min-h-[600px]">
+        <DeferredSection hashTarget="kontak" minHeight="min-h-[1400px] lg:min-h-[1100px]">
           <Contact />
         </DeferredSection>
       </main>
-      <DeferredSection minHeight="min-h-[300px]">
+      <DeferredSection minHeight="min-h-[650px] lg:min-h-[500px]">
         <Footer />
       </DeferredSection>
     </div>
