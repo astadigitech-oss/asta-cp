@@ -7,52 +7,20 @@ import { Hero } from "./sections/Hero";
 const Toaster = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
-const loadHomeFAQ = () => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ }));
-const loadFooter = () => import("./sections/Footer").then((m) => ({ default: m.Footer }));
-const loadAbout = () => import("./sections/About").then((m) => ({ default: m.About }));
-const loadServices = () => import("./sections/Services").then((m) => ({ default: m.Services }));
-const loadComparisonTable = () => import("./sections/ComparisonTable").then((m) => ({ default: m.ComparisonTable }));
-const loadPortfolio = () => import("./sections/Portfolio").then((m) => ({ default: m.Portfolio }));
-const loadDiscoverSection = () => import("./sections/DiscoverSection").then((m) => ({ default: m.DiscoverSection }));
-const loadWhyUs = () => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs }));
-const loadStats = () => import("./sections/Stats").then((m) => ({ default: m.Stats }));
-const loadProcess = () => import("./sections/Process").then((m) => ({ default: m.Process }));
-const loadBlogSection = () => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection }));
-const loadTestimonials = () => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials }));
-const loadCTA = () => import("./sections/CTA").then((m) => ({ default: m.CTA }));
-const loadContact = () => import("./sections/Contact").then((m) => ({ default: m.Contact }));
-
-const deferredSectionLoaders = [
-  ["FAQ", loadHomeFAQ],
-  ["Footer", loadFooter],
-  ["About", loadAbout],
-  ["Services", loadServices],
-  ["ComparisonTable", loadComparisonTable],
-  ["Portfolio", loadPortfolio],
-  ["DiscoverSection", loadDiscoverSection],
-  ["WhyUs", loadWhyUs],
-  ["Stats", loadStats],
-  ["Process", loadProcess],
-  ["BlogSection", loadBlogSection],
-  ["Testimonials", loadTestimonials],
-  ["CTA", loadCTA],
-  ["Contact", loadContact],
-] as const;
-
-const HomeFAQ = lazy(loadHomeFAQ);
-const Footer = lazy(loadFooter);
-const About = lazy(loadAbout);
-const Services = lazy(loadServices);
-const ComparisonTable = lazy(loadComparisonTable);
-const Portfolio = lazy(loadPortfolio);
-const DiscoverSection = lazy(loadDiscoverSection);
-const WhyUs = lazy(loadWhyUs);
-const Stats = lazy(loadStats);
-const Process = lazy(loadProcess);
-const BlogSection = lazy(loadBlogSection);
-const Testimonials = lazy(loadTestimonials);
-const CTA = lazy(loadCTA);
-const Contact = lazy(loadContact);
+const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
+const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
+const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
+const Services = lazy(() => import("./sections/Services").then((m) => ({ default: m.Services })));
+const ComparisonTable = lazy(() => import("./sections/ComparisonTable").then((m) => ({ default: m.ComparisonTable })));
+const Portfolio = lazy(() => import("./sections/Portfolio").then((m) => ({ default: m.Portfolio })));
+const DiscoverSection = lazy(() => import("./sections/DiscoverSection").then((m) => ({ default: m.DiscoverSection })));
+const WhyUs = lazy(() => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs })));
+const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.Stats })));
+const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
+const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
+const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
+const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
+const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
 
 function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }) {
   return <div className={`w-full ${minHeight}`} aria-hidden="true" />;
@@ -87,7 +55,7 @@ function DeferredSection({
             observer?.disconnect();
           }
         },
-        { rootMargin: "1000px 0px" },
+        { rootMargin: "2000px 0px" },
       );
       if (sectionRef.current) {
         observer.observe(sectionRef.current);
@@ -140,47 +108,6 @@ export function LandingPage() {
       year: "numeric",
     })
     : null;
-
-  useEffect(() => {
-    type IdleWindow = Window & {
-      requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
-      cancelIdleCallback?: (handle: number) => void;
-    };
-
-    const idleWindow = window as IdleWindow;
-    let idleCallbackId: number | undefined;
-    let timeoutId: number | undefined;
-
-    const preloadSections = () => {
-      void Promise.allSettled(deferredSectionLoaders.map(([, load]) => load())).then((results) => {
-        results.forEach((result, index) => {
-          if (result.status === "rejected") {
-            console.error(`Failed to preload landing section "${deferredSectionLoaders[index][0]}".`, result.reason);
-          }
-        });
-      });
-    };
-
-    const schedulePreload = () => {
-      if (idleWindow.requestIdleCallback) {
-        idleCallbackId = idleWindow.requestIdleCallback(preloadSections, { timeout: 2000 });
-      } else {
-        timeoutId = window.setTimeout(preloadSections, 0);
-      }
-    };
-
-    if (document.readyState === "complete") {
-      schedulePreload();
-    } else {
-      window.addEventListener("load", schedulePreload, { once: true });
-    }
-
-    return () => {
-      window.removeEventListener("load", schedulePreload);
-      if (idleCallbackId !== undefined) idleWindow.cancelIdleCallback?.(idleCallbackId);
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
-  }, []);
 
   useEffect(() => {
     let interval: number | undefined;
@@ -362,11 +289,11 @@ export function LandingPage() {
           <CTA />
         </DeferredSection>
 
-        <DeferredSection hashTarget="kontak" minHeight="min-h-[600px]">
+        <DeferredSection hashTarget="kontak" minHeight="min-h-[1400px] lg:min-h-[1100px]">
           <Contact />
         </DeferredSection>
       </main>
-      <DeferredSection minHeight="min-h-[300px]">
+      <DeferredSection minHeight="min-h-[650px] lg:min-h-[500px]">
         <Footer />
       </DeferredSection>
     </div>
