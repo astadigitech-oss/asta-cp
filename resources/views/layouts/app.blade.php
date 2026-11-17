@@ -611,6 +611,35 @@
               imagesizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px"
               type="image/avif"
               fetchpriority="high">
+        @php
+            $landingModulePreloads = [];
+            $vite = app(\Illuminate\Foundation\Vite::class);
+            if (!$vite->isRunningHot()) {
+                $viteManifestPath = public_path('build/manifest.json');
+                if (is_file($viteManifestPath)) {
+                    $viteManifest = json_decode(file_get_contents($viteManifestPath), true, 512, JSON_THROW_ON_ERROR);
+                    $entryDependencies = ['resources/js/main.tsx'];
+                    foreach ($viteManifest['resources/js/main.tsx']['imports'] ?? [] as $entryDependency) {
+                        $entryDependencies[] = $entryDependency;
+                    }
+
+                    foreach ($viteManifest as $manifestKey => $manifestChunk) {
+                        if (($manifestChunk['name'] ?? null) === 'LandingPage') {
+                            $landingModulePreloads[] = $vite->asset($manifestKey);
+                            foreach ($manifestChunk['imports'] ?? [] as $dependencyKey) {
+                                if (!in_array($dependencyKey, $entryDependencies, true)) {
+                                    $landingModulePreloads[] = $vite->asset($dependencyKey);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        @endphp
+        @foreach (array_unique($landingModulePreloads) as $landingModulePreload)
+            <link rel="modulepreload" href="{{ $landingModulePreload }}">
+        @endforeach
     @endif
     @php
         $gaId = config('services.google.analytics_id');
@@ -651,15 +680,11 @@
         h1,h2,h3,p{margin-top:0}
     </style>
     @viteReactRefresh
-    @if ($isHomePage ?? false)
-        @vite('resources/css/app.css')
-    @else
-        @vite(['resources/css/app.css', 'resources/js/main.tsx'])
-    @endif
+    @vite(['resources/css/app.css', 'resources/js/main.tsx'])
     <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/app.css') }}"></noscript>
 </head>
 <body class="bg-background text-foreground antialiased">
-    <div id="react-app" @if ($isHomePage ?? false) data-preserve-ssr="true" @endif>
+    <div id="react-app">
         {{-- Semantic Server-Side Pre-rendered Content untuk Mesin Pencari & Bot AI --}}
         @if ($article)
             <article class="max-w-4xl mx-auto px-4 py-12">
@@ -2100,17 +2125,6 @@
                             </button>
                             <p data-contact-status role="status" aria-live="polite" class="text-sm"></p>
                         </form>
-                    </div>
-                    <div class="mt-6 overflow-hidden rounded border border-gray-200 shadow-xs">
-                        <iframe
-                            title="{{ $currentLocale === 'en' ? 'Office location of PT ASTA DIGITAL AGENCY' : 'Lokasi Kantor PT ASTA DIGITAL AGENCY' }}"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.3134947783983!2d110.3937699!3d-7.8622244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a57007c5b62a1%3A0xa5de8456c19b7c75!2sPT%20ASTA%20DIGITAL%20AGENCY!5e0!3m2!1sid!2sid!4v1793271415729!5m2!1sid!2sid"
-                            class="h-[280px] w-full border-0 sm:h-[340px]"
-                            allowfullscreen
-                            loading="lazy"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                            aria-label="{{ $currentLocale === 'en' ? 'Map to the PT ASTA DIGITAL AGENCY office in Bantul, Yogyakarta' : 'Peta lokasi kantor PT ASTA DIGITAL AGENCY, Bantul, D.I. Yogyakarta' }}"
-                        ></iframe>
                     </div>
                 </section>
 
