@@ -31,6 +31,22 @@ class OptimizedImageTest extends TestCase
         );
     }
 
+    public function test_medium_discover_thumbnail_uses_its_optimized_variant(): void
+    {
+        Storage::fake('public');
+        $path = 'images/discovers/example.png';
+        Storage::disk('public')->put($path, 'image');
+
+        $this->assertSame(
+            route('media.optimized', [
+                'preset' => 'discover-thumb-medium',
+                'path' => $path,
+                'v' => OptimizedImage::version($path, 'discover-thumb-medium'),
+            ]),
+            OptimizedImage::url($path, 'discover-thumb-medium'),
+        );
+    }
+
     public function test_image_version_changes_when_the_source_file_changes(): void
     {
         Storage::fake('public');

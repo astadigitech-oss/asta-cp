@@ -103,23 +103,16 @@ class ArticleForm
                                 FileUpload::make('thumbnail')
                                     ->label('Gambar Utama / Cover Thumbnail')
                                     ->image()
-                                    ->imageResizeMode('contain')
-                                    ->imageResizeTargetWidth('1600')
-                                    ->imageResizeTargetHeight('1200')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->directory('articles/covers')
                                     ->disk('public')
                                     ->visibility('public')
-                                    ->imageEditor()
-                                    ->helperText('Cover utama kartu blog & share preview')
+                                    ->helperText('Cover utama kartu blog & banner artikel (resolusi dan rasio asli dipertahankan penuh, auto convert ke WebP)')
                                     ->nullable(),
 
                                 FileUpload::make('images')
                                     ->label('Foto Galeri / Banner Tambahan (Carousel)')
                                     ->image()
-                                    ->imageResizeMode('contain')
-                                    ->imageResizeTargetWidth('1600')
-                                    ->imageResizeTargetHeight('1200')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->multiple()
                                     ->maxFiles(6)
@@ -127,7 +120,7 @@ class ArticleForm
                                     ->directory('articles/gallery')
                                     ->disk('public')
                                     ->visibility('public')
-                                    ->helperText('Upload beberapa gambar jika ingin menampilkan slider carousel di atas artikel'),
+                                    ->helperText('Upload beberapa gambar jika ingin menampilkan slider carousel di atas artikel (rasio asli dipertahankan penuh)'),
                             ]),
 
                         Textarea::make('excerpt')
@@ -173,14 +166,11 @@ class ArticleForm
                                 FileUpload::make('image')
                                     ->label('Upload Gambar Bagian Ini')
                                     ->image()
-                                    ->imageResizeMode('contain')
-                                    ->imageResizeTargetWidth('1600')
-                                    ->imageResizeTargetHeight('1200')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
                                     ->disk('public')
                                     ->directory('articles/sections')
                                     ->visibility('public')
-                                    ->imageEditor()
+                                    ->helperText('Gambar bagian ini akan tampil penuh sesuai rasio asli tanpa terpotong')
                                     ->visible(fn ($get) => $get('media_type') === 'image')
                                     ->nullable(),
 

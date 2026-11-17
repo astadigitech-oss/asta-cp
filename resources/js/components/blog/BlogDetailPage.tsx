@@ -397,16 +397,16 @@ export function BlogDetailPage() {
                 <div className="mt-8 w-full">
                   <div
                     onClick={() => currentCover && setPreviewImage({ src: currentCover, title: localizedTitle })}
-                    className="group/cimg relative w-full aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-900 border border-gray-100 shadow-md cursor-zoom-in"
+                    className="group/cimg relative w-full overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-50 border border-gray-100 shadow-md cursor-zoom-in flex items-center justify-center"
                   >
                     <img
                       src={currentCover}
                       alt={localizedTitle}
                       width={1200}
-                      height={675}
-                      loading="lazy"
+                      height={800}
+                      loading="eager"
                       decoding="async"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover/cimg:scale-105"
+                      className="w-full h-auto object-contain transition-transform duration-500 group-hover/cimg:scale-[1.01] rounded-2xl sm:rounded-3xl"
                     />
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/cimg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md px-4 py-2 text-xs font-semibold text-white shadow-lg">
@@ -505,7 +505,7 @@ export function BlogDetailPage() {
                           {!isVideo && section.image && (
                             <div
                               onClick={() => section.image && setPreviewImage({ src: section.image, title: `${localizedTitle} — Bagian ${sectionIndex}` })}
-                              className="group/simg relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200/70 shadow-sm cursor-zoom-in"
+                              className="group/simg relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200/70 shadow-sm cursor-zoom-in flex items-center justify-center"
                             >
                               <img
                                 src={section.image}
@@ -514,7 +514,7 @@ export function BlogDetailPage() {
                                 height={800}
                                 loading="lazy"
                                 decoding="async"
-                                className="w-full h-auto max-h-[540px] object-cover mx-auto transition-transform duration-500 group-hover/simg:scale-[1.02]"
+                                className="w-full h-auto object-contain mx-auto transition-transform duration-500 group-hover/simg:scale-[1.01] rounded-2xl"
                               />
                               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/simg:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                 <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg">

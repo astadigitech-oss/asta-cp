@@ -26,10 +26,25 @@ class AppServiceProvider extends ServiceProvider
             string $url,
             ?array $chunk,
             ?array $manifest,
-        ): array => config('app.env') === 'production' ? [
+        ): array => [
             'media' => 'print',
             'onload' => "this.onload=null;this.media='all'",
-        ] : []);
+        ]);
+
+        // Auto convert uploaded images to high-quality WebP on upload across Filament
+        \Filament\Forms\Components\FileUpload::configureUsing(function (\Filament\Forms\Components\FileUpload $component) {
+            $component->saveUploadedFileUsing(static function (\Filament\Forms\Components\FileUpload $component, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile $file): ?string {
+                $storedPath = $component->saveUploadedFile($file);
+                if (! $storedPath) {
+                    return null;
+                }
+
+                $disk = $component->getDiskName() ?? 'public';
+                $converted = \App\Support\ImageOptimizer::convertUploadedImageToWebp($storedPath, $disk);
+
+                return $converted ?: $storedPath;
+            });
+        });
 
         // Pre-generate optimized WebP variants on model upload/save in Filament admin
         \App\Models\Client::saved(function ($model) {
@@ -53,7 +68,22 @@ class AppServiceProvider extends ServiceProvider
             }
         });
         \App\Models\Article::saved(function ($model) {
-            if (!empty($model->thumbnail)) \App\Support\OptimizedImage::url($model->thumbnail, 'article-thumb');
+            if (!empty($model->thumbnail)) {
+                \App\Support\OptimizedImage::url($model->thumbnail, 'article-thumb');
+                \App\Support\OptimizedImage::url($model->thumbnail, 'article-image');
+            }
+            if (!empty($model->images) && is_array($model->images)) {
+                foreach ($model->images as $img) {
+                    if (is_string($img)) \App\Support\OptimizedImage::url($img, 'article-image');
+                }
+            }
+            if (!empty($model->content_sections) && is_array($model->content_sections)) {
+                foreach ($model->content_sections as $sec) {
+                    if (!empty($sec['image']) && is_string($sec['image'])) {
+                        \App\Support\OptimizedImage::url($sec['image'], 'article-image');
+                    }
+                }
+            }
         });
         \App\Models\Discover::saved(function ($model) {
             if (!empty($model->image)) {

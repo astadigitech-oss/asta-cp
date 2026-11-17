@@ -208,7 +208,7 @@ class ImageOptimizer
         int $targetWidth,
         int $targetHeight,
         bool $contain = false,
-        int $quality = 78
+        int $quality = 88
     ): bool {
         if (! function_exists('imagewebp')) {
             return false;
@@ -255,29 +255,28 @@ class ImageOptimizer
             return false;
         }
 
-        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
-        if ($canvas === false) {
-            imagedestroy($source);
-            return false;
-        }
-
-        imagealphablending($canvas, false);
-        imagesavealpha($canvas, true);
-        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
-        imagefill($canvas, 0, 0, $transparent);
-
         if ($contain) {
-            $scale = min($targetWidth / $sourceWidth, $targetHeight / $sourceHeight);
+            // Preserve exact aspect ratio without cropping and without canvas letterboxing
+            $scale = min($targetWidth / $sourceWidth, $targetHeight / $sourceHeight, 1.0);
             $newW = max(1, (int) round($sourceWidth * $scale));
             $newH = max(1, (int) round($sourceHeight * $scale));
-            $dstX = (int) floor(($targetWidth - $newW) / 2);
-            $dstY = (int) floor(($targetHeight - $newH) / 2);
+
+            $canvas = imagecreatetruecolor($newW, $newH);
+            if ($canvas === false) {
+                imagedestroy($source);
+                return false;
+            }
+
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $transparent);
 
             imagecopyresampled(
                 $canvas,
                 $source,
-                $dstX,
-                $dstY,
+                0,
+                0,
                 0,
                 0,
                 $newW,
@@ -286,6 +285,17 @@ class ImageOptimizer
                 $sourceHeight
             );
         } else {
+            $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+            if ($canvas === false) {
+                imagedestroy($source);
+                return false;
+            }
+
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $transparent);
+
             $targetRatio = $targetWidth / $targetHeight;
             $sourceRatio = $sourceWidth / $sourceHeight;
 
@@ -331,6 +341,144 @@ class ImageOptimizer
         }
 
         return false;
+    }
+
+    /**
+     * Auto convert an uploaded image to high-quality WebP on public storage.
+     * Preserves exact original aspect ratio, alpha transparency, and avoids visible quality degradation.
+     * Replaces the uploaded file with the .webp file and returns the new relative path.
+     */
+    public static function convertUploadedImageToWebp(
+        string $relativePath,
+        string $diskName = 'public',
+        int $maxDimension = 2560,
+        int $quality = 88
+    ): ?string {
+        if (! function_exists('imagewebp')) {
+            return $relativePath;
+        }
+
+        $disk = Storage::disk($diskName);
+        if (! $disk->exists($relativePath)) {
+            return $relativePath;
+        }
+
+        $fullPath = $disk->path($relativePath);
+        $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+
+        // Skip SVGs and GIFs (preserve vector & animated GIF)
+        if (in_array($ext, ['svg', 'gif'], true)) {
+            return $relativePath;
+        }
+
+        // Only handle raster images: jpg, jpeg, png, webp
+        if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+            return $relativePath;
+        }
+
+        $imageInfo = @getimagesize($fullPath);
+        if ($imageInfo === false) {
+            return $relativePath;
+        }
+
+        $origWidth = $imageInfo[0];
+        $origHeight = $imageInfo[1];
+        $imageType = $imageInfo[2];
+
+        // If it is already a WebP and within bounds, nothing to do
+        if ($ext === 'webp' && $origWidth <= $maxDimension && $origHeight <= $maxDimension) {
+            return $relativePath;
+        }
+
+        if (! self::isSafeToDecode($origWidth, $origHeight, false)) {
+            return $relativePath;
+        }
+
+        $currentLimit = ini_get('memory_limit');
+        @ini_set('memory_limit', '1536M');
+
+        try {
+            $source = match ($imageType) {
+                IMAGETYPE_JPEG => @imagecreatefromjpeg($fullPath),
+                IMAGETYPE_PNG => @imagecreatefrompng($fullPath),
+                IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($fullPath) : false,
+                default => false,
+            };
+
+            if ($source === false) {
+                return $relativePath;
+            }
+
+            // Downscale proportionally ONLY if exceeding maxDimension, NEVER crop!
+            $scale = min($maxDimension / $origWidth, $maxDimension / $origHeight, 1.0);
+            $newWidth = max(1, (int) round($origWidth * $scale));
+            $newHeight = max(1, (int) round($origHeight * $scale));
+
+            $canvas = imagecreatetruecolor($newWidth, $newHeight);
+            if ($canvas === false) {
+                imagedestroy($source);
+                return $relativePath;
+            }
+
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+            imagefill($canvas, 0, 0, $transparent);
+
+            imagecopyresampled(
+                $canvas,
+                $source,
+                0,
+                0,
+                0,
+                0,
+                $newWidth,
+                $newHeight,
+                $origWidth,
+                $origHeight
+            );
+
+            // Determine webp destination path
+            $dir = dirname($relativePath);
+            $filename = pathinfo($relativePath, PATHINFO_FILENAME);
+            $cleanDir = ($dir === '.' || $dir === '') ? '' : rtrim($dir, '/') . '/';
+            $webpRelativePath = $cleanDir . $filename . '.webp';
+            $webpFullPath = $disk->path($webpRelativePath);
+
+            $tempPath = $webpFullPath . '.tmp.' . bin2hex(random_bytes(4));
+            $saved = @imagewebp($canvas, $tempPath, $quality);
+
+            imagedestroy($source);
+            imagedestroy($canvas);
+
+            if ($saved && file_exists($tempPath)) {
+                @chmod($tempPath, 0644);
+                @rename($tempPath, $webpFullPath);
+
+                // If original file was not webp (e.g. .png or .jpg), delete the original file
+                if ($ext !== 'webp' && file_exists($fullPath) && $fullPath !== $webpFullPath) {
+                    @unlink($fullPath);
+                }
+
+                // Purge any old variants
+                self::purgeVariantsForPath($relativePath);
+                self::purgeVariantsForPath($webpRelativePath);
+
+                return $webpRelativePath;
+            }
+
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+        } catch (Throwable) {
+            // Silently fallback to original path
+        } finally {
+            if ($currentLimit) {
+                @ini_set('memory_limit', $currentLimit);
+            }
+        }
+
+        return $relativePath;
     }
 
     /**

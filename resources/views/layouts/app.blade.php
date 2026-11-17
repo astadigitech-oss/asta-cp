@@ -606,9 +606,9 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
         <link rel="preload" as="image"
-              href="{{ $robotImageBase }}-640.avif?v={{ $robotImageHash }}"
+              href="{{ $robotImageBase }}-480.avif?v={{ $robotImageHash }}"
               imagesrcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w"
-              imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+              imagesizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px"
               type="image/avif"
               fetchpriority="high">
     @endif
@@ -628,8 +628,8 @@
     {{-- Preconnect & Load Google Fonts untuk performa maksimal tanpa render blocking di Safari & Firefox --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional" media="print" onload="this.onload=null;this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700&display=optional"></noscript>
     {{-- Initial Data Inlining untuk 0ms Data Fetching di React SPA --}}
     @php
         $clientInitialData = array_merge($initialData ?? ['locale' => $currentLocale], [
@@ -652,6 +652,7 @@
     </style>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
+    <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/app.css') }}"></noscript>
 </head>
 <body class="bg-background text-foreground antialiased">
     <div id="react-app">
@@ -682,13 +683,12 @@
                 </header>
 
                 @if ($article->thumbnail)
-                    <div class="my-6">
-                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
+                    <div class="my-6 flex items-center justify-center overflow-hidden rounded-2xl">
+                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-image') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
-                             {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!}
                              loading="lazy"
                              decoding="async"
-                             class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
+                             class="w-full h-auto rounded-2xl shadow-md object-contain" />
                     </div>
                 @endif
 
@@ -1235,17 +1235,26 @@
                                 $dDesc = is_array($item->short_description) ? ($item->short_description[$currentLocale] ?? reset($item->short_description)) : $item->short_description;
                                 $dSlug = method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id);
                                 $dImg = null;
+                                $dImgMedium = null;
                                 if (!empty($item->image)) {
                                     $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                     if ($first) {
                                         $dImg = \App\Support\OptimizedImage::url($first, 'discover-thumb');
+                                        if (!str_starts_with($first, 'http')) {
+                                            $dImgMedium = \App\Support\OptimizedImage::url($first, 'discover-thumb-medium');
+                                        }
                                     }
                                 }
                             @endphp
                             <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                 @if ($dImg)
                                     <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                        <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!}
+                                            @if ($dImgMedium)
+                                                srcset="{{ $dImgMedium }} 432w, {{ $dImg }} 640w"
+                                                sizes="(min-width: 1440px) 432px, (min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
+                                            @endif
+                                            class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </a>
                                 @endif
                                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -1387,9 +1396,9 @@
                             <div class="relative lg:col-span-5">
                                 <div class="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] flex items-center justify-center">
                                     <picture class="block h-full w-full">
-                                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-contain">
+                                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px">
+                                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px">
+                                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-contain">
                                     </picture>
                                 </div>
                             </div>
@@ -1406,7 +1415,7 @@
                                                     <img src="{{ \App\Support\OptimizedImage::url($client->image, 'client-logo') }}"
                                                          alt="{{ localizeTextPhp($client->name, $currentLocale) }}"
                                                          width="130" height="44" loading="lazy" decoding="async"
-                                                         class="max-h-11 max-w-[130px] w-auto h-auto object-contain opacity-75" />
+                                                         class="h-11 w-[130px] shrink-0 object-contain opacity-75" />
                                                 </div>
                                             @else
                                                 <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ localizeTextPhp($client->name, $currentLocale) }}</span>
@@ -1746,17 +1755,26 @@
                                     $dDesc = is_array($item->short_description) ? ($item->short_description[$currentLocale] ?? reset($item->short_description)) : $item->short_description;
                                     $dSlug = method_exists($item, 'getLocalizedSlug') ? $item->getLocalizedSlug($currentLocale) : ($item->slug ?: $item->id);
                                     $dImg = null;
+                                    $dImgMedium = null;
                                     if (!empty($item->image)) {
                                         $first = is_array($item->image) ? ($item->image[0] ?? null) : $item->image;
                                         if ($first) {
                                             $dImg = \App\Support\OptimizedImage::url($first, 'discover-thumb');
+                                            if (!str_starts_with($first, 'http')) {
+                                                $dImgMedium = \App\Support\OptimizedImage::url($first, 'discover-thumb-medium');
+                                            }
                                         }
                                     }
                                 @endphp
                                 <article class="flex flex-col bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xs hover:shadow-md transition-shadow">
                                     @if ($dImg)
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ localizeTextPhp($dName, $currentLocale) }}" class="block aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!} class="w-full h-full object-cover" loading="lazy" decoding="async" />
+                                            <img src="{{ $dImg }}" alt="{{ localizeTextPhp($dName, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('discover-thumb') !!}
+                                                @if ($dImgMedium)
+                                                    srcset="{{ $dImgMedium }} 432w, {{ $dImg }} 640w"
+                                                    sizes="(min-width: 1440px) 432px, (min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
+                                                @endif
+                                                class="w-full h-full object-cover" loading="lazy" decoding="async" />
                                         </a>
                                     @endif
                                     <div class="p-6 flex-1 flex flex-col justify-between">

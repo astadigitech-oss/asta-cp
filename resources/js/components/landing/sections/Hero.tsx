@@ -92,11 +92,11 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                   <div className="absolute inset-0 flex items-center justify-center z-10">
                     <ResponsiveImage
                       source="Hero/Laptop.webp"
-                      sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+                      sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, 320px"
                       alt="Laptop ASTA Digital Agency"
                       width={952}
                       height={714}
-                      loading="eager"
+                      loading="lazy"
                       decoding="async"
                       className="w-full h-full object-contain drop-shadow-2xl select-none scale-[1.1] sm:scale-[1.1] lg:scale-[1.2] translate-x-[0.3%] translate-y-[-5.15%]"
                     />
@@ -105,7 +105,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                   <div className="absolute inset-0 flex items-center justify-center z-20 floating">
                     <ResponsiveImage
                       source="Hero/Robot.webp"
-                      sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+                      sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px"
                       alt="3D Robot ASTA Digital Agency"
                       width={954}
                       height={715}
@@ -158,7 +158,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                               height={44}
                               loading="lazy"
                               decoding="async"
-                              className="max-h-11 max-w-[130px] w-auto h-auto object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
+                              className="h-11 w-[130px] shrink-0 object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
                               onError={(e) => {
                                 const target = e.target as HTMLElement;
                                 target.style.display = "none";
@@ -198,7 +198,7 @@ export function Hero({ clientsList }: { clientsList?: ClientItem[] }) {
                           height={44}
                           loading="lazy"
                           decoding="async"
-                          className="max-h-11 max-w-[130px] w-auto h-auto object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
+                          className="h-11 w-[130px] shrink-0 object-contain filter opacity-75 hover:opacity-100 transition-opacity duration-300"
                           onError={(e) => {
                             const target = e.target as HTMLElement;
                             target.style.display = "none";

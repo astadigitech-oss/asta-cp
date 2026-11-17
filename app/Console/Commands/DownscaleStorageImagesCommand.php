@@ -40,7 +40,7 @@ class DownscaleStorageImagesCommand extends Command
         'images/discovers' => [
             'width' => 1200,
             'height' => 800,
-            'presets' => ['discover-card', 'discover-thumb'],
+            'presets' => ['discover-card', 'discover-thumb', 'discover-thumb-medium'],
         ],
         'images/elearning' => [
             'width' => 1200,

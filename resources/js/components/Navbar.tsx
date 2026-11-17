@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, Menu, X, ArrowRight, Pin, ChevronLeft, ChevronRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useLandingData } from "../hooks/useLandingData";
 import { useTranslation } from "../i18n/useTranslation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -839,60 +838,43 @@ export function Navbar() {
         </div>
 
         {/* Mobile Navigation Drawer */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              key="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="xl:hidden fixed inset-0 top-[90px] bg-white z-40 p-6 flex flex-col justify-between shadow-2xl border-t border-gray-100 overflow-y-auto"
-            >
-              <div className="space-y-1">
-                {[
-                  { to: "/$lang", label: t("nav.home") },
-                  { to: "/$lang/services", label: t("nav.services") },
-                  { to: "/$lang/portfolio", label: t("nav.portfolio") },
-                  { to: "/$lang/discover", label: t("nav.discover") },
-                  { to: "/$lang/blog", label: t("nav.blog") },
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.to}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.22, delay: 0.05 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+        {mobileMenuOpen && (
+          <div
+            className="xl:hidden fixed inset-0 top-[90px] bg-white z-40 p-6 flex flex-col justify-between shadow-2xl border-t border-gray-100 overflow-y-auto animate-in fade-in slide-in-from-top-4 duration-200"
+          >
+            <div className="space-y-1">
+              {[
+                { to: "/$lang", label: t("nav.home") },
+                { to: "/$lang/services", label: t("nav.services") },
+                { to: "/$lang/portfolio", label: t("nav.portfolio") },
+                { to: "/$lang/discover", label: t("nav.discover") },
+                { to: "/$lang/blog", label: t("nav.blog") },
+              ].map((item) => (
+                <div key={item.to}>
+                  <Link
+                    to={item.to}
+                    params={{ lang: language }}
+                    preload="intent"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] active:text-[#004AAD] border-b border-gray-100"
                   >
-                    <Link
-                      to={item.to}
-                      params={{ lang: language }}
-                      preload="intent"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block py-3 text-lg font-semibold text-gray-800 hover:text-[#004AAD] active:text-[#004AAD] border-b border-gray-100"
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                    {item.label}
+                  </Link>
+                </div>
+              ))}
+            </div>
 
-              <motion.div
-                className="pt-6 space-y-3"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            <div className="pt-6 space-y-3">
+              <a
+                href={`/${language}/#kontak`}
+                onClick={scrollToContact}
+                className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md cursor-pointer"
               >
-                <a
-                  href={`/${language}/#kontak`}
-                  onClick={scrollToContact}
-                  className="block w-full text-center py-3.5 rounded-xl bg-[#004AAD] text-white font-bold text-base shadow-md cursor-pointer"
-                >
-                  {t("nav.contact")}
-                </a>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {t("nav.contact")}
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

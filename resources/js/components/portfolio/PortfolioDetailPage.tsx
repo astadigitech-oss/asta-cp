@@ -540,7 +540,7 @@ export function PortfolioDetailPage() {
 
       {/* Contact Dialog */}
       <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl sm:rounded-[28px] border border-gray-100 bg-white shadow-2xl focus:outline-none">
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl sm:rounded-[28px] border border-gray-100 bg-white shadow-2xl focus:outline-none">
           <div className="grid sm:grid-cols-12">
             {/* Left Panel */}
             <div className="relative overflow-hidden gradient-hero p-5 sm:p-8 text-primary-foreground sm:col-span-5">
