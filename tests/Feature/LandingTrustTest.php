@@ -10,19 +10,18 @@ class LandingTrustTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_landing_api_only_publishes_active_verified_testimonials_with_public_sources(): void
+    public function test_landing_api_publishes_active_testimonials_without_requiring_a_public_source(): void
     {
         Testimonial::create([
-            'name' => 'Verified reviewer',
-            'quote' => 'A published customer review.',
-            'source_url' => 'https://example.com/reviews/verified',
+            'name' => 'No source reviewer',
+            'quote' => 'A customer-approved review without a public link.',
             'is_active' => true,
-            'is_verified' => true,
+            'is_verified' => false,
         ]);
         Testimonial::create([
-            'name' => 'Unverified reviewer',
-            'quote' => 'This quote has not been checked.',
-            'source_url' => 'https://example.com/reviews/unverified',
+            'name' => 'Unverified linked reviewer',
+            'quote' => 'A review with an optional public link.',
+            'source_url' => 'https://example.com/reviews/optional',
             'is_active' => true,
             'is_verified' => false,
         ]);
@@ -33,35 +32,49 @@ class LandingTrustTest extends TestCase
             'is_active' => true,
             'is_verified' => true,
         ]);
+        Testimonial::create([
+            'name' => 'Inactive reviewer',
+            'quote' => 'This review is not published.',
+            'is_active' => false,
+            'is_verified' => true,
+        ]);
 
         $this->getJson('/api/landing')
             ->assertOk()
-            ->assertJsonCount(1, 'testimonials')
-            ->assertJsonPath('testimonials.0.name', 'Verified reviewer')
-            ->assertJsonPath('testimonials.0.source_url', 'https://example.com/reviews/verified');
+            ->assertJsonCount(3, 'testimonials')
+            ->assertJsonPath('testimonials.0.name', 'No source reviewer')
+            ->assertJsonPath('testimonials.0.source_url', null)
+            ->assertJsonFragment([
+                'name' => 'Unverified linked reviewer',
+                'source_url' => 'https://example.com/reviews/optional',
+            ])
+            ->assertJsonFragment([
+                'name' => 'Invalid source reviewer',
+                'source_url' => null,
+            ])
+            ->assertJsonMissing(['name' => 'Inactive reviewer']);
     }
 
-    public function test_homepage_hides_unverified_testimonials_and_unsubstantiated_metrics(): void
+    public function test_homepage_displays_active_testimonials_without_public_sources(): void
     {
         Testimonial::create([
-            'name' => 'Verified reviewer',
-            'quote' => 'A published customer review.',
-            'source_url' => 'https://example.com/reviews/verified',
+            'name' => 'Active reviewer',
+            'quote' => 'A customer-approved review without a public link.',
             'is_active' => true,
-            'is_verified' => true,
+            'is_verified' => false,
         ]);
         Testimonial::create([
-            'name' => 'Unverified reviewer',
-            'quote' => 'This quote has not been checked.',
+            'name' => 'Inactive reviewer',
+            'quote' => 'This review is not published.',
             'source_url' => null,
-            'is_active' => true,
+            'is_active' => false,
             'is_verified' => false,
         ]);
 
         $this->get('/id')
             ->assertOk()
-            ->assertSee('Verified reviewer')
-            ->assertDontSee('Unverified reviewer')
+            ->assertSee('Active reviewer')
+            ->assertDontSee('Inactive reviewer')
             ->assertDontSee('98%')
             ->assertDontSee('20+');
     }

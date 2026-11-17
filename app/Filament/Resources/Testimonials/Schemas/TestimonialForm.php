@@ -9,7 +9,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -70,10 +69,9 @@ class TestimonialForm
                             ->required()
                             ->columnSpanFull(),
                         TextInput::make('source_url')
-                            ->label('Public evidence URL')
+                            ->label('Public review/source URL (optional)')
                             ->url()
-                            ->required(fn (Get $get): bool => (bool) $get('is_verified'))
-                            ->helperText('Link to a public page, customer review, or published quote that supports this testimonial.')
+                            ->helperText('Optional. Add a link if the review is publicly available; a URL is not required to display the testimonial.')
                             ->columnSpanFull(),
                         Grid::make(4)
                             ->schema([
@@ -94,8 +92,8 @@ class TestimonialForm
                                     ->default(true)
                                     ->required(),
                                 Toggle::make('is_verified')
-                                    ->label('Source verified')
-                                    ->helperText('Only publish after checking the linked source and permission to use the quote.')
+                                    ->label('Customer permission confirmed')
+                                    ->helperText('Record whether the customer approved publishing this testimonial. Display is controlled by "Display on Landing Page".')
                                     ->default(false)
                                     ->required(),
                             ]),

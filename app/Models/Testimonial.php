@@ -5,18 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Testimonial extends Model
 {
     use SoftDeletes;
 
-    public function scopePubliclyVerified(Builder $query): Builder
+    protected static function booted(): void
     {
-        return $query
-            ->where('is_active', true)
-            ->where('is_verified', true)
-            ->whereNotNull('source_url')
-            ->where('source_url', '!=', '');
+        $clearLandingCaches = static function (): void {
+            Cache::forget('landing_api_cache');
+            Cache::forget('home_data_bundle_v2_id');
+            Cache::forget('home_data_bundle_v2_en');
+        };
+
+        static::saved($clearLandingCaches);
+        static::deleted($clearLandingCaches);
+        static::restored($clearLandingCaches);
+    }
+
+    public function scopeActiveForLanding(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 
     public static function hasPublicSource(?string $url): bool
