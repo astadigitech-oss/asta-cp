@@ -26,10 +26,10 @@ class AppServiceProvider extends ServiceProvider
             string $url,
             ?array $chunk,
             ?array $manifest,
-        ): array => config('app.env') === 'production' ? [
+        ): array => [
             'media' => 'print',
             'onload' => "this.onload=null;this.media='all'",
-        ] : []);
+        ]);
 
         // Auto convert uploaded images to high-quality WebP on upload across Filament
         \Filament\Forms\Components\FileUpload::configureUsing(function (\Filament\Forms\Components\FileUpload $component) {

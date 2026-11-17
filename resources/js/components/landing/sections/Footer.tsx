@@ -1,4 +1,4 @@
-import { Instagram, Mail, LinkedinIcon, MapPin, Clock, FileText, Facebook, Youtube } from "lucide-react";
+import { Instagram, Mail, LinkedinIcon, MapPin, Clock, FileText, Facebook, Youtube, Phone } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useParams } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
@@ -91,15 +91,30 @@ export function Footer() {
                 <MapPin className="h-3.5 w-3.5" />
                 {t("footer.office_title")}
               </div>
-              <address className="mt-4 text-xs leading-relaxed text-white/80 not-italic">
+              <address className="mt-3 text-xs leading-relaxed text-white/70 not-italic">
                 {t("contact.info_office_address")}
               </address>
-              <a href="tel:+6281578223564" className="mt-2 inline-flex items-center min-h-[44px] py-1 text-xs text-white/80 hover:text-white transition-colors">
-                +62 815 7822 3564
-              </a>
-              <a href="mailto:cs@astadigitalagency.com" className="mt-1 inline-flex items-center min-h-[44px] py-1 text-xs text-white/80 hover:text-white transition-colors">
-                cs@astadigitalagency.com
-              </a>
+
+              <div className="mt-4 space-y-2 pt-3 border-t border-white/10">
+                <a
+                  href="tel:+6281578223564"
+                  className="group flex items-center gap-2.5 text-xs text-white/80 hover:text-white transition-colors"
+                >
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-white/10 text-accent transition-colors group-hover:bg-accent group-hover:text-primary">
+                    <Phone className="h-3 w-3" />
+                  </span>
+                  <span className="font-medium tracking-wide">+62 815 7822 3564</span>
+                </a>
+                <a
+                  href="mailto:cs@astadigitalagency.com"
+                  className="group flex items-center gap-2.5 text-xs text-white/80 hover:text-white transition-colors"
+                >
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-white/10 text-accent transition-colors group-hover:bg-accent group-hover:text-primary">
+                    <Mail className="h-3 w-3" />
+                  </span>
+                  <span className="font-medium tracking-wide">cs@astadigitalagency.com</span>
+                </a>
+              </div>
             </div>
 
             <div>

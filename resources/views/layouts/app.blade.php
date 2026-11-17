@@ -606,9 +606,9 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     @if ($isHomePage ?? false)
         <link rel="preload" as="image"
-              href="{{ $robotImageBase }}-640.avif?v={{ $robotImageHash }}"
+              href="{{ $robotImageBase }}-480.avif?v={{ $robotImageHash }}"
               imagesrcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w"
-              imagesizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw"
+              imagesizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px"
               type="image/avif"
               fetchpriority="high">
     @endif
@@ -652,6 +652,7 @@
     </style>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
+    <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/app.css') }}"></noscript>
 </head>
 <body class="bg-background text-foreground antialiased">
     <div id="react-app">
@@ -1386,9 +1387,9 @@
                             <div class="relative lg:col-span-5">
                                 <div class="relative mx-auto aspect-square w-full max-w-[520px] xl:max-w-[600px] flex items-center justify-center">
                                     <picture class="block h-full w-full">
-                                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw">
-                                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 40vw, (min-width: 640px) 50vw, 100vw" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-contain">
+                                        <source type="image/avif" srcset="{{ $robotImageBase }}-320.avif?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.avif?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.avif?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.avif?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px">
+                                        <source type="image/webp" srcset="{{ $robotImageBase }}-320.webp?v={{ $robotImageHash }} 320w, {{ $robotImageBase }}-480.webp?v={{ $robotImageHash }} 480w, {{ $robotImageBase }}-640.webp?v={{ $robotImageHash }} 640w, {{ $robotImageBase }}-954.webp?v={{ $robotImageHash }} 954w" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px">
+                                        <img src="{{ $robotImageBase }}-954.webp?v={{ $robotImageHash }}" alt="ASTA Digital Agency" width="954" height="715" sizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-contain">
                                     </picture>
                                 </div>
                             </div>
