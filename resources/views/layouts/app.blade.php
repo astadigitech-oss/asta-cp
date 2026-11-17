@@ -611,6 +611,25 @@
               imagesizes="(min-width: 1280px) 480px, (min-width: 640px) 420px, (min-width: 380px) 380px, 320px"
               type="image/avif"
               fetchpriority="high">
+        @php
+            $landingModulePreload = null;
+            $vite = app(\Illuminate\Foundation\Vite::class);
+            if (!$vite->isRunningHot()) {
+                $viteManifestPath = public_path('build/manifest.json');
+                if (is_file($viteManifestPath)) {
+                    $viteManifest = json_decode(file_get_contents($viteManifestPath), true, 512, JSON_THROW_ON_ERROR);
+                    foreach ($viteManifest as $manifestKey => $manifestChunk) {
+                        if (($manifestChunk['name'] ?? null) === 'LandingPage') {
+                            $landingModulePreload = $vite->asset($manifestKey);
+                            break;
+                        }
+                    }
+                }
+            }
+        @endphp
+        @if ($landingModulePreload)
+            <link rel="modulepreload" href="{{ $landingModulePreload }}">
+        @endif
     @endif
     @php
         $gaId = config('services.google.analytics_id');
