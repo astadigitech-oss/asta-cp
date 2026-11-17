@@ -1,7 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LandingPage } from "@/components/landing/LandingPage";
+import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import enTranslations from "@/locales/en.json";
 import idTranslations from "@/locales/id.json";
+
+const LandingPage = lazyRouteComponent(
+  () => import("@/components/landing/LandingPage"),
+  "LandingPage",
+);
 
 // Root "/" merender LandingPage langsung tanpa redirect,
 // mengeliminasi penalti redirect ganda di Google PageSpeed Insights & audit SEO.
@@ -112,5 +116,5 @@ export const Route = createFileRoute("/")({
       ],
     };
   },
-  component: () => <LandingPage />,
+  component: LandingPage,
 });

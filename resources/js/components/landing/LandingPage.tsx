@@ -1,9 +1,10 @@
 import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from "react";
-import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Hero } from "./sections/Hero";
+
+const Toaster = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
 // Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
 const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
@@ -141,7 +142,9 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-accent/30 selection:text-accent font-sans">
-      <Toaster position="top-right" />
+      <Suspense fallback={null}>
+        <Toaster position="top-right" />
+      </Suspense>
       <Navbar />
       <main>
         {/* Above-the-fold critical content (loaded immediately) */}
