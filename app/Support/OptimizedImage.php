@@ -76,15 +76,15 @@ class OptimizedImage
         ],
         'article-thumb' => [
             'directories' => ['articles/covers', 'articles', 'covers'],
-            'width' => 960,
-            'height' => 600,
-            'contain' => false,
+            'width' => 1200,
+            'height' => 1200,
+            'contain' => true,
         ],
         'article-image' => [
             'directories' => ['articles/covers', 'articles/gallery', 'articles/sections', 'articles/content', 'articles'],
-            'width' => 1200,
-            'height' => 900,
-            'contain' => false,
+            'width' => 1920,
+            'height' => 1920,
+            'contain' => true,
         ],
         'og-image' => [
             'directories' => ['seo/og', 'seo'],
@@ -125,6 +125,7 @@ class OptimizedImage
         return sha1(implode('|', [
             $cleanPath,
             $preset,
+            'v2',
             $disk->lastModified($cleanPath),
             $disk->size($cleanPath),
         ]));
@@ -165,7 +166,7 @@ class OptimizedImage
             $configuration['width'],
             $configuration['height'],
             $configuration['contain'] ?? false,
-            78
+            88
         );
     }
 

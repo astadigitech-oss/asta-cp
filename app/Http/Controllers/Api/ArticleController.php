@@ -110,14 +110,11 @@ class ArticleController extends Controller
             // Fallback
         }
 
-        $thumbnailUrl = $this->formatImageUrl($article->thumbnail, 'article-thumb');
-        $thumbnailOgUrl = $this->formatImageUrl($article->thumbnail);
+        $thumbnailUrl = $this->formatImageUrl($article->thumbnail, 'article-image');
+        $thumbnailOgUrl = $this->formatImageUrl($article->thumbnail, 'og-image') ?: $this->formatImageUrl($article->thumbnail);
         $rawImages = is_array($article->images) ? $article->images : [];
         $formattedImages = collect($rawImages)
-            ->map(fn ($img) => $this->formatImageUrl(
-                $img,
-                $img === $article->thumbnail ? 'article-thumb' : 'article-image',
-            ))
+            ->map(fn ($img) => $this->formatImageUrl($img, 'article-image'))
             ->filter()
             ->values()
             ->all();

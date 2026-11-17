@@ -682,13 +682,12 @@
                 </header>
 
                 @if ($article->thumbnail)
-                    <div class="my-6">
-                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-thumb') }}"
+                    <div class="my-6 flex items-center justify-center overflow-hidden rounded-2xl">
+                        <img src="{{ \App\Support\OptimizedImage::url($article->thumbnail, 'article-image') }}"
                              alt="{{ localizeTextPhp($article->title, $currentLocale) }}"
-                             {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!}
                              loading="lazy"
                              decoding="async"
-                             class="w-full rounded-2xl shadow-md object-cover max-h-[500px]" />
+                             class="w-full h-auto rounded-2xl shadow-md object-contain" />
                     </div>
                 @endif
 
