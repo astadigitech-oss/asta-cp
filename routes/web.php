@@ -205,7 +205,7 @@ Route::get('/{any?}', function () {
     ];
 
     if ($isHomePage) {
-        $homeCacheKey = "home_data_bundle_{$locale}";
+        $homeCacheKey = "home_data_bundle_v2_{$locale}";
         $cachedHome = Cache::remember($homeCacheKey, 1800, function () {
             try {
                 $landing = (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
@@ -220,11 +220,9 @@ Route::get('/{any?}', function () {
             }
 
             try {
-                $testimonials = Testimonial::publiclyVerified()
+                $testimonials = Testimonial::activeForLanding()
                     ->orderBy('sort')
-                    ->get()
-                    ->filter(fn (Testimonial $testimonial) => Testimonial::hasPublicSource($testimonial->source_url))
-                    ->values();
+                    ->get();
             } catch (\Throwable $e) {
                 $testimonials = collect();
             }

@@ -129,11 +129,9 @@ class LandingController extends Controller
             ];
         });
 
-        $testimonials = Testimonial::publiclyVerified()
+        $testimonials = Testimonial::activeForLanding()
             ->orderBy('sort', 'asc')
             ->get()
-            ->filter(fn (Testimonial $testimonial) => Testimonial::hasPublicSource($testimonial->source_url))
-            ->values()
             ->map(function ($testimonial) {
                 return [
                     'id' => $testimonial->id,
@@ -141,7 +139,9 @@ class LandingController extends Controller
                     'role' => $testimonial->role,
                     'org' => $testimonial->org,
                     'quote' => $testimonial->quote,
-                    'source_url' => $testimonial->source_url,
+                    'source_url' => Testimonial::hasPublicSource($testimonial->source_url)
+                        ? $testimonial->source_url
+                        : null,
                     'avatar' => $this->formatImageUrl($testimonial->avatar, 'testimonial-avatar'),
                     'tag' => $testimonial->tag,
                     'rating' => $testimonial->rating,

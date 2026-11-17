@@ -45,10 +45,10 @@ class TestimonialsTable
                     ->label('Active')
                     ->boolean(),
                 IconColumn::make('is_verified')
-                    ->label('Source Verified')
+                    ->label('Permission Confirmed')
                     ->boolean(),
                 TextColumn::make('source_url')
-                    ->label('Evidence URL')
+                    ->label('Public URL')
                     ->url(fn ($record) => $record->source_url)
                     ->openUrlInNewTab()
                     ->limit(32)

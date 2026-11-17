@@ -1986,9 +1986,11 @@
                                             </span>
                                         @endif
                                     </figcaption>
-                                    <a href="{{ $testimonial->source_url }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-sm font-semibold text-blue-600 underline underline-offset-4">
-                                        {{ transKey($transDict, 'testimonials.view_source') }}
-                                    </a>
+                                    @if (\App\Models\Testimonial::hasPublicSource($testimonial->source_url))
+                                        <a href="{{ $testimonial->source_url }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-sm font-semibold text-blue-600 underline underline-offset-4">
+                                            {{ transKey($transDict, 'testimonials.view_source') }}
+                                        </a>
+                                    @endif
                                 </figure>
                             @endforeach
                         </div>
