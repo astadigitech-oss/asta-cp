@@ -22,6 +22,7 @@ export interface DiscoverData {
 
 export interface ServiceData {
   id: number | string;
+  slug?: string;
   name: string;
   show_name?: number;
   header?: string;
@@ -40,6 +41,7 @@ export interface ServiceData {
 
 export interface PortfolioProject {
   id: string | number;
+  slug?: string;
   img?: string;
   title: string;
   category: string;
@@ -51,6 +53,7 @@ export interface PortfolioProject {
 
 export interface PortfolioData {
   id: number | string;
+  slug?: string;
   name: string;
   description?: string;
   type?: "mobile" | "desktop" | string;

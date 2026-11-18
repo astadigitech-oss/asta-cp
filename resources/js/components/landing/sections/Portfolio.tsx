@@ -34,6 +34,7 @@ export function Portfolio() {
       const catLabel = item.type === "mobile" ? "Mobile" : "Desktop";
       return {
         id: item.id,
+        slug: item.slug,
         img: item.image,
         title: localize(item.name) || "Portfolio Item",
         category: catLabel,
@@ -126,13 +127,13 @@ export function Portfolio() {
                   transition={{ duration: 0.5, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                   onClick={() => {
                     const lang = params?.lang || language || "id";
-                    navigate({ to: "/$lang/portfolio/$id", params: { lang, id: String(p.id) } });
+                    navigate({ to: "/$lang/portfolio/$id", params: { lang, id: p.slug || String(p.id) } });
                   }}
                   className={`group relative aspect-[4/5] w-[85%] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/60 bg-primary shadow-glass sm:aspect-auto sm:w-auto sm:shrink cursor-pointer transition-all duration-300 hover:shadow-2xl ${p.span}`}
                 >
                   <Link
                     to="/$lang/portfolio/$id"
-                    params={{ lang: params?.lang || language || "id", id: String(p.id) }}
+                    params={{ lang: params?.lang || language || "id", id: p.slug || String(p.id) }}
                     aria-label={p.title}
                     className="absolute inset-0 z-20"
                     tabIndex={0}

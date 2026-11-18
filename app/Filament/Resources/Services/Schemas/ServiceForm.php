@@ -72,12 +72,18 @@ class ServiceForm
                     ->description('General service information')
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(3)
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Service Name')
                                     ->helperText('Name of the service')
                                     ->required(),
+                                TextInput::make('slug')
+                                    ->label('URL Slug')
+                                    ->placeholder('e.g. website-development')
+                                    ->helperText('Kosongkan untuk generate otomatis.')
+                                    ->nullable()
+                                    ->unique(ignoreRecord: true),
                                 Toggle::make('show_name')
                                     ->label('Show Name')
                                     ->helperText('Toggle to display service name')

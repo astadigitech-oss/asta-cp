@@ -15,6 +15,10 @@ ASTA Digital Agency publishes its website in Indonesian and English. Use the lan
 
 - [Indonesian homepage](https://astadigitalagency.com/id)
 - [English homepage](https://astadigitalagency.com/en)
+- [Services & Solutions](https://astadigitalagency.com/id/services)
+- [Services & Solutions in English](https://astadigitalagency.com/en/services)
+- [Portfolio](https://astadigitalagency.com/id/portfolio)
+- [Portfolio in English](https://astadigitalagency.com/en/portfolio)
 - [Articles and insights](https://astadigitalagency.com/id/blog)
 - [Articles and insights in English](https://astadigitalagency.com/en/blog)
 - [Discover and case studies](https://astadigitalagency.com/id/discover)

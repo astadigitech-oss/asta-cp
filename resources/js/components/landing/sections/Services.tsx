@@ -242,7 +242,7 @@ export function Services() {
   const handleCardClick = (s: ServiceData) => {
     if (isDraggingRef.current) return;
     const lang = params?.lang || language || "id";
-    navigate({ to: "/$lang/services/$id", params: { lang, id: String(s.id) } });
+    navigate({ to: "/$lang/services/$id", params: { lang, id: s.slug || String(s.id) } });
   };
 
   const renderServiceCard = (s: ServiceData, index: number) => {
@@ -319,7 +319,7 @@ export function Services() {
           <div className="pt-4 border-t border-primary/5 sm:group-hover:border-white/20 transition-colors">
             <Link
               to="/$lang/services/$id"
-              params={{ lang: params?.lang || language || "id", id: String(s.id) }}
+              params={{ lang: params?.lang || language || "id", id: s.slug || String(s.id) }}
               aria-label={`${t("services.view_detail")}: ${s.name}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-secondary sm:group-hover:text-cyan-300 transition-colors cursor-pointer"

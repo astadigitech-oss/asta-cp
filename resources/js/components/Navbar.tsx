@@ -8,6 +8,7 @@ import { ResponsiveImage } from "./landing/common/ResponsiveImage";
 
 interface ServiceItem {
   id: number;
+  slug?: string;
   name: string;
   short_description?: string;
   logo?: string;
@@ -16,6 +17,7 @@ interface ServiceItem {
 
 interface PortfolioItem {
   id: number;
+  slug?: string;
   name: string;
   description?: string;
   image?: string;
@@ -311,7 +313,7 @@ export function Navbar() {
                         <Link
                           key={service.id}
                           to="/$lang/services/$id"
-                          params={{ lang: language, id: String(service.id) }}
+                          params={{ lang: language, id: service.slug || String(service.id) }}
                           onClick={() => setActiveDropdown(null)}
                           className="p-4 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 group/item cursor-pointer"
                         >
@@ -491,7 +493,7 @@ export function Navbar() {
                           <Link
                             key={p.id}
                             to="/$lang/portfolio/$id"
-                            params={{ lang: language, id: String(p.id) }}
+                            params={{ lang: language, id: p.slug || String(p.id) }}
                             onClick={() => setActiveDropdown(null)}
                             className="flex gap-3 items-center p-2 rounded-lg hover:bg-blue-50 transition-colors group/item border border-transparent hover:border-blue-100 cursor-pointer"
                           >

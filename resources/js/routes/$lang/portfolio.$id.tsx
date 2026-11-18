@@ -9,7 +9,7 @@ const PortfolioDetailPage = lazyRouteComponent(
 export const Route = createFileRoute("/$lang/portfolio/$id")({
   loader: async ({ params: { id } }) => {
     const initialData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__ : null;
-    if (initialData?.portfolio && (String(initialData.id) === String(id) || String(initialData.portfolio.id) === String(id))) {
+    if (initialData?.portfolio && (String(initialData.id) === String(id) || initialData.portfolio.slug === id || String(initialData.portfolio.id) === String(id))) {
       return initialData.portfolio;
     }
     try {
@@ -65,6 +65,9 @@ export const Route = createFileRoute("/$lang/portfolio/$id")({
 
     const scripts: Array<{ type: string; children: string }> = [];
 
+    const currentLang = params?.lang || "id";
+    const pageUrl = seo?.canonical_url || `https://astadigitalagency.com/${currentLang}/portfolio/${loaderData.slug || loaderData.id}`;
+
     const isMobile = type === "mobile";
     const appSchema = {
       "@context": "https://schema.org",
@@ -74,19 +77,49 @@ export const Route = createFileRoute("/$lang/portfolio/$id")({
       applicationCategory: isMobile ? "MobileApp" : "BusinessApplication",
       operatingSystem: isMobile ? "Android, iOS" : "Web, Windows, macOS",
       image: ogImg,
-      inLanguage: params?.lang || "id",
+      inLanguage: currentLang,
       author: {
         "@type": "Organization",
         name: "PT Asta Digital Agency",
-        url: "https://astadigital.id",
+        url: "https://astadigitalagency.com",
       },
-      ...(seo?.canonical_url ? { url: seo.canonical_url } : {}),
+      url: pageUrl,
       ...(loaderData.demo_url ? { sameAs: loaderData.demo_url } : {}),
     };
 
     scripts.push({
       type: "application/ld+json",
       children: JSON.stringify(appSchema),
+    });
+
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: currentLang === "en" ? "Home" : "Beranda",
+          item: `https://astadigitalagency.com/${currentLang}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: currentLang === "en" ? "Portfolio" : "Portofolio",
+          item: `https://astadigitalagency.com/${currentLang}/portfolio`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: typeof name === "string" ? name : name?.id || name?.en || "Portfolio",
+          item: pageUrl,
+        },
+      ],
+    };
+
+    scripts.push({
+      type: "application/ld+json",
+      children: JSON.stringify(breadcrumbSchema),
     });
 
     return {

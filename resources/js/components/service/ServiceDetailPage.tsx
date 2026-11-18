@@ -56,7 +56,7 @@ export function ServiceDetailPage() {
 
   // Try finding from cached landingData first for immediate render
   const allServices = (landingData?.services || []) as ServiceData[];
-  const cachedItem = allServices.find((item) => String(item.id) === String(id));
+  const cachedItem = allServices.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
 
   // Query single service detail to ensure full and fresh data (faqs, images, seo)
   const { data: fetchedItem, isLoading, isError } = useQuery<ServiceData>({
@@ -109,7 +109,7 @@ export function ServiceDetailPage() {
   const currentLang = lang || language || "id";
   const serviceImages = service ? getServiceImages(service.image) : [];
   const otherServices = allServices
-    .filter((s) => String(s.id) !== String(id))
+    .filter((s) => String(s.slug || s.id) !== String(id) && String(s.id) !== String(rawService?.id))
     .slice(0, 3);
 
   const handleCopyLink = () => {
@@ -226,6 +226,7 @@ export function ServiceDetailPage() {
               <Link
                 to="/$lang"
                 params={{ lang: currentLang }}
+                aria-label={currentLang === "en" ? "Home" : "Beranda"}
                 className="inline-flex items-center gap-1 text-gray-500 hover:text-[#004AAD] transition-colors"
               >
                 <Home className="h-3.5 w-3.5" />
@@ -537,7 +538,7 @@ export function ServiceDetailPage() {
                         <Link
                           key={other.id}
                           to="/$lang/services/$id"
-                          params={{ lang: currentLang, id: String(other.id) }}
+                          params={{ lang: currentLang, id: other.slug || String(other.id) }}
                           aria-label={localize(other.name)}
                           preload="intent"
                           className="group flex items-start gap-3 rounded-2xl border border-gray-100 p-3 hover:border-blue-200 hover:bg-blue-50/50 transition-all cursor-pointer"

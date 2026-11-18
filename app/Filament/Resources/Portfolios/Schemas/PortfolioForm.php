@@ -39,6 +39,12 @@ class PortfolioForm
                                             ->label('Portfolio Name')
                                             ->placeholder('e.g. Mobile Banking App')
                                             ->required(),
+                                        TextInput::make('slug')
+                                            ->label('URL Slug')
+                                            ->placeholder('e.g. mobile-banking-app')
+                                            ->helperText('Kosongkan untuk generate otomatis.')
+                                            ->nullable()
+                                            ->unique(ignoreRecord: true),
                                         Select::make('type')
                                             ->label('Category / Type')
                                             ->options(['mobile' => 'Mobile', 'desktop' => 'Desktop'])

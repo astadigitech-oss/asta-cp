@@ -656,6 +656,10 @@ return [
          * \App\Models\Page::class => ['priority' => 0.6, 'changefreq' => 'monthly'],
          */
         'models' => [
+            \App\Models\Service::class => [
+                'priority'   => 0.9,
+                'changefreq' => 'weekly',
+            ],
             \App\Models\Article::class => [
                 'priority'   => 0.8,
                 'changefreq' => 'weekly',
