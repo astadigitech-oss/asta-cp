@@ -127,6 +127,7 @@ export function ServicesListPage() {
             <Link
               to="/$lang"
               params={{ lang }}
+              aria-label={lang === "en" ? "Home" : "Beranda"}
               className="inline-flex items-center gap-1.5 hover:text-[#004AAD] transition-colors font-medium"
             >
               <Home className="h-4 w-4" />
@@ -300,7 +301,7 @@ export function ServicesListPage() {
                       >
                         <Link
                           to="/$lang/services/$id"
-                          params={{ lang, id: String(service.id) }}
+                          params={{ lang, id: service.slug || String(service.id) }}
                           aria-label={`${t("services.view_detail")}: ${service.name}`}
                           preload="intent"
                         >

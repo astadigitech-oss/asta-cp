@@ -12,6 +12,7 @@ class Portfolio extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'image',
         'type',
         'sort',
@@ -21,6 +22,18 @@ class Portfolio extends Model
 
     protected static function booted(): void
     {
+        static::creating(function ($portfolio) {
+            if (empty($portfolio->slug)) {
+                $portfolio->slug = static::generateUniqueSlug($portfolio);
+            }
+        });
+
+        static::updating(function ($portfolio) {
+            if (empty($portfolio->slug)) {
+                $portfolio->slug = static::generateUniqueSlug($portfolio);
+            }
+        });
+
         static::saved(function () {
             Cache::forget('landing_api_cache');
         });
@@ -28,5 +41,19 @@ class Portfolio extends Model
         static::deleted(function () {
             Cache::forget('landing_api_cache');
         });
+    }
+
+    public static function generateUniqueSlug(self $portfolio): string
+    {
+        $name = is_array($portfolio->name)
+            ? ($portfolio->name['id'] ?? $portfolio->name['en'] ?? 'portfolio')
+            : (string) $portfolio->name;
+        $base = \Illuminate\Support\Str::slug($name) ?: 'portfolio';
+        $slug = $base;
+        $i = 1;
+        while (static::withTrashed()->where('slug', $slug)->where('id', '!=', $portfolio->id ?? 0)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+        return $slug;
     }
 }

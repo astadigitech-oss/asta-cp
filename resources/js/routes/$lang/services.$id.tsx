@@ -1,5 +1,7 @@
 import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
 import axios from "axios";
+import { localizeText } from "@/i18n/localize";
+import { Language } from "@/i18n/LanguageContext";
 
 const ServiceDetailPage = lazyRouteComponent(
   () => import("@/components/service/ServiceDetailPage"),
@@ -9,7 +11,7 @@ const ServiceDetailPage = lazyRouteComponent(
 export const Route = createFileRoute("/$lang/services/$id")({
   loader: async ({ params: { id } }) => {
     const initialData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__ : null;
-    if (initialData?.service && (String(initialData.id) === String(id) || String(initialData.service.id) === String(id))) {
+    if (initialData?.service && (String(initialData.id) === String(id) || initialData.service.slug === id || String(initialData.service.id) === String(id))) {
       return initialData.service;
     }
     try {
@@ -68,13 +70,17 @@ export const Route = createFileRoute("/$lang/services/$id")({
 
     const scripts: Array<{ type: string; children: string }> = [];
 
+    const currentLang = (params?.lang || "id") as Language;
+    const pageUrl = seo?.canonical_url || `https://astadigitalagency.com/${currentLang}/services/${loaderData.slug || loaderData.id}`;
+
+    // 1. Service Schema
     const serviceSchema = {
       "@context": "https://schema.org",
       "@type": "Service",
       name: metaTitle,
       description: typeof metaDesc === "string" ? metaDesc.replace(/<[^>]*>?/gm, "") : metaTitle,
       image: ogImg,
-      inLanguage: params?.lang || "id",
+      inLanguage: currentLang,
       provider: {
         "@type": "Organization",
         name: "PT Asta Digital Agency",
@@ -83,13 +89,77 @@ export const Route = createFileRoute("/$lang/services/$id")({
           url: "/images/logo-dark.png",
         },
       },
-      ...(seo?.canonical_url ? { url: seo.canonical_url } : {}),
+      url: pageUrl,
     };
 
     scripts.push({
       type: "application/ld+json",
       children: JSON.stringify(serviceSchema),
     });
+
+    // 2. BreadcrumbList Schema for Rich Search & GEO
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: currentLang === "en" ? "Home" : "Beranda",
+          item: `https://astadigitalagency.com/${currentLang}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: currentLang === "en" ? "Services" : "Layanan",
+          item: `https://astadigitalagency.com/${currentLang}/services`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: typeof name === "string" ? name : name?.[currentLang] || name?.id || name?.en || "Service",
+          item: pageUrl,
+        },
+      ],
+    };
+
+    scripts.push({
+      type: "application/ld+json",
+      children: JSON.stringify(breadcrumbSchema),
+    });
+
+    // 3. FAQPage Schema for AI/LLM & GEO Search Engines
+    const rawFaqs = Array.isArray(loaderData.faqs)
+      ? loaderData.faqs
+      : typeof loaderData.faqs === "string"
+      ? (() => {
+          try {
+            return JSON.parse(loaderData.faqs);
+          } catch {
+            return [];
+          }
+        })()
+      : [];
+
+    if (rawFaqs.length > 0) {
+      const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: rawFaqs.map((faq: { question?: any; answer?: any }) => ({
+          "@type": "Question",
+          name: localizeText(faq?.question, currentLang),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: localizeText(faq?.answer, currentLang).replace(/<[^>]*>?/gm, "").trim(),
+          },
+        })),
+      };
+
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify(faqSchema),
+      });
+    }
 
     if (seo?.schema_jsonld) {
       const jsonLdString =

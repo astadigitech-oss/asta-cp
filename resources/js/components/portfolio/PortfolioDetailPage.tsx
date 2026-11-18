@@ -48,7 +48,7 @@ export function PortfolioDetailPage() {
 
   // Try finding from cached landingData first for instant render (0ms wait)
   const allPortfolios = (landingData?.portfolios || []) as any[];
-  const cachedItem = allPortfolios.find((item) => String(item.id) === String(id));
+  const cachedItem = allPortfolios.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
 
   // Query single portfolio detail to ensure full and fresh data
   const { data: fetchedItem, isLoading, isError } = useQuery<PortfolioData>({
@@ -78,10 +78,11 @@ export function PortfolioDetailPage() {
 
   // Other portfolios for recommendation
   const otherPortfolios = allPortfolios
-    .filter((p) => String(p.id) !== String(id))
+    .filter((p) => String(p.slug || p.id) !== String(id) && String(p.id) !== String(rawPortfolio?.id))
     .slice(0, 3)
     .map((item) => ({
       id: item.id,
+      slug: item.slug,
       name: localize(item.name),
       category: item.type === "mobile" ? "Mobile" : "Desktop",
       type: item.type,
@@ -200,6 +201,7 @@ export function PortfolioDetailPage() {
               <Link
                 to="/$lang"
                 params={{ lang: currentLang }}
+                aria-label={currentLang === "en" ? "Home" : "Beranda"}
                 className="flex items-center gap-1 hover:text-[#004AAD] transition-colors font-medium shrink-0"
               >
                 <Home className="h-3.5 w-3.5" />
@@ -496,7 +498,7 @@ export function PortfolioDetailPage() {
                       <Link
                         key={item.id}
                         to="/$lang/portfolio/$id"
-                        params={{ lang: currentLang, id: String(item.id) }}
+                        params={{ lang: currentLang, id: item.slug || String(item.id) }}
                         aria-label={item.name}
                         preload="intent"
                         className="group flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-blue-50/60 border border-transparent hover:border-blue-100 transition-all cursor-pointer"

@@ -44,6 +44,7 @@ class LandingController extends Controller
         }])->orderBy('sort', 'asc')->get()->map(function ($service) {
             return [
                 'id' => $service->id,
+                'slug' => $service->slug ?? \Illuminate\Support\Str::slug(is_array($service->name) ? ($service->name['id'] ?? $service->name['en'] ?? '') : (string) $service->name),
                 'name' => $service->name,
                 'show_name' => $service->show_name,
                 'header' => $service->header,
@@ -64,6 +65,7 @@ class LandingController extends Controller
         $portfolios = Portfolio::all()->map(function ($portfolio) {
             return [
                 'id' => $portfolio->id,
+                'slug' => $portfolio->slug ?? \Illuminate\Support\Str::slug(is_array($portfolio->name) ? ($portfolio->name['id'] ?? $portfolio->name['en'] ?? '') : (string) $portfolio->name),
                 'name' => $portfolio->name,
                 'description' => $portfolio->description,
                 'type' => $portfolio->type,
@@ -189,11 +191,15 @@ class LandingController extends Controller
     public function getPortfolioDetail($id)
     {
         $decoded = urldecode((string) $id);
-        $portfolio = Portfolio::where(function ($q) use ($id, $decoded) {
+        $slugified = \Illuminate\Support\Str::slug($decoded);
+        $portfolio = Portfolio::where(function ($q) use ($id, $decoded, $slugified) {
+            $q->where('slug', $id)
+              ->orWhere('slug', $decoded)
+              ->orWhere('slug', $slugified);
             if (is_numeric($id)) {
-                $q->where('id', (int) $id);
+                $q->orWhere('id', (int) $id);
             } else {
-                $q->where('id', $id)
+                $q->orWhere('id', $id)
                   ->orWhere('name', 'like', "%{$decoded}%");
             }
         })->first();
@@ -216,6 +222,7 @@ class LandingController extends Controller
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
+                    'slug' => $item->slug ?? \Illuminate\Support\Str::slug(is_array($item->name) ? ($item->name['id'] ?? $item->name['en'] ?? '') : (string) $item->name),
                     'name' => $item->name,
                     'type' => $item->type,
                     'category' => $item->type === 'mobile' ? 'Mobile' : 'Desktop',
@@ -229,6 +236,7 @@ class LandingController extends Controller
 
         return response()->json([
             'id' => $portfolio->id,
+            'slug' => $portfolio->slug ?? \Illuminate\Support\Str::slug(is_array($portfolio->name) ? ($portfolio->name['id'] ?? $portfolio->name['en'] ?? '') : (string) $portfolio->name),
             'name' => $portfolio->name,
             'description' => $portfolio->description,
             'type' => $portfolio->type,
@@ -242,6 +250,7 @@ class LandingController extends Controller
             'seo' => [
                 'meta_title' => "{$portfolio->name} — Portofolio ASTA Digital Agency",
                 'meta_description' => $metaDesc,
+                'canonical_url' => url('/portfolio/' . ($portfolio->slug ?: $portfolio->id)),
                 'og_title' => "{$portfolio->name} — Portofolio ASTA Digital Agency",
                 'og_description' => $metaDesc,
                 'og_image' => $formattedImage,
@@ -260,13 +269,17 @@ class LandingController extends Controller
     public function getServiceDetail($id)
     {
         $decoded = urldecode((string) $id);
+        $slugified = \Illuminate\Support\Str::slug($decoded);
         $service = Service::with(['serviceListMains' => function ($query) {
             $query->orderBy('sort', 'asc');
-        }])->where(function ($q) use ($id, $decoded) {
+        }])->where(function ($q) use ($id, $decoded, $slugified) {
+            $q->where('slug', $id)
+              ->orWhere('slug', $decoded)
+              ->orWhere('slug', $slugified);
             if (is_numeric($id)) {
-                $q->where('id', (int) $id);
+                $q->orWhere('id', (int) $id);
             } else {
-                $q->where('id', $id)
+                $q->orWhere('id', $id)
                   ->orWhere('name', 'like', "%{$decoded}%");
             }
         })->first();
@@ -292,6 +305,7 @@ class LandingController extends Controller
 
         return response()->json([
             'id' => $service->id,
+            'slug' => $service->slug ?? \Illuminate\Support\Str::slug(is_array($service->name) ? ($service->name['id'] ?? $service->name['en'] ?? '') : (string) $service->name),
             'name' => $service->name,
             'show_name' => $service->show_name,
             'header' => $service->header,
@@ -307,7 +321,7 @@ class LandingController extends Controller
             'seo' => [
                 'meta_title' => $seo?->title ?? (is_array($service->name) ? ($service->name['id'] ?? reset($service->name)) : $service->name),
                 'meta_description' => $seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description['id'] ?? reset($service->short_description)) : ($service->short_description ?? '')),
-                'canonical_url' => $seo?->canonical ?: url("/services/{$service->id}"),
+                'canonical_url' => $seo?->canonical ?: url("/services/" . ($service->slug ?: $service->id)),
                 'robots' => $seo?->robots ?? 'index, follow',
                 'og_title' => $seo?->ogTitle ?? ($seo?->title ?? (is_array($service->name) ? ($service->name['id'] ?? reset($service->name)) : $service->name)),
                 'og_description' => $seo?->ogDescription ?? ($seo?->description ?? strip_tags(is_array($service->short_description) ? ($service->short_description['id'] ?? reset($service->short_description)) : ($service->short_description ?? ''))),
