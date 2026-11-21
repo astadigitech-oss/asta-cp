@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Antigravity Agent files
+.agents/
+skills-lock.json
+.skills-lock

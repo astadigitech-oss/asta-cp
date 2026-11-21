@@ -46,6 +46,7 @@ export interface ServiceItem {
 
 export interface PortfolioItem {
   id: number | string;
+  slug?: string;
   name: string;
   description?: string;
   image?: string;
