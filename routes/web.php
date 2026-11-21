@@ -381,6 +381,15 @@ Route::get('/{any?}', function () {
             }
 
             if ($discover) {
+                // 301 redirect jika diakses via numeric ID dan memiliki slug kanonikal
+                $canonicalSlug = method_exists($discover, 'getLocalizedSlug')
+                    ? $discover->getLocalizedSlug($locale)
+                    : ($discover->slug ?: null);
+
+                if (is_numeric($discoverParam) && !empty($canonicalSlug) && $canonicalSlug !== $discoverParam) {
+                    return redirect("/{$locale}/discover/{$canonicalSlug}", 301);
+                }
+
                 try {
                     $seo = $discover->seoData();
                 } catch (\Throwable $e) {
@@ -457,11 +466,13 @@ Route::get('/{any?}', function () {
                 $service = Service::with(['serviceListMains' => function ($query) {
                     $query->orderBy('sort', 'asc');
                 }])->where(function ($q) use ($serviceParam, $decodedParam, $slugifiedParam) {
+                    $q->where('slug', $serviceParam)
+                      ->orWhere('slug', $decodedParam)
+                      ->orWhere('slug', $slugifiedParam)
+                      ->orWhere('name', 'like', "%{$decodedParam}%");
+
                     if (is_numeric($serviceParam)) {
-                        $q->where('id', (int) $serviceParam);
-                    } else {
-                        $q->where('id', $serviceParam)
-                          ->orWhere('name', 'like', "%{$decodedParam}%");
+                        $q->orWhere('id', (int) $serviceParam);
                     }
                 })->first();
             } catch (\Throwable $e) {
@@ -469,6 +480,11 @@ Route::get('/{any?}', function () {
             }
 
             if ($service) {
+                // 301 redirect jika diakses via numeric ID dan memiliki slug kanonikal
+                if (is_numeric($serviceParam) && !empty($service->slug) && $service->slug !== $serviceParam) {
+                    return redirect("/{$locale}/services/{$service->slug}", 301);
+                }
+
                 try {
                     $seo = $service->seoData();
                 } catch (\Throwable $e) {
@@ -507,7 +523,7 @@ Route::get('/{any?}', function () {
                     'seo' => [
                         'meta_title' => $seo?->title ?? $service->name,
                         'meta_description' => $serviceLocalizedDesc,
-                        'canonical_url' => $seo?->canonical ?: url("/{$locale}/services/{$service->id}"),
+                        'canonical_url' => $seo?->canonical ?: url("/{$locale}/services/" . ($service->slug ?: $service->id)),
                         'robots' => $seo?->robots ?? 'index, follow',
                         'og_title' => $seo?->ogTitle ?? ($seo?->title ?? $service->name),
                         'og_description' => $serviceLocalizedDesc,
@@ -526,14 +542,17 @@ Route::get('/{any?}', function () {
                 ? substr($cleanPath, strlen('portfolio/'))
                 : substr($cleanPath, strlen('portfolios/'));
             $decodedParam = urldecode($portfolioParam);
+            $slugifiedParam = \Illuminate\Support\Str::slug($decodedParam);
 
             try {
-                $portfolio = Portfolio::where(function ($q) use ($portfolioParam, $decodedParam) {
+                $portfolio = Portfolio::where(function ($q) use ($portfolioParam, $decodedParam, $slugifiedParam) {
+                    $q->where('slug', $portfolioParam)
+                      ->orWhere('slug', $decodedParam)
+                      ->orWhere('slug', $slugifiedParam)
+                      ->orWhere('name', 'like', "%{$decodedParam}%");
+
                     if (is_numeric($portfolioParam)) {
-                        $q->where('id', (int) $portfolioParam);
-                    } else {
-                        $q->where('id', $portfolioParam)
-                          ->orWhere('name', 'like', "%{$decodedParam}%");
+                        $q->orWhere('id', (int) $portfolioParam);
                     }
                 })->first();
             } catch (\Throwable $e) {
@@ -541,6 +560,11 @@ Route::get('/{any?}', function () {
             }
 
             if ($portfolio) {
+                // 301 redirect jika diakses via numeric ID dan memiliki slug kanonikal
+                if (is_numeric($portfolioParam) && !empty($portfolio->slug) && $portfolio->slug !== $portfolioParam) {
+                    return redirect("/{$locale}/portfolio/{$portfolio->slug}", 301);
+                }
+
                 $formattedImage = OptimizedImage::url($portfolio->image, 'portfolio-card');
                 $formattedThumb = OptimizedImage::url($portfolio->image, 'portfolio-thumb');
                 $portfolioOgImage = $formattedImage ?: ($portfolio->image ? (str_starts_with($portfolio->image, 'http') ? $portfolio->image : asset('storage/' . ltrim($portfolio->image, '/'))) : null);
@@ -565,7 +589,7 @@ Route::get('/{any?}', function () {
                         ];
                     });
 
-                $canonicalUrl = url("/{$locale}/portfolio/{$portfolio->id}");
+                $canonicalUrl = url("/{$locale}/portfolio/" . ($portfolio->slug ?: $portfolio->id));
 
                 $initialData['portfolio'] = [
                     'id' => $portfolio->id,

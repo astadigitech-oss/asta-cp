@@ -168,7 +168,23 @@
     }
 
     $robots = $isNotFound ? 'noindex, follow' : ($seo?->robots ?? 'index, follow');
-    $canonicalUrl = $seo?->canonical ?: (($isHomePage ?? false) ? ($currentLocale === 'en' ? $enUrl : $idUrl) : $currentUrl);
+    if ($seo && !empty($seo->canonical)) {
+        $canonicalUrl = $seo->canonical;
+    } elseif ($isHomePage ?? false) {
+        $canonicalUrl = $currentLocale === 'en' ? $enUrl : $idUrl;
+    } elseif ($article) {
+        $artSlug = method_exists($article, 'getLocalizedSlug') ? $article->getLocalizedSlug($currentLocale) : $article->slug;
+        $canonicalUrl = url("/{$currentLocale}/{$artSlug}");
+    } elseif ($discover) {
+        $discSlug = method_exists($discover, 'getLocalizedSlug') ? $discover->getLocalizedSlug($currentLocale) : ($discover->slug ?: $discover->id);
+        $canonicalUrl = url("/{$currentLocale}/discover/{$discSlug}");
+    } elseif ($service) {
+        $canonicalUrl = url("/{$currentLocale}/services/" . ($service->slug ?: $service->id));
+    } elseif ($portfolio) {
+        $canonicalUrl = url("/{$currentLocale}/portfolio/" . ($portfolio->slug ?: $portfolio->id));
+    } else {
+        $canonicalUrl = $currentUrl;
+    }
 
     // Resolve OG default image via Vite manifest (supaya dapat URL dengan hash yang benar)
     $ogDefaultImage = \Illuminate\Support\Facades\Vite::asset('resources/js/assets/og-image.png');
