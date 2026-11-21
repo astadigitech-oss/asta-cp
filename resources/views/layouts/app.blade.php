@@ -92,7 +92,7 @@
             ? 'The page you are looking for could not be found or has been moved.'
             : 'Halaman yang Anda tuju tidak ditemukan atau mungkin telah dipindahkan.';
     } elseif ($isServicesPage) {
-        $rawTitle = $currentLocale === 'en' ? 'Digital Services & Solutions — ASTA Digital Agency' : 'Semua Layanan & Solusi Digital — ASTA Digital Agency';
+        $rawTitle = $currentLocale === 'en' ? 'Software Engineering & IT Solutions — ASTA Digital Agency' : 'Layanan & Solusi Rekayasa Software — ASTA Digital Agency';
         $rawDesc = $currentLocale === 'en'
             ? 'Explore digital solutions and engineering services from ASTA Digital Agency: Web apps, Mobile apps, and Custom enterprise systems.'
             : 'Jelajahi kumpulan layanan dan solusi teknologi dari ASTA Digital Agency: Pembuatan website, aplikasi mobile iOS & Android, dan sistem informasi custom.';
@@ -108,11 +108,11 @@
             : 'Jelajahi kumpulan artikel, panduan, dan wawasan seputar transformasi digital, teknologi, dan pertumbuhan bisnis dari ASTA Digital Agency.';
     } elseif ($isDiscoverPage) {
         $rawTitle = $currentLocale === 'en'
-            ? 'Technology Insights, Case Studies & Solutions — ASTA Digital Agency'
-            : 'Semua Wawasan, Cerita & Panduan Teknologi — ASTA Digital Agency';
+            ? 'Case Studies & Client Project Stories — ASTA Digital Agency'
+            : 'Studi Kasus & Cerita Proyek Klien — ASTA Digital Agency';
         $rawDesc = $currentLocale === 'en'
-            ? 'Explore industry insights, digital transformation case studies, and software engineering solutions from ASTA Digital Agency.'
-            : 'Jelajahi kumpulan wawasan industri, studi kasus transformasi digital, dan panduan rekayasa perangkat lunak dari para ahli di ASTA Digital Agency.';
+            ? 'Browse real-world client project stories: web platforms, mobile apps, and enterprise systems built by ASTA Digital Agency software engineers.'
+            : 'Lihat studi kasus nyata proyek klien ASTA Digital Agency: website, aplikasi mobile, dan sistem informasi yang telah berhasil dibangun.';
     } elseif ($isHomePage ?? false) {
         $rawTitle = transKey($transDict, 'meta.title', 'ASTA Digital Agency — Solusi Teknologi & Digital Agency');
         $rawDesc = transKey($transDict, 'meta.description', 'ASTA Digital Agency membangun website, aplikasi mobile, dan sistem informasi custom untuk UMKM dan perusahaan.');
@@ -816,28 +816,33 @@
                                 @php
                                     $recSlug = method_exists($rec, 'getLocalizedSlug') ? $rec->getLocalizedSlug($currentLocale) : $rec->slug;
                                     $recThumbnail = \App\Support\OptimizedImage::url($rec->thumbnail, 'article-thumb');
+                                    $recUrl = url("/{$currentLocale}/{$recSlug}");
                                 @endphp
-                                <a href="{{ url("/{$currentLocale}/{$recSlug}") }}" aria-label="{{ localizeTextPhp($rec->title, $currentLocale) }}" class="block rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow">
-                                    @if ($recThumbnail)
-                                        <div class="w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
-                                            <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!} loading="lazy" decoding="async" class="h-full w-full object-cover" />
+                                <article class="rounded-2xl border border-gray-200 dark:border-gray-800 p-5 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                                    <div>
+                                        @if ($recThumbnail)
+                                            <a href="{{ $recUrl }}" aria-label="{{ localizeTextPhp($rec->title, $currentLocale) }}" class="block w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-100">
+                                                <img src="{{ $recThumbnail }}" alt="{{ localizeTextPhp($rec->title, $currentLocale) }}" {!! \App\Support\OptimizedImage::htmlAttributes('article-thumb') !!} loading="lazy" decoding="async" class="h-full w-full object-cover hover:scale-105 transition-transform" />
+                                            </a>
+                                        @endif
+                                        <div class="text-xs text-gray-400 mb-1">
+                                            {{ $rec->published_at?->format('d M Y') ?? date('d M Y') }}
+                                            @if ($rec->category)
+                                                • <span class="font-semibold text-blue-600">{{ $rec->category }}</span>
+                                            @endif
                                         </div>
-                                    @endif
-                                    <div class="text-xs text-gray-400 mb-1">
-                                        {{ $rec->published_at?->format('d M Y') ?? date('d M Y') }}
-                                        @if ($rec->category)
-                                            • <span class="font-semibold text-blue-600">{{ $rec->category }}</span>
+                                        <h3 class="font-bold text-base text-gray-900 dark:text-white line-clamp-2 mb-2">
+                                            <a href="{{ $recUrl }}" class="hover:text-blue-600 transition-colors">
+                                                {{ localizeTextPhp($rec->title, $currentLocale) }}
+                                            </a>
+                                        </h3>
+                                        @if ($rec->excerpt)
+                                            <p class="text-xs text-gray-500 line-clamp-2">
+                                                {{ strip_tags(localizeTextPhp($rec->excerpt, $currentLocale)) }}
+                                            </p>
                                         @endif
                                     </div>
-                                    <h3 class="font-bold text-base text-gray-900 dark:text-white line-clamp-2 mb-2">
-                                        {{ localizeTextPhp($rec->title, $currentLocale) }}
-                                    </h3>
-                                    @if ($rec->excerpt)
-                                        <p class="text-xs text-gray-500 line-clamp-2">
-                                            {{ strip_tags(localizeTextPhp($rec->excerpt, $currentLocale)) }}
-                                        </p>
-                                    @endif
-                                </a>
+                                </article>
                             @endforeach
                         </div>
                     </section>
@@ -927,7 +932,7 @@
                 @endif
 
                 {{-- Modul FAQ Permanen Detail Solusi / Discover --}}
-                <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800" data-nosnippet>
                     <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
                         {{ $currentLocale === 'en' ? 'Frequently Asked Questions (FAQ)' : 'Pertanyaan Umum seputar Solusi Ini (FAQ)' }}
                     </h2>
@@ -946,7 +951,7 @@
                 </section>
 
                 {{-- CTA & Navigation Section — Outgoing links for SEO (internal + external) --}}
-                <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800" aria-label="{{ $currentLocale === 'en' ? 'Related Links' : 'Tautan Terkait' }}">
+                <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800" data-nosnippet aria-label="{{ $currentLocale === 'en' ? 'Related Links' : 'Tautan Terkait' }}">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                         {{ $currentLocale === 'en' ? 'Interested in a Similar Digital Solution?' : 'Tertarik Membangun Solusi Digital Serupa?' }}
                     </h2>
@@ -1155,7 +1160,7 @@
                         {{ $currentLocale === 'en' ? 'Blog & Knowledge' : 'Artikel & Wawasan' }}
                     </span>
                     <h1 class="text-3xl md:text-5xl font-bold mt-2 text-gray-900 dark:text-white">
-                        {{ $currentLocale === 'en' ? 'Articles & Insights' : 'Artikel & Wawasan' }}
+                        {{ $currentLocale === 'en' ? 'Software Engineering & Technology Insights' : 'Artikel & Wawasan Rekayasa Perangkat Lunak' }}
                     </h1>
                     <p class="mt-3 text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                         {{ $currentLocale === 'en'
@@ -1307,7 +1312,8 @@
                                     </div>
                                     <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                                         <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ ($currentLocale === 'en' ? 'Read story: ' : 'Pelajari selengkapnya: ') . localizeTextPhp($dName, $currentLocale) }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                                            <span>{{ $currentLocale === 'en' ? 'Read Story' : 'Pelajari Selengkapnya' }}</span>
+                                            <span>{{ $currentLocale === 'en' ? 'Read Story: ' : 'Pelajari: ' }}</span>
+                                            <span class="font-semibold">{{ localizeTextPhp($dName, $currentLocale) }}</span>
                                             <span>→</span>
                                         </a>
                                     </div>
@@ -1343,6 +1349,117 @@
                                     : 'Opsi pemeliharaan dan dukungan setelah peluncuran dapat dibahas dan dicantumkan dalam penawaran atau perjanjian layanan.' }}
                             </p>
                         </div>
+                    </div>
+                </section>
+            </main>
+        @elseif ($isServicesPage)
+            <main class="max-w-6xl mx-auto px-4 py-16 space-y-12">
+                {{-- Breadcrumb Navigation --}}
+                <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs text-gray-500 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+                    <a href="{{ url('/' . $currentLocale) }}" class="hover:text-blue-600 transition-colors font-medium">
+                        {{ $currentLocale === 'en' ? 'Home' : 'Beranda' }}
+                    </a>
+                    <span aria-hidden="true" class="text-gray-400">/</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300" aria-current="page">
+                        {{ $currentLocale === 'en' ? 'Services & Solutions' : 'Layanan & Solusi' }}
+                    </span>
+                </nav>
+
+                <header class="text-center max-w-3xl mx-auto space-y-4">
+                    <span class="inline-block text-xs font-bold text-blue-600 uppercase tracking-widest">
+                        ASTA DIGITAL AGENCY · {{ $currentLocale === 'en' ? 'SOFTWARE ENGINEERING' : 'REKAYASA PERANGKAT LUNAK' }}
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+                        {{ $currentLocale === 'en'
+                            ? 'Digital Engineering Services & Software Solutions'
+                            : 'Layanan Rekayasa Digital & Solusi Perangkat Lunak' }}
+                    </h1>
+                    <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
+                        {{ $currentLocale === 'en'
+                            ? 'Explore custom digital solutions engineered by ASTA Digital Agency: Web platforms, Mobile iOS & Android apps, and Enterprise information systems.'
+                            : 'Jelajahi kumpulan layanan rekayasa teknologi dari ASTA Digital Agency: Pembuatan website, aplikasi mobile iOS & Android, dan sistem informasi enterprise custom.' }}
+                    </p>
+                </header>
+
+                @php
+                    $displayServices = (!empty($allServices) && $allServices->count() > 0)
+                        ? $allServices
+                        : ((!empty($homeServices) && $homeServices->count() > 0) ? $homeServices : collect());
+                @endphp
+
+                @if ($displayServices->isNotEmpty())
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        @foreach ($displayServices as $srv)
+                            @php
+                                $sName = is_array($srv->name) ? ($srv->name[$currentLocale] ?? reset($srv->name)) : $srv->name;
+                                $sDesc = is_array($srv->short_description) ? ($srv->short_description[$currentLocale] ?? reset($srv->short_description)) : $srv->short_description;
+                                $sLogo = \App\Support\OptimizedImage::url($srv->logo, 'service-logo');
+                                $sTargetUrl = url("/{$currentLocale}/services/" . ($srv->slug ?: $srv->id));
+                            @endphp
+                            <article class="flex flex-col justify-between bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-6 sm:p-8 shadow-xs hover:shadow-md transition-shadow">
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        @if ($sLogo)
+                                            <div class="h-14 w-14 rounded-2xl bg-blue-50 dark:bg-blue-950/40 p-2.5 flex items-center justify-center border border-blue-100 dark:border-blue-900/50">
+                                                <img src="{{ $sLogo }}" alt="{{ localizeTextPhp($sName, $currentLocale) }}" width="48" height="48" class="h-full w-full object-contain" loading="lazy" decoding="async" />
+                                            </div>
+                                        @endif
+                                        @if (!empty($srv->header))
+                                            <span class="text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                                {{ $srv->header }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                                        <a href="{{ $sTargetUrl }}" class="hover:text-blue-600 transition-colors">
+                                            {{ localizeTextPhp($sName, $currentLocale) }}
+                                        </a>
+                                    </h2>
+                                    @if ($sDesc)
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+                                            {!! strip_tags(localizeTextPhp($sDesc, $currentLocale)) !!}
+                                        </p>
+                                    @endif
+
+                                    @if ($srv->serviceListMains && $srv->serviceListMains->count() > 0)
+                                        <ul class="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                                            @foreach ($srv->serviceListMains->take(4) as $feature)
+                                                <li class="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                                    <span class="text-blue-600 font-bold shrink-0">✓</span>
+                                                    <span>{{ strip_tags(localizeTextPhp($feature->description, $currentLocale)) }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                    <a href="{{ $sTargetUrl }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                                        <span>{{ $currentLocale === 'en' ? 'Explore Service: ' : 'Lihat Layanan: ' }}</span>
+                                        <span class="font-semibold">{{ localizeTextPhp($sName, $currentLocale) }}</span>
+                                        <span>→</span>
+                                    </a>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- CTA Konsultasi Layanan --}}
+                <section class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-800 text-center space-y-4" data-nosnippet>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ $currentLocale === 'en' ? 'Ready to Build Your Digital Solution?' : 'Siap Mewujudkan Solusi Digital Bisnis Anda?' }}
+                    </h2>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
+                        {{ $currentLocale === 'en'
+                            ? 'Consult your product requirements with our technical engineering team for an optimal architectural proposal.'
+                            : 'Konsultasikan kebutuhan sistem Anda dengan tim teknis ASTA Digital Agency untuk mendapatkan estimasi dan arsitektur terbaik.' }}
+                    </p>
+                    <div class="pt-2">
+                        <a href="{{ url('/' . $currentLocale . '#kontak') }}" class="inline-flex items-center gap-2 rounded-full bg-[#004AAD] text-white px-7 py-3 text-sm font-semibold hover:opacity-90 transition-all shadow-md">
+                            <span>{{ $currentLocale === 'en' ? 'Contact Our Team' : 'Hubungi Tim Kami' }}</span>
+                            <span>→</span>
+                        </a>
                     </div>
                 </section>
             </main>
@@ -1458,15 +1575,15 @@
                         <div class="mt-8 grid gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:grid-cols-3">
                             <h2 class="sr-only">{{ transKey($transDict, 'home_seo.proof_title') }}</h2>
                             <a href="#portofolio" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h2>
+                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h3>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_portfolio') }}</p>
                             </a>
                             <a href="#tentang" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h2>
+                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h3>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_company') }}</p>
                             </a>
                             <a href="#kontak" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h2 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h2>
+                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h3>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_contact') }}</p>
                             </a>
                         </div>
@@ -1827,7 +1944,8 @@
                                         </div>
                                         <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                                             <a href="/{{ $currentLocale }}/discover/{{ $dSlug }}" aria-label="{{ ($currentLocale === 'en' ? 'Read story: ' : 'Pelajari selengkapnya: ') . localizeTextPhp($dName, $currentLocale) }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
-                                                <span>{{ $currentLocale === 'en' ? 'Read Story' : 'Pelajari Selengkapnya' }}</span>
+                                                <span>{{ $currentLocale === 'en' ? 'Read Story: ' : 'Pelajari: ' }}</span>
+                                                <span class="font-semibold">{{ localizeTextPhp($dName, $currentLocale) }}</span>
                                                 <span>→</span>
                                             </a>
                                         </div>

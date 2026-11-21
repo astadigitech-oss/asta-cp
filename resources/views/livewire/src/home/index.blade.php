@@ -253,7 +253,7 @@
                         membantu setiap tahap perjalanan digital bisnismu. mulai dari membangun citra
                         profesional melalui company profile, mengelola operasional dengan sistem ERP yang terintegrasi,
                         hingga meningkatkan efisiensi penjualan melalui solusi Point of Sales yang andal. Sebagai
-                        penyedia jasa pembuatan website di Yogyakarta, ASTA juga membantu bisnis membangun toko online
+                        penyedia jasa pembuatan website & aplikasi di Yogyakarta, ASTA juga membantu bisnis membangun toko online
                         dan portal yang responsif. Kami mengembangkan aplikasi mobile serta sistem informasi custom
                         yang terintegrasi, aman, dan mudah digunakan. Setiap proyek dimulai dengan memahami kebutuhan,
                         merancang solusi, lalu menguji kualitasnya sebelum diluncurkan.</p>

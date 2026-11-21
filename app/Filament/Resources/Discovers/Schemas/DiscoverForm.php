@@ -141,7 +141,7 @@ class DiscoverForm
                             ->toolbarButtons([
                                 'blockquote', 'bold', 'bulletList', 'h2', 'h3', 'italic', 'link', 'orderedList', 'redo', 'strike', 'underline', 'undo',
                             ])
-                            ->helperText('Pengantar singkat sebelum membaca materi/cerita lengkap')
+                            ->helperText(' PENTING: Isi maksimal 1–2 kalimat singkat yang menggambarkan proyek ini. Field ini digunakan sebagai fallback meta description Google jika SEO Meta Description di bawah dikosongkan. Jangan isi dengan paragraf panjang, tagline, atau nama perusahaan.')
                             ->required()
                             ->columnSpanFull(),
                     ])->columnSpanFull(),
@@ -221,8 +221,8 @@ class DiscoverForm
                                 TextInput::make('title')
                                     ->label('SEO Meta Title')
                                     ->placeholder('Biarkan kosong untuk otomatis memakai judul')
-                                    ->maxLength(70)
-                                    ->helperText('Maks. 70 karakter untuk hasil pencarian Google'),
+                                    ->maxLength(60)
+                                    ->helperText('Maks. 60 karakter / 550 pixel untuk hasil pencarian Google'),
 
                                 TextInput::make('canonical')
                                     ->label('Canonical URL')
@@ -235,8 +235,8 @@ class DiscoverForm
                             ->label('SEO Meta Description')
                             ->placeholder('Deskripsi ringkas konten untuk cuplikan mesin pencari Google...')
                             ->rows(3)
-                            ->maxLength(160)
-                            ->helperText('Panjang ideal 120-160 karakter')
+                            ->maxLength(140)
+                            ->helperText('✅ WAJIB diisi agar Google menampilkan cuplikan yang tepat. Disarankan 120–140 karakter. Jika kosong, sistem otomatis memotong teks dari Ringkasan/Pengantar yang mungkin tidak relevan.')
                             ->columnSpanFull(),
 
                         Grid::make(2)

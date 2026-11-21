@@ -181,6 +181,7 @@ Route::get('/{any?}', function () {
     $isPortfolioPage = ($cleanPath === 'portfolio' || $cleanPath === 'portfolios');
     $isHomePage = ($cleanPath === '');
     $homeServices = null;
+    $allServices = collect();
     $homeArticles = null;
     $homePortfolios = null;
     $homeDiscovers = null;
@@ -327,7 +328,22 @@ Route::get('/{any?}', function () {
         } catch (\Throwable $e) {
             $discoverItems = collect();
         }
-    } elseif ($isServicesPage || $isPortfolioPage) {
+    } elseif ($isServicesPage) {
+        try {
+            $allServices = Service::with(['serviceListMains' => function ($q) {
+                $q->orderBy('sort', 'asc');
+            }])->orderBy('sort', 'asc')->get();
+        } catch (\Throwable $e) {
+            $allServices = collect();
+        }
+        try {
+            $initialData['landing'] = Cache::remember('landing_api_cache', 30, function () {
+                return (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
+            });
+        } catch (\Throwable $e) {
+            $initialData['landing'] = null;
+        }
+    } elseif ($isPortfolioPage) {
         try {
             $initialData['landing'] = Cache::remember('landing_api_cache', 30, function () {
                 return (new \App\Http\Controllers\Api\LandingController())->getLandingData()->getData(true);
@@ -714,6 +730,7 @@ Route::get('/{any?}', function () {
         'discoverItems' => $discoverItems,
         'isHomePage' => $isHomePage,
         'isNotFound' => $isNotFound,
+        'allServices' => $allServices,
         'homeServices' => $homeServices,
         'homeArticles' => $homeArticles,
         'homePortfolios' => $homePortfolios,

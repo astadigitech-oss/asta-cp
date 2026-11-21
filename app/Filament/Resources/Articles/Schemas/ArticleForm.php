@@ -126,8 +126,9 @@ class ArticleForm
                         Textarea::make('excerpt')
                             ->label('Pengantar / Ringkasan Excerpt')
                             ->rows(3)
-                            ->placeholder('Deskripsi pengantar singkat sebelum membaca materi/isi lengkap...')
-                            ->helperText('Tampil sebagai lead text di awal artikel dan fallback meta description')
+                            ->maxLength(200)
+                            ->placeholder('Deskripsi pengantar singkat sebelum membaca materi/isi lengkap (maks. 200 karakter)...')
+                            ->helperText('Wajib ringkas (maks. 200 karakter). Tampil sebagai cuplikan kartu blog, artikel terkait, dan fallback meta description Google.')
                             ->columnSpanFull(),
 
                         Grid::make(2)
@@ -280,8 +281,8 @@ class ArticleForm
                                 TextInput::make('title')
                                     ->label('Meta Title')
                                     ->placeholder('Biarkan kosong untuk otomatis memakai judul artikel')
-                                    ->maxLength(70)
-                                    ->helperText('Maks. 70 karakter untuk hasil pencarian Google'),
+                                    ->maxLength(60)
+                                    ->helperText('Maks. 60 karakter / 550 pixel agar tidak terpotong di hasil pencarian Google'),
 
                                 TextInput::make('canonical')
                                     ->label('Canonical URL')
@@ -294,8 +295,8 @@ class ArticleForm
                             ->label('Meta Description')
                             ->placeholder('Deskripsi ringkas artikel untuk cuplikan mesin pencari Google...')
                             ->rows(3)
-                            ->maxLength(160)
-                            ->helperText('Panjang ideal 120-160 karakter'),
+                            ->maxLength(140)
+                            ->helperText('Disarankan 120-140 karakter (maks. 960 pixel) untuk mencegah pemotongan di SERP'),
 
                         Grid::make(2)
                             ->schema([

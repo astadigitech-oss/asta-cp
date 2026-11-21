@@ -13,6 +13,14 @@ class SecurityHeadersMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Canonical host redirection (www -> non-www 301 Permanent Redirect)
+        $host = $request->getHost();
+        if ($host && str_starts_with(strtolower($host), 'www.')) {
+            $nonWwwHost = substr($host, 4);
+            $targetUrl = 'https://' . $nonWwwHost . $request->getRequestUri();
+            return redirect()->away($targetUrl, 301);
+        }
+
         $response = $next($request);
 
         // HTTP Strict Transport Security (HSTS)
