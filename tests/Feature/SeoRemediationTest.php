@@ -111,4 +111,17 @@ class SeoRemediationTest extends TestCase
         $this->assertLessThanOrEqual(135, mb_strlen($limited, 'UTF-8'));
         $this->assertStringEndsWith('...', $limited);
     }
+
+    public function test_page_has_exactly_one_meta_description_and_canonical_tag(): void
+    {
+        $response = $this->get('/id');
+        $response->assertOk();
+        $content = $response->getContent();
+
+        $metaDescCount = substr_count($content, '<meta name="description"');
+        $this->assertSame(1, $metaDescCount, 'There must be exactly one meta description tag.');
+
+        $canonicalCount = substr_count($content, '<link rel="canonical"');
+        $this->assertSame(1, $canonicalCount, 'There must be exactly one canonical link tag.');
+    }
 }

@@ -32,6 +32,7 @@ interface DiscoverListItem {
 
 interface DiscoverItem {
   id: number | string;
+  slug?: string;
   name: string;
   short_description?: string;
   logo?: string;
@@ -632,7 +633,7 @@ export function Navbar() {
                       <div className="grid grid-cols-2 gap-3.5">
                         {paginatedDiscovers.length > 0 ? (
                           paginatedDiscovers.map((disc) => (
-                            <a key={disc.id} href={`/${language}/discover/${disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
+                            <a key={disc.id} href={`/${language}/discover/${disc.slug || disc.id}`} className="p-3 rounded-xl hover:bg-blue-50/60 transition-all border border-transparent hover:border-blue-100 flex items-start gap-3 group/disc">
                               {disc.logo ? (
                                 <img src={disc.logo} alt={disc.name} width={32} height={32} loading="lazy" decoding="async" className="w-8 h-8 object-contain shrink-0 mt-0.5" />
                               ) : (
@@ -742,7 +743,7 @@ export function Navbar() {
                           {/* Slide 1..N: Image Berita */}
                           {newsItems.map((item, idx) => {
                             const isMock = typeof item.id === "string" && String(item.id).startsWith("mock");
-                            const itemHref = isMock ? `/${language}/discover` : `/${language}/discover/${item.id}`;
+                            const itemHref = isMock ? `/${language}/discover` : `/${language}/discover/${item.slug || item.id}`;
                             return (
                               <a
                                 key={item.id || idx}
