@@ -81,19 +81,25 @@ class ContentSanitizer
 
         $normalizedTitles = self::extractTitles($articleTitle);
 
-        return preg_replace_callback('/<h([1-6])([^>]*)>(.*?)<\/h\1>/is', function ($matches) use ($normalizedTitles) {
+        // 1. Process headings: remove empty headings, demote H1 to H2, remove title duplicates
+        $cleanedHtml = preg_replace_callback('/<h([1-6])([^>]*)>(.*?)<\/h\1>/is', function ($matches) use ($normalizedTitles) {
             $tagNum = $matches[1];
             $attrs = $matches[2];
             $content = $matches[3];
 
             $headingNorm = self::normalize($content);
 
-            // 1. If heading duplicates the article title, remove the entire heading tag
-            if ($headingNorm !== '' && in_array($headingNorm, $normalizedTitles, true)) {
+            // Strip empty headings (e.g. <h2></h2>, <h3>&nbsp;</h3>, <h4> </h4>)
+            if ($headingNorm === '') {
                 return '';
             }
 
-            // 2. Demote any other <h1> in content to <h2> so there is strictly one <h1> on the page
+            // If heading duplicates the article title, remove the entire heading tag to avoid h1=h2 or h1=h1
+            if (in_array($headingNorm, $normalizedTitles, true)) {
+                return '';
+            }
+
+            // Demote any <h1> in content to <h2> so there is strictly one single <h1> on the page
             if ($tagNum === '1') {
                 return "<h2{$attrs}>{$content}</h2>";
             }
@@ -101,7 +107,20 @@ class ContentSanitizer
             return $matches[0];
         }, $html);
 
-        // 3. Remove accidental nofollow from internal links (domain astadigitalagency.com or relative paths)
+        // 2. Remove empty <strong>, <b>, <em>, <i> tags
+        $cleanedHtml = preg_replace('/<(strong|b|em|i)[^>]*>\s*(?:&nbsp;)*\s*<\/\1>/is', '', $cleanedHtml);
+
+        // 3. Unwrap excessively long bold/strong tags (> 100 characters) to prevent SERP over-optimization flags
+        $cleanedHtml = preg_replace_callback('/<(strong|b)([^>]*)>(.*?)<\/\1>/is', function ($bMatch) {
+            $bContent = $bMatch[3];
+            $plain = trim(strip_tags(html_entity_decode($bContent, ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+            if (mb_strlen($plain, 'UTF-8') > 100) {
+                return $bContent;
+            }
+            return $bMatch[0];
+        }, $cleanedHtml);
+
+        // 4. Remove accidental nofollow from internal links (domain astadigitalagency.com or relative paths)
         $cleanedHtml = preg_replace_callback('/<a\b([^>]*)>/i', function ($aMatch) {
             $attrs = $aMatch[1];
             $isInternal = preg_match('/href=[\'"](?:https?:\/\/(?:www\.)?astadigitalagency\.com|\/(?!\/))/i', $attrs);
@@ -157,8 +176,9 @@ class ContentSanitizer
 
     /**
      * Limits text to a specific length at word boundary without breaking words.
+     * Default 135 characters safely fits within Google's ~960-1000px SERP snippet limit.
      */
-    public static function limitWords(string $text, int $limit = 155): string
+    public static function limitWords(string $text, int $limit = 135): string
     {
         $text = trim(preg_replace('/\s+/', ' ', $text));
         if (mb_strlen($text, 'UTF-8') <= $limit) {
@@ -191,13 +211,20 @@ class ContentSanitizer
                 : 'PT Asta Digital Agency membangun aplikasi mobile, website, dan sistem informasi modern untuk perusahaan.';
         }
 
+        $hasDelimiters = preg_match('/\[:\s*(id|en)\s*\]/i', $descStr) || preg_match('/\[\s*(id|en)\s*\]/i', $descStr);
+
+        // If the description does not contain multilingual tags, it was provided directly for this page
+        if (!$hasDelimiters) {
+            return self::limitWords($descStr, 135);
+        }
+
         $idDesc = trim(strip_tags(self::extractDelimitedText($descStr, 'id')));
         $enDesc = trim(strip_tags(self::extractDelimitedText($descStr, 'en')));
 
         if ($locale === 'en') {
             // If explicit English translation exists and is distinct from ID, use it
             if ($enDesc !== '' && $enDesc !== $idDesc) {
-                return self::limitWords($enDesc, 155);
+                return self::limitWords($enDesc, 135);
             }
 
             // Fallback: Generate an English contextualized description so /en/ is never duplicate of /id/
@@ -210,10 +237,10 @@ class ContentSanitizer
                 $enGenerated = "Explore {$cleanTitle} by ASTA Digital Agency: {$idDesc}";
             }
 
-            return self::limitWords($enGenerated, 155);
+            return self::limitWords($enGenerated, 135);
         }
 
         // Locale is 'id'
-        return self::limitWords($idDesc ?: $descStr, 155);
+        return self::limitWords($idDesc ?: $descStr, 135);
     }
 }
