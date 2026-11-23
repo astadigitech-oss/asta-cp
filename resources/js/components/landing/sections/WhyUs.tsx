@@ -44,7 +44,7 @@ export function WhyUs() {
                 <a.icon className="h-6 w-6 text-white" />
               </span>
               <div className="min-w-0 flex-1">
-                <h3 className="font-display text-lg font-bold text-primary">{a.title}</h3>
+                <p className="font-display text-lg font-bold text-primary">{a.title}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{a.text}</p>
               </div>
             </motion.div>

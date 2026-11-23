@@ -229,7 +229,9 @@ export function DiscoverSection({ discoversList = [] }: { discoversList?: Discov
                         params={{ id: localize(item.slug) || String(item.id), lang }}
                         aria-label={`${t("discover.read_more")}: ${item.name}`}
                       >
-                        {t("discover.read_more")} <ArrowRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                        <span>{t("discover.read_more")}</span>
+                        <span className="sr-only">: {localize(item.name)}</span>
+                        <ArrowRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </Button>
                   </div>

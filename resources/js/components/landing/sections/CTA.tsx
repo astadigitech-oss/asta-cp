@@ -15,37 +15,36 @@ export function CTA() {
   };
 
   return (
-    <section className="relative py-6 sm:py-6">
-      <div className="mx-auto max-w-[1440px] xl:max-w-[1600px] 2xl:max-w-[1780px] 3xl:max-w-[1980px] 4xl:max-w-[2240px] px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 3xl:px-24">
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-[36px] gradient-hero p-10 shadow-glass sm:p-16"
-        >
-          <div className="relative mx-auto max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl text-center text-primary-foreground">
-            <h2 className="mt-5 font-display text-3xl font-bold leading-[1.05] sm:text-5xl text-white">
-              {t("cta.title")}
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl 2xl:max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
-              {t("cta.description")}
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 rounded-full bg-white px-6 text-primary shadow-glass hover:bg-white/90"
-              >
-                <a href={`/${language}/#kontak`} onClick={handleContactClick}>
-                  {t("cta.button")} <ArrowRight className="ml-1.5 h-4 w-4" />
-                </a>
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+    <section className="relative w-full overflow-hidden bg-gradient-to-br from-[#004AAD] via-[#023377] to-[#011e48] py-16 sm:py-20 text-white shadow-xl">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-16 text-center text-primary-foreground"
+      >
+        <h2 className="font-display text-3xl font-bold leading-[1.1] sm:text-4xl md:text-5xl text-white">
+          {t("cta.title")}
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base leading-relaxed text-blue-100/90">
+          {t("cta.description")}
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 rounded-full bg-white px-7 font-bold text-[#004AAD] shadow-glass hover:bg-blue-50 transition-all hover:scale-105 active:scale-95"
+          >
+            <a href={`/${language}/#kontak`} onClick={handleContactClick}>
+              {t("cta.button")} <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        </div>
+      </motion.div>
+
+      {/* Decorative ambient glowing orbs matching discover header */}
+      <div className="absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+      <div className="absolute right-1/3 -top-20 h-60 w-60 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
     </section>
   );
 }
-

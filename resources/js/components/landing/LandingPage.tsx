@@ -1,97 +1,26 @@
-import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useLandingData } from "@/hooks/useLandingData";
 import { useTranslation } from "@/i18n/useTranslation";
-import { Hero } from "./sections/Hero";
+import {
+  Hero,
+  About,
+  Services,
+  ComparisonTable,
+  Portfolio,
+  DiscoverSection,
+  WhyUs,
+  Stats,
+  Process,
+  BlogSection,
+  Testimonials,
+  HomeFAQ,
+  CTA,
+  Contact,
+  Footer,
+} from "./sections";
 
 const Toaster = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
-
-// Lazy-load below-the-fold sections to drastically reduce initial JS execution and memory overhead on low-end devices
-const HomeFAQ = lazy(() => import("./sections/HomeFAQ").then((m) => ({ default: m.HomeFAQ })));
-const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
-const About = lazy(() => import("./sections/About").then((m) => ({ default: m.About })));
-const Services = lazy(() => import("./sections/Services").then((m) => ({ default: m.Services })));
-const ComparisonTable = lazy(() => import("./sections/ComparisonTable").then((m) => ({ default: m.ComparisonTable })));
-const Portfolio = lazy(() => import("./sections/Portfolio").then((m) => ({ default: m.Portfolio })));
-const DiscoverSection = lazy(() => import("./sections/DiscoverSection").then((m) => ({ default: m.DiscoverSection })));
-const WhyUs = lazy(() => import("./sections/WhyUs").then((m) => ({ default: m.WhyUs })));
-const Stats = lazy(() => import("./sections/Stats").then((m) => ({ default: m.Stats })));
-const Process = lazy(() => import("./sections/Process").then((m) => ({ default: m.Process })));
-const BlogSection = lazy(() => import("./sections/BlogSection").then((m) => ({ default: m.BlogSection })));
-const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
-const CTA = lazy(() => import("./sections/CTA").then((m) => ({ default: m.CTA })));
-const Contact = lazy(() => import("./sections/Contact").then((m) => ({ default: m.Contact })));
-
-function SectionFallback({ minHeight = "min-h-[200px]" }: { minHeight?: string }) {
-  return <div className={`w-full ${minHeight}`} aria-hidden="true" />;
-}
-
-function DeferredSection({
-  children,
-  minHeight,
-  hashTarget,
-}: {
-  children: ReactNode;
-  minHeight: string;
-  hashTarget?: string;
-}) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    // Jika hash target di URL sesuai, muat langsung
-    if (hashTarget && typeof window !== "undefined" && window.location.hash === `#${hashTarget}`) {
-      setShouldLoad(true);
-      return;
-    }
-
-    let observer: IntersectionObserver | undefined;
-
-    if ("IntersectionObserver" in window) {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setShouldLoad(true);
-            observer?.disconnect();
-          }
-        },
-        { rootMargin: "5000px 0px" },
-      );
-      if (sectionRef.current) {
-        observer.observe(sectionRef.current);
-      }
-    } else {
-      setShouldLoad(true);
-    }
-
-    const loadForHash = () => {
-      if (hashTarget && window.location.hash === `#${hashTarget}`) {
-        setShouldLoad(true);
-      }
-    };
-
-    window.addEventListener("hashchange", loadForHash);
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener("hashchange", loadForHash);
-    };
-  }, [hashTarget]);
-
-  return (
-    <div
-      ref={sectionRef}
-      className={`w-full ${shouldLoad ? "" : minHeight}`}
-    >
-      {shouldLoad ? (
-        <Suspense fallback={<SectionFallback minHeight={minHeight} />}>
-          {children}
-        </Suspense>
-      ) : (
-        <SectionFallback minHeight={minHeight} />
-      )}
-    </div>
-  );
-}
 
 export function LandingPage() {
   const { data: landingData } = useLandingData();
@@ -146,10 +75,11 @@ export function LandingPage() {
       </Suspense>
       <Navbar />
       <main>
-        {/* Above-the-fold critical content (loaded immediately) */}
+        {/* Hero Section */}
         <Hero clientsList={landingData?.clients} />
 
-        <section className="mx-auto max-w-full space-y-6 px-4 py-14 sm:px-6 lg:px-24 ">
+        {/* SEO Structured Content */}
+        <section className="mx-auto max-w-full space-y-6 px-4 py-14 sm:px-6 lg:px-24">
           <h2 className="font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             {t("home_seo.title")}
           </h2>
@@ -187,15 +117,13 @@ export function LandingPage() {
               <p className="mt-2 text-sm leading-relaxed text-gray-600">{t("home_seo.security_description")}</p>
             </article>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
-          </div>
           <p className="max-w-4xl text-sm leading-relaxed text-gray-600">{t("home_seo.location")}</p>
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-primary">
             <a href="#layanan" className="underline underline-offset-4">{t("home_seo.services_link")}</a>
             <a href="#kontak" className="underline underline-offset-4">{t("home_seo.contact_link")}</a>
           </div>
 
-          {/* Explicit Business Identity & Contact Transparency Card for AI/SEO Verification */}
+          {/* Explicit Business Identity & Contact Transparency Card */}
           <div className="rounded-2xl border border-gray-200 bg-gray-50/70 p-6 text-sm text-gray-700 shadow-xs dark:border-gray-800 dark:bg-gray-900/50">
             <h4 className="font-semibold text-gray-900 dark:text-white text-base mb-3">
               {language === "en" ? "Company Information & Contact Transparency" : "Informasi Resmi Perusahaan & Transparansi Kontak"}
@@ -240,62 +168,57 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Below-the-fold deferred content (lazy loaded chunks) */}
-        <DeferredSection hashTarget="tentang" minHeight="min-h-[400px]">
+        {/* Synchronously rendered full-page sections to ensure 0 layout shift and reliable scroll restoration */}
+        <div id="tentang">
           <About discoversList={landingData?.discovers} />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="layanan" minHeight="min-h-[400px]">
+        <div id="layanan">
           <Services />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="komparasi" minHeight="min-h-[400px]">
+        <div id="komparasi">
           <ComparisonTable />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="portofolio" minHeight="min-h-[400px]">
+        <div id="portofolio">
           <Portfolio />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="discover" minHeight="min-h-[400px]">
+        <div id="discover">
           <DiscoverSection discoversList={landingData?.discovers} />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="keunggulan" minHeight="min-h-[300px]">
+        <div id="keunggulan">
           <WhyUs />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection minHeight="min-h-[250px]">
-          <Stats />
-        </DeferredSection>
+        <Stats />
 
-        <DeferredSection hashTarget="proses" minHeight="min-h-[350px]">
+        <div id="proses">
           <Process />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="blog" minHeight="min-h-[400px]">
+        <div id="blog">
           <BlogSection articlesList={landingData?.articles} />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="testimoni" minHeight="min-h-[350px]">
+        <div id="testimoni">
           <Testimonials />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection hashTarget="faq" minHeight="min-h-[400px]">
+        <div id="faq">
           <HomeFAQ />
-        </DeferredSection>
+        </div>
 
-        <DeferredSection minHeight="min-h-[250px]">
-          <CTA />
-        </DeferredSection>
+        <CTA />
 
-        <DeferredSection hashTarget="kontak" minHeight="min-h-[1400px] lg:min-h-[1100px]">
+        <div id="kontak">
           <Contact />
-        </DeferredSection>
+        </div>
       </main>
-      <DeferredSection minHeight="min-h-[650px] lg:min-h-[500px]">
-        <Footer />
-      </DeferredSection>
+
+      <Footer />
     </div>
   );
 }

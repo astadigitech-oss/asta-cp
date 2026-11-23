@@ -46,9 +46,12 @@ export function PortfolioDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [mountedAt] = useState(() => Date.now());
 
+  const initialWindowData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__?.portfolio : null;
+  const initialItem = initialWindowData && (String(initialWindowData.id) === String(id) || initialWindowData.slug === id || String(initialWindowData.slug) === id) ? initialWindowData : null;
+
   // Try finding from cached landingData first for instant render (0ms wait)
   const allPortfolios = (landingData?.portfolios || []) as any[];
-  const cachedItem = allPortfolios.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
+  const cachedItem = initialItem || allPortfolios.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
 
   // Query single portfolio detail to ensure full and fresh data
   const { data: fetchedItem, isLoading, isError } = useQuery<PortfolioData>({
@@ -62,7 +65,11 @@ export function PortfolioDetailPage() {
 
   // Scroll to top on mount or portfolio change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    const navEntries = performance.getEntriesByType("navigation");
+    const isReload = navEntries.length > 0 && (navEntries[0] as PerformanceNavigationTiming).type === "reload";
+    if (!isReload) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }, [id]);
 
   const currentLang = lang || language || "id";
@@ -404,7 +411,7 @@ export function PortfolioDetailPage() {
               </section>
 
               {/* Tech Stack & Key Attributes Grid */}
-              <section className="bg-gradient-to-br from-blue-50/60 to-cyan-50/40 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-blue-100/60">
+              <section className="space-y-4 sm:space-y-5">
                 <div className="flex items-center gap-2 mb-4 sm:mb-5">
                   <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-[#004AAD]" />
                   <h3 className="text-sm sm:text-base font-bold text-gray-900">
@@ -489,7 +496,7 @@ export function PortfolioDetailPage() {
                       params={{ lang: currentLang }}
                       className="text-xs font-semibold text-[#004AAD] hover:underline"
                     >
-                      {currentLang === "en" ? "View All" : "Lihat Semua"}
+                      {currentLang === "en" ? "View All Portfolios" : "Lihat Semua Portofolio"}
                     </Link>
                   </div>
 

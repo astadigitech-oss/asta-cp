@@ -259,7 +259,7 @@ export function About({ discoversList = [] }: { discoversList?: DiscoverData[] }
                     <span className="relative grid h-11 w-11 place-items-center rounded-2xl gradient-accent text-accent-foreground shadow-soft transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <v.icon className="h-5 w-5 text-white" />
                     </span>
-                    <h3 className="mt-4 font-display text-lg font-bold text-primary">{t(v.titleKey)}</h3>
+                    <p className="mt-4 font-display text-lg font-bold text-primary">{t(v.titleKey)}</p>
                     <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-muted-foreground">{t(v.descKey)}</p>
                   </motion.div>
                 ))}

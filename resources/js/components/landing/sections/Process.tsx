@@ -57,7 +57,7 @@ export function Process() {
                 </div>
 
                 <div className="mt-6 w-full rounded-2xl border border-white/60 bg-white/70 px-4 py-5 shadow-glass/60 backdrop-blur-md transition-all duration-500 group-hover:border-accent/50 group-hover:bg-white/90">
-                  <h3 className="font-display text-base font-bold text-primary">{s.title}</h3>
+                  <p className="font-display text-base font-bold text-primary">{s.title}</p>
                   <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{s.text}</p>
                 </div>
               </motion.li>
@@ -86,7 +86,7 @@ export function Process() {
                       <div className="h-px flex-1 bg-gradient-to-r from-accent/60 to-transparent" />
                     </div>
                     <div className="mt-4 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-glass backdrop-blur-md">
-                      <h3 className="font-display text-base font-bold text-primary">{s.title}</h3>
+                      <p className="font-display text-base font-bold text-primary">{s.title}</p>
                       <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{s.text}</p>
                     </div>
                   </motion.li>

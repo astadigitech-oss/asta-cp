@@ -55,9 +55,9 @@ export function HomeFAQ() {
                 itemType="https://schema.org/Question"
               >
                 <AccordionTrigger className="py-5 text-left font-display text-base sm:text-lg font-bold text-primary hover:underline cursor-pointer">
-                  <h3 className="font-display text-base sm:text-lg font-bold text-primary inline m-0" itemProp="name">
+                  <span className="font-display text-base sm:text-lg font-bold text-primary inline m-0" itemProp="name">
                     {faq.question}
-                  </h3>
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent
                   className="pb-6 pt-1 text-sm sm:text-base leading-relaxed text-muted-foreground"

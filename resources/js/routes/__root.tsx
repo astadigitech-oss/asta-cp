@@ -6,6 +6,7 @@ import {
   useRouter,
   useRouterState,
   HeadContent,
+  ScrollRestoration,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "../i18n/useTranslation";
@@ -109,6 +110,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <ScrollRestoration />
     </QueryClientProvider>
   );
 }

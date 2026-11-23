@@ -1,6 +1,7 @@
 export * from "./Hero";
 export * from "./About";
 export * from "./Services";
+export * from "./ComparisonTable";
 export * from "./Portfolio";
 export * from "./DiscoverSection";
 export * from "./WhyUs";
@@ -8,6 +9,7 @@ export * from "./Stats";
 export * from "./Process";
 export * from "./BlogSection";
 export * from "./Testimonials";
+export * from "./HomeFAQ";
 export * from "./CTA";
 export * from "./Contact";
 export * from "./Footer";

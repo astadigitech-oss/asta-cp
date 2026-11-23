@@ -3,6 +3,12 @@
     $currentLocale = app()->getLocale() ?: 'id';
     $baseUrl = config('app.url', url('/'));
     
+    $article = $article ?? null;
+    $discover = $discover ?? null;
+    $service = $service ?? null;
+    $portfolio = $portfolio ?? null;
+    $seo = $seo ?? null;
+
     // Extraksi path tanpa prefix locale untuk generator Hreflang
     $path = request()->path();
     $cleanPath = trim(preg_replace('/^(id|en)(\/|$)/i', '', $path), '/');
@@ -15,11 +21,13 @@
         $idUrl = rtrim($baseUrl, '/') . '/id/discover/' . $discover->getLocalizedSlug('id');
         $enUrl = rtrim($baseUrl, '/') . '/en/discover/' . $discover->getLocalizedSlug('en');
     } elseif ($service) {
-        $idUrl = rtrim($baseUrl, '/') . '/id/services/' . $service->id;
-        $enUrl = rtrim($baseUrl, '/') . '/en/services/' . $service->id;
+        $serviceSlug = !empty($service->slug) ? $service->slug : $service->id;
+        $idUrl = rtrim($baseUrl, '/') . '/id/services/' . $serviceSlug;
+        $enUrl = rtrim($baseUrl, '/') . '/en/services/' . $serviceSlug;
     } elseif ($portfolio) {
-        $idUrl = rtrim($baseUrl, '/') . '/id/portfolio/' . $portfolio->id;
-        $enUrl = rtrim($baseUrl, '/') . '/en/portfolio/' . $portfolio->id;
+        $portfolioSlug = !empty($portfolio->slug) ? $portfolio->slug : $portfolio->id;
+        $idUrl = rtrim($baseUrl, '/') . '/id/portfolio/' . $portfolioSlug;
+        $enUrl = rtrim($baseUrl, '/') . '/en/portfolio/' . $portfolioSlug;
     } else {
         $idUrl = rtrim($baseUrl, '/') . '/id' . $cleanPathSegment;
         $enUrl = rtrim($baseUrl, '/') . '/en' . $cleanPathSegment;
@@ -81,8 +89,11 @@
     $isServicesPage = $isServicesPage ?? false;
     $isPortfolioPage = $isPortfolioPage ?? false;
     $isNotFound = $isNotFound ?? false;
+    $article = $article ?? null;
+    $discover = $discover ?? null;
     $service = $service ?? null;
     $portfolio = $portfolio ?? null;
+    $seo = $seo ?? null;
     $itemTitle = $article ? $article->title : ($discover ? (is_array($discover->name) ? ($discover->name[$currentLocale] ?? reset($discover->name)) : $discover->name) : ($service ? (is_array($service->name) ? ($service->name[$currentLocale] ?? reset($service->name)) : $service->name) : ($portfolio ? $portfolio->name : null)));
     $itemDesc = $article ? ($article->excerpt ?: strip_tags($article->body ?? '')) : ($discover ? strip_tags(is_array($discover->short_description) ? ($discover->short_description[$currentLocale] ?? reset($discover->short_description)) : ($discover->short_description ?? '')) : ($service ? strip_tags(is_array($service->short_description) ? ($service->short_description[$currentLocale] ?? reset($service->short_description)) : ($service->short_description ?? '')) : ($portfolio ? strip_tags($portfolio->description ?? '') : null)));
 
@@ -123,10 +134,24 @@
 
     // html_entity_decode mencegah double-escape &amp;amp; saat Blade merender {{ }}
     $parsedTitle = localizeTextPhp($rawTitle, $currentLocale);
-    if ($currentLocale === 'en' && ($discover || $article)) {
-        $idTitle = localizeTextPhp($rawTitle, 'id');
-        if ($parsedTitle === $idTitle && !str_contains($parsedTitle, 'Case Study') && !str_contains($parsedTitle, 'Insights')) {
-            $parsedTitle .= ($discover ? ' — Case Study' : ' — Insights');
+    if ($currentLocale === 'en') {
+        if ($discover || $article) {
+            $idTitle = localizeTextPhp($rawTitle, 'id');
+            if ($parsedTitle === $idTitle && !str_contains($parsedTitle, 'Case Study') && !str_contains($parsedTitle, 'Insights')) {
+                $parsedTitle .= ($discover ? ' — Case Study' : ' — Insights');
+            }
+        } elseif ($portfolio) {
+            $idTitle = localizeTextPhp($rawTitle, 'id');
+            if ($parsedTitle === $idTitle && !str_contains($parsedTitle, 'Portfolio') && !str_contains($parsedTitle, 'Showcase')) {
+                $cleanName = trim(preg_replace('/\s*(?:—|-|\|)\s*ASTA Digital Agency$/iu', '', $parsedTitle));
+                $parsedTitle = $cleanName . ' — Portfolio Showcase | ASTA Digital Agency';
+            }
+        } elseif ($service) {
+            $idTitle = localizeTextPhp($rawTitle, 'id');
+            if ($parsedTitle === $idTitle && !str_contains($parsedTitle, 'Service') && !str_contains($parsedTitle, 'Solutions')) {
+                $cleanName = trim(preg_replace('/\s*(?:—|-|\|)\s*ASTA Digital Agency$/iu', '', $parsedTitle));
+                $parsedTitle = $cleanName . ' — IT Services & Solutions | ASTA Digital Agency';
+            }
         }
     }
     $metaTitle = html_entity_decode($parsedTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -140,7 +165,7 @@
         ->filter(fn ($file) => is_file($file))
         ->map(fn ($file) => filemtime($file))
         ->max() ?? time();
-    $homepageDataModifiedAt = collect([$homeServices, $homeArticles, $homePortfolios, $homeDiscovers])
+    $homepageDataModifiedAt = collect([$homeServices ?? null, $homeArticles ?? null, $homePortfolios ?? null, $homeDiscovers ?? null])
         ->filter()
         ->flatMap(fn ($items) => collect($items))
         ->pluck('updated_at')
@@ -1591,15 +1616,15 @@
                         <div class="mt-8 grid gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:grid-cols-3">
                             <h2 class="sr-only">{{ transKey($transDict, 'home_seo.proof_title') }}</h2>
                             <a href="#portofolio" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</h3>
+                                <p class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_portfolio') }}</p>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_portfolio') }}</p>
                             </a>
                             <a href="#tentang" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</h3>
+                                <p class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_company') }}</p>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_company') }}</p>
                             </a>
                             <a href="#kontak" class="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-900/50">
-                                <h3 class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</h3>
+                                <p class="font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'hero.trust_contact') }}</p>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.proof_contact') }}</p>
                             </a>
                         </div>
@@ -1618,29 +1643,29 @@
                     </p>
                     <div class="grid gap-6 md:grid-cols-3">
                         <article>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.website_title') }}</h3>
+                            <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.website_title') }}</p>
                             <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.website_description') }}</p>
                         </article>
                         <article>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.mobile_title') }}</h3>
+                            <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.mobile_title') }}</p>
                             <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.mobile_description') }}</p>
                         </article>
                         <article>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.systems_title') }}</h3>
+                            <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.systems_title') }}</p>
                             <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.systems_description') }}</p>
                         </article>
                     </div>
                     <div class="max-w-4xl">
-                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.process_title') }}</h3>
+                        <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.process_title') }}</p>
                         <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.process_description') }}</p>
                     </div>
                     <div class="grid gap-6 md:grid-cols-2">
                         <article>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.review_title') }}</h3>
+                            <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.review_title') }}</p>
                             <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.review_description') }}</p>
                         </article>
                         <article>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.security_title') }}</h3>
+                            <p class="font-semibold text-gray-900 dark:text-white">{{ transKey($transDict, 'home_seo.security_title') }}</p>
                             <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'home_seo.security_description') }}</p>
                         </article>
                     </div>
@@ -1713,17 +1738,17 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
+                            <p class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
                                 {{ transKey($transDict, 'about.vision_title') }}
-                            </h3>
+                            </p>
                             <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                                 {{ transKey($transDict, 'about.vision_desc') }}
                             </p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
+                            <p class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
                                 {{ transKey($transDict, 'about.mission_title') }}
-                            </h3>
+                            </p>
                             <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                                 {{ transKey($transDict, 'about.mission_desc') }}
                             </p>
@@ -1732,19 +1757,19 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_1_title') }}</h4>
+                            <p class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_1_title') }}</p>
                             <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_1_desc') }}</p>
                         </div>
                         <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_2_title') }}</h4>
+                            <p class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_2_title') }}</p>
                             <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_2_desc') }}</p>
                         </div>
                         <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_3_title') }}</h4>
+                            <p class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_3_title') }}</p>
                             <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_3_desc') }}</p>
                         </div>
                         <div class="p-5 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40">
-                            <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_4_title') }}</h4>
+                            <p class="font-bold text-sm text-gray-900 dark:text-white mb-1">{{ transKey($transDict, 'about.val_4_title') }}</p>
                             <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'about.val_4_desc') }}</p>
                         </div>
                     </div>
@@ -1787,15 +1812,15 @@
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_web_title', 'Web Apps Development') }}</h3>
+                                <p class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_web_title', 'Web Apps Development') }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_web_desc', 'Aplikasi berbasis web modern, cepat & responsif.') }}</p>
                             </div>
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_mobile_title', 'Mobile Apps Development') }}</h3>
+                                <p class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_mobile_title', 'Mobile Apps Development') }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_mobile_desc', 'Aplikasi Android & iOS performa tinggi.') }}</p>
                             </div>
                             <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900">
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_it_title', 'Layanan IT & Konsultasi') }}</h3>
+                                <p class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'services.default_it_title', 'Layanan IT & Konsultasi') }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ transKey($transDict, 'services.default_it_desc', 'Dukungan IT dan konsultasi arsitektur sistem.') }}</p>
                             </div>
                         </div>
@@ -1988,19 +2013,19 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_1_title') }}</h3>
+                            <p class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_1_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_1_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_2_title') }}</h3>
+                            <p class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_2_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_2_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_3_title') }}</h3>
+                            <p class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_3_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_3_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_4_title') }}</h3>
+                            <p class="font-bold text-base text-gray-900 dark:text-white mb-2">{{ transKey($transDict, 'why_us.reason_4_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'why_us.reason_4_desc') }}</p>
                         </div>
                     </div>
@@ -2023,32 +2048,32 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">01</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_1_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_1_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_1_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">02</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_2_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_2_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_2_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">03</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_3_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_3_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_3_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">04</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_4_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_4_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_4_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">05</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_5_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_5_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_5_desc') }}</p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
                             <span class="text-xs font-bold text-blue-600 uppercase">06</span>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_6_title') }}</h3>
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mt-1 mb-2">{{ transKey($transDict, 'process.step_6_title') }}</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ transKey($transDict, 'process.step_6_desc') }}</p>
                         </div>
                     </div>
@@ -2147,33 +2172,33 @@
 
                     <div class="space-y-4">
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mb-2">
                                 {{ transKey($transDict, 'faq.q1', 'Mengapa harus ASTA DIGITAL AGENCY?') }}
-                            </h3>
+                            </p>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
                                 {{ transKey($transDict, 'faq.a1') }}
                             </p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mb-2">
                                 {{ transKey($transDict, 'faq.q2', 'Apa Yang ASTA DIGITAL AGENCY tawarkan?') }}
-                            </h3>
+                            </p>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
                                 {{ transKey($transDict, 'faq.a2') }}
                             </p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mb-2">
                                 {{ transKey($transDict, 'faq.q3', 'Begaimana cara mendapatkan tim IT dedicated tanpa perlu repot melakukan rekrutment?') }}
-                            </h3>
+                            </p>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
                                 {{ transKey($transDict, 'faq.a3') }}
                             </p>
                         </div>
                         <div class="p-6 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 shadow-xs">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                            <p class="font-bold text-lg text-gray-900 dark:text-white mb-2">
                                 {{ transKey($transDict, 'faq.q4', 'Apakah ASTA DIGITAL AGENCY menjamin ketepatan waktu dalam setiap proyek pembuatan website') }}
-                            </h3>
+                            </p>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
                                 {{ transKey($transDict, 'faq.a4') }}
                             </p>
@@ -2223,7 +2248,7 @@
                             class="grid gap-4">
                             <input type="text" name="website_hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden opacity-0 absolute -z-10 pointer-events-none h-0 w-0" />
                             <input type="hidden" name="_timer" value="" />
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'contact.form_title') }}</h3>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ transKey($transDict, 'contact.form_title') }}</p>
                             <div>
                                 <label for="contact-name" class="mb-1 block text-sm font-medium">{{ transKey($transDict, 'contact.form.full_name') }}</label>
                                 <input id="contact-name" name="name" type="text" required maxlength="255" autocomplete="name"

@@ -285,6 +285,7 @@
     "not_found_article_desc": "Konten yang Anda cari mungkin telah dipindahkan atau belum tersedia.",
     "editorial_name": "ASTA Digital Editorial",
     "official_article": "Artikel Resmi Agensi",
+    "read_time": "{min} menit baca",
     "part_indicator": "Bagian {index}",
     "prev_article": "Artikel Sebelumnya",
     "next_article": "Artikel Selanjutnya",
