@@ -54,9 +54,12 @@ export function ServiceDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [mountedAt] = useState(() => Date.now());
 
+  const initialWindowData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__?.service : null;
+  const initialItem = initialWindowData && (String(initialWindowData.id) === String(id) || initialWindowData.slug === id || String(initialWindowData.slug) === id) ? initialWindowData : null;
+
   // Try finding from cached landingData first for immediate render
   const allServices = (landingData?.services || []) as ServiceData[];
-  const cachedItem = allServices.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
+  const cachedItem = initialItem || allServices.find((item) => String(item.slug) === String(id) || String(item.id) === String(id));
 
   // Query single service detail to ensure full and fresh data (faqs, images, seo)
   const { data: fetchedItem, isLoading, isError } = useQuery<ServiceData>({
@@ -70,7 +73,11 @@ export function ServiceDetailPage() {
 
   // Scroll to top on mount or service change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    const navEntries = performance.getEntriesByType("navigation");
+    const isReload = navEntries.length > 0 && (navEntries[0] as PerformanceNavigationTiming).type === "reload";
+    if (!isReload) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
     setActiveImgIndex(0);
   }, [id]);
 
@@ -93,7 +100,7 @@ export function ServiceDetailPage() {
       header: rawService.header ? localize(rawService.header) : undefined,
       short_description: rawService.short_description ? localize(rawService.short_description) : undefined,
       description: rawService.description ? localize(rawService.description) : undefined,
-      serviceListMains: rawService.serviceListMains?.map((item) => ({
+      serviceListMains: rawService.serviceListMains?.map((item: any) => ({
         ...item,
         description: localize(item.description),
       })),
@@ -429,7 +436,7 @@ export function ServiceDetailPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                      {service.serviceListMains.map((feature) => (
+                      {service.serviceListMains.map((feature: any) => (
                         <div
                           key={feature.id}
                           className="flex items-start gap-3 rounded-2xl border border-blue-100/70 bg-gradient-to-br from-blue-50/50 to-white p-4 shadow-2xs hover:border-[#004AAD]/40 transition-colors"

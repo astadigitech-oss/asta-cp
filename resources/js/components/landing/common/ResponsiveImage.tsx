@@ -23,6 +23,25 @@ function sanitizeSrcSet(srcSet?: string): string | undefined {
     .join(", ");
 }
 
+function resolveSourceUrl(src?: string): string | undefined {
+  if (!src) return src;
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("/") ||
+    src.startsWith("data:")
+  ) {
+    return src;
+  }
+  if (src.startsWith("storage/")) {
+    return `/${src}`;
+  }
+  if (src.startsWith("images/")) {
+    return `/storage/${src}`;
+  }
+  return `/${src}`;
+}
+
 export const ResponsiveImage = forwardRef<HTMLImageElement, Props>(function ResponsiveImage(
   { source, sizes = "100vw", loading = "lazy", decoding = "async", ...imageProps },
   ref,
@@ -30,7 +49,17 @@ export const ResponsiveImage = forwardRef<HTMLImageElement, Props>(function Resp
   const variant = imageVariants[source];
 
   if (!variant) {
-    return <img ref={ref} src={source} sizes={sizes} loading={loading} decoding={decoding} {...imageProps} />;
+    const resolved = resolveSourceUrl(source);
+    return (
+      <img
+        ref={ref}
+        src={resolved ? encodeURI(resolved) : source}
+        sizes={sizes}
+        loading={loading}
+        decoding={decoding}
+        {...imageProps}
+      />
+    );
   }
 
   return (

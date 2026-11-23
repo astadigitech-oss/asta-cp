@@ -200,11 +200,10 @@ export function BlogListPage() {
                   key={cat}
                   type="button"
                   onClick={() => handleCategoryChange(cat)}
-                  className={`h-9 rounded-full px-4 text-xs font-semibold transition-all border cursor-pointer shrink-0 ${
-                    activeCategory === cat
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                  }`}
+                  className={`h-9 rounded-full px-4 text-xs font-semibold transition-all border cursor-pointer shrink-0 ${activeCategory === cat
+                    ? "bg-primary text-white border-primary shadow-sm"
+                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                    }`}
                 >
                   {cat === "All" ? (lang === "en" ? "All" : "Semua") : cat}
                 </button>
@@ -388,11 +387,10 @@ export function BlogListPage() {
                       key={pNum}
                       type="button"
                       onClick={() => handlePageChange(pNum)}
-                      className={`h-9 w-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        currentPage === pNum
-                          ? "bg-primary text-white shadow-sm"
-                          : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                      }`}
+                      className={`h-9 w-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === pNum
+                        ? "bg-primary text-white shadow-sm"
+                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                        }`}
                     >
                       {pNum}
                     </button>
@@ -413,11 +411,34 @@ export function BlogListPage() {
             </div>
           )}
         </div>
+        <div>
+          <FAQBlog />
+          <div className="mt-16 sm:mt-24 rounded-[32px] sm:rounded-[40px] bg-gradient-to-r from-[#003882] via-[#004AAD] to-[#0072b2] text-white p-8 sm:p-12 lg:p-14 text-center shadow-xl relative overflow-hidden">
+            <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
+              {lang === "en"
+                ? "Need a Custom Software Solution for Your Business?"
+                : "Butuh Solusi Software Kustom untuk Bisnis Anda?"}
+            </h2>
+            <p className="mt-3 text-xs sm:text-base text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              {lang === "en"
+                ? "Every business has unique workflows. Our technical architects build tailored architectures matching your exact specifications."
+                : "Setiap proses bisnis memiliki kebutuhan unik. Tim kami siap merancang arsitektur kustom yang sesuai dengan spesifikasi dan alur kerja Anda."}
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3.5">
+              <Button
+                asChild
+                className="rounded-full bg-white text-[#004AAD] hover:bg-blue-50 font-bold px-7 py-3 text-sm shadow-lg shrink-0 transition-transform active:scale-95"
+              >
+                <a href={`/${language}/#kontak`}>
+                  {t("common.consult_now")} <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
       </main>
-      <FAQBlog />
-      <Suspense fallback={null}>
-        <CTA />
-      </Suspense>
+
 
       <Suspense fallback={null}>
         <Footer />

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, Suspense, lazy } from "react";
+import { useState, useRef, useEffect, useMemo, Suspense, lazy } from "react";
 import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -48,9 +48,12 @@ export function DiscoverDetailPage() {
   const contentTopRef = useRef<HTMLDivElement>(null);
   const prevDiscoverIdRef = useRef<number | string | null>(null);
 
+  const initialWindowData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__?.discover : null;
+  const initialItem = initialWindowData && (String(initialWindowData.id) === String(id) || initialWindowData.slug === id || String(initialWindowData.slug) === id) ? initialWindowData : null;
+
   // Try finding from cached landingData first
   const allDiscovers = (landingData?.discovers || []) as DiscoverData[];
-  const cachedItem = allDiscovers.find((item) => {
+  const cachedItem = initialItem || allDiscovers.find((item) => {
     if (String(item.id) === String(id)) return true;
     if (item.slug) {
       if (typeof item.slug === "string" && (item.slug === id || item.slug.includes(id || ""))) return true;
@@ -71,13 +74,17 @@ export function DiscoverDetailPage() {
 
   // Scroll to top on mount or discover change (jangan reset saat sekadar ganti bahasa slug)
   useEffect(() => {
+    const navEntries = performance.getEntriesByType("navigation");
+    const isReload = navEntries.length > 0 && (navEntries[0] as PerformanceNavigationTiming).type === "reload";
     if (rawDiscover?.id) {
       if (prevDiscoverIdRef.current && prevDiscoverIdRef.current === rawDiscover.id) {
         return;
       }
       prevDiscoverIdRef.current = rawDiscover.id;
     }
+    if (!isReload) {
     window.scrollTo({ top: 0, behavior: "instant" });
+    }
     setArticlePage(1);
     setActiveImgIndex(0);
   }, [id, rawDiscover?.id]);
@@ -113,7 +120,7 @@ export function DiscoverDetailPage() {
     ...rawDiscover,
     name: localize(rawDiscover.name),
     short_description: rawDiscover.short_description ? localize(rawDiscover.short_description) : undefined,
-    content_sections: rawDiscover.content_sections?.map((sec) => ({
+    content_sections: rawDiscover.content_sections?.map((sec: any) => ({
       ...sec,
       description: localize(sec.description),
     })),
@@ -198,6 +205,13 @@ export function DiscoverDetailPage() {
       articlePage * SECTIONS_PER_PAGE
     )
     : allSections;
+
+  // Reading time calculation
+  const readMinutes = useMemo(() => {
+    const text = allSections.map((s: any) => `${s.title || ""} ${s.description || ""}`).join(" ") + " " + (discover.short_description || "");
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.ceil(words / 180));
+  }, [allSections, discover.short_description]);
 
   // Other recommendations
   const otherDiscovers = allDiscovers
@@ -339,7 +353,7 @@ export function DiscoverDetailPage() {
 
               <div className="flex items-center gap-3 text-xs text-gray-500 font-medium">
                 <span className="flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5 text-[#004AAD]" /> {t("common.read_time")}
+                  <Clock className="h-3.5 w-3.5 text-[#004AAD]" /> {t("common.read_time", { min: readMinutes })}
                 </span>
                 {totalArticlePages > 1 && (
                   <span className="inline-flex items-center rounded-full bg-blue-100/90 px-3 py-1 text-xs font-bold text-[#004AAD]">
@@ -430,7 +444,7 @@ export function DiscoverDetailPage() {
               {/* Modular Content Sections for E-Learning & Stories */}
               {discover.type === "elearning" && paginatedSections.length > 0 && (
                 <div className="space-y-10 pt-4">
-                  {paginatedSections.map((section, sIdx) => {
+                  {paginatedSections.map((section: any, sIdx: number) => {
                     const sectionRealIndex = (articlePage - 1) * SECTIONS_PER_PAGE + sIdx + 1;
                     const sectionTitle = t("discover.modal.section_part", { index: sectionRealIndex });
                     const embedUrl = section.video_url ? getYoutubeEmbedUrl(section.video_url) : null;
@@ -499,7 +513,7 @@ export function DiscoverDetailPage() {
                     {t("discover.modal.key_points")}
                   </h3>
                   <ul className="grid sm:grid-cols-2 gap-3.5">
-                    {discover.DiscoverLists.map((list) => (
+                    {discover.DiscoverLists.map((list: any) => (
                       <li
                         key={list.id}
                         className="flex items-start gap-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-100 text-sm font-medium text-gray-800 shadow-xs"

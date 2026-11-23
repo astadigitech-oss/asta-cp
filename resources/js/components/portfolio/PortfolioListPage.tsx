@@ -98,67 +98,71 @@ export function PortfolioListPage() {
       <Toaster position="top-right" richColors />
       <Navbar />
 
-      <main className="flex-1 pt-24 pb-20 sm:pt-28 sm:pb-28">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">
-          {/* Breadcrumb Navigation */}
-          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs sm:text-sm text-gray-500">
-            <Link
-              to="/$lang"
-              params={{ lang }}
-              aria-label={lang === "en" ? "Home" : "Beranda"}
-              className="inline-flex items-center gap-1.5 hover:text-[#004AAD] transition-colors font-medium"
+      <main className="flex-1 pb-20 sm:pb-28">
+        {/* Hero Section — Full Width */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#004AAD] via-[#023377] to-[#011e48] pt-32 sm:pt-36 pb-10 sm:pb-14 px-4 sm:px-8 lg:px-16 text-white shadow-xl mb-10">
+          <div className="pointer-events-none absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
+          <div className="pointer-events-none absolute right-1/3 -top-20 h-60 w-60 rounded-full bg-blue-400/20 blur-3xl" />
+
+          <div className="relative z-10 mx-auto max-w-[1440px]">
+            {/* Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-blue-200/80">
+              <Link
+                to="/$lang"
+                params={{ lang }}
+                aria-label={lang === "en" ? "Home" : "Beranda"}
+                className="inline-flex items-center gap-1.5 hover:text-white transition-colors font-medium"
+              >
+                <Home className="h-4 w-4" />
+                <span>{lang === "en" ? "Home" : "Beranda"}</span>
+              </Link>
+              <span>/</span>
+              <span className="font-semibold text-white" aria-current="page">
+                {t("nav.portfolio")}
+              </span>
+            </nav>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-blue-200 uppercase tracking-wider mb-4 border border-white/15"
             >
-              <Home className="h-4 w-4" />
-              <span>{lang === "en" ? "Home" : "Beranda"}</span>
-            </Link>
-            <span className="text-gray-300">/</span>
-            <span className="font-semibold text-gray-900" aria-current="page">
-              {t("nav.portfolio")}
-            </span>
-          </nav>
+              <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
+              {t("portfolio.eyebrow")}
+            </motion.div>
 
-          {/* Hero Section */}
-          <div className="relative overflow-hidden rounded-[32px] sm:rounded-[40px] bg-gradient-to-br from-white via-blue-50/40 to-blue-100/30 border border-blue-100/80 p-8 sm:p-12 lg:p-16 shadow-glass mb-10">
-            <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#004AAD]/10 blur-3xl" />
-            <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-[#38B6FF]/15 blur-2xl" />
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.15]"
+            >
+              {lang === "en"
+                ? "Explore All Projects & Software Showcase"
+                : "Daftar Lengkap Portofolio & Studi Kasus Proyek ASTA"}
+            </motion.h1>
 
-            <div className="relative z-10 max-w-3xl">
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="inline-flex items-center gap-2 rounded-full bg-[#004AAD]/10 px-4 py-1.5 text-xs font-bold text-[#004AAD] uppercase tracking-wider mb-4 border border-[#004AAD]/20"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-[#004AAD]" />
-                {t("portfolio.eyebrow")}
-              </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-4 text-sm sm:text-base lg:text-lg text-blue-100/90 leading-relaxed max-w-2xl"
+            >
+              {t("portfolio.description")}
+            </motion.p>
+          </div>
+        </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-[1.15]"
-              >
-                {lang === "en"
-                  ? "Explore All Projects & Software Showcase"
-                  : "Daftar Lengkap Portofolio & Studi Kasus Proyek ASTA"}
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-4 text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed"
-              >
-                {t("portfolio.description")}
-              </motion.p>
-
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">
+          {/* Filters & Search Row — below hero */}
+          <div className="mt-6 mb-8">
               {/* Filters & Search Row */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="mt-8 flex flex-col md:flex-row items-stretch md:items-center gap-4 justify-between"
+                className="flex flex-col md:flex-row items-stretch md:items-center gap-4 justify-between bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-xs"
               >
                 {/* Category Tabs */}
                 <div className="inline-flex rounded-full bg-white p-1.5 shadow-xs border border-gray-200/80 self-start">
@@ -227,7 +231,6 @@ export function PortfolioListPage() {
                   )}
                 </div>
               </motion.div>
-            </div>
           </div>
 
           <div ref={listTopRef} />

@@ -91,56 +91,54 @@ export function DiscoverListPage() {
       <Toaster position="top-right" />
       <Navbar />
 
-      <main className="pt-28 pb-20 sm:pt-32 sm:pb-28">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
-          {/* Breadcrumb Bar */}
-          <motion.nav
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex items-center gap-2 text-xs text-gray-500 mb-8 pb-4 border-b border-gray-200/80"
-          >
-            <Link
-              to="/$lang"
-              params={{ lang }}
-              className="flex items-center gap-1 font-medium hover:text-[#004AAD] transition-colors"
+      <main className="pb-20 sm:pb-28">
+        {/* Hero Header Section — Full Width */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden bg-gradient-to-br from-[#004AAD] via-[#023377] to-[#011e48] pt-36 sm:pt-40 pb-10 sm:pb-14 px-4 sm:px-8 lg:px-16 text-white shadow-xl mb-12"
+        >
+          <div className="relative z-10 mx-auto max-w-[1400px]">
+            <motion.nav
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center gap-2 text-xs text-blue-200/80 mb-6"
             >
-              <Home className="h-3.5 w-3.5" />
-              <span>{t("nav.home")}</span>
-            </Link>
-            <span>/</span>
-            <span className="font-bold text-gray-800">{t("nav.discover")}</span>
-          </motion.nav>
+              <Link
+                to="/$lang"
+                params={{ lang }}
+                className="flex items-center gap-1 font-medium hover:text-white transition-colors"
+              >
+                <Home className="h-3.5 w-3.5" />
+                <span>{t("nav.home")}</span>
+              </Link>
+              <span>/</span>
+              <span className="font-bold text-white">{t("nav.discover")}</span>
+            </motion.nav>
 
-          {/* Hero Header Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#004AAD] via-[#023377] to-[#011e48] p-8 sm:p-12 lg:p-16 text-white shadow-xl mb-12"
-          >
-            <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-200 border border-white/15 mb-4">
-                <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
-                <span>{lang === "en" ? "Knowledge Hub & Stories" : "Pusat Wawasan & Cerita"}</span>
-              </div>
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.15] tracking-tight">
-                {lang === "en"
-                  ? "Explore Insights, Stories & Technology Guides"
-                  : "Jelajahi Wawasan, Cerita & Panduan Teknologi"}
-              </h1>
-              <p className="mt-4 text-sm sm:text-base text-blue-100/90 leading-relaxed max-w-2xl">
-                {lang === "en"
-                  ? "A curated collection of industry perspectives, digital transformation case studies, and engineering practices from ASTA Digital Agency."
-                  : "Kumpulan artikel, studi kasus transformasi digital, dan panduan teknis dari para praktisi ASTA Digital Agency."}
-              </p>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-200 border border-white/15 mb-4">
+              <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
+              <span>{lang === "en" ? "Knowledge Hub & Stories" : "Pusat Wawasan & Cerita"}</span>
             </div>
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.15] tracking-tight">
+              {lang === "en"
+                ? "Explore Insights, Stories & Technology Guides"
+                : "Jelajahi Wawasan, Cerita & Panduan Teknologi"}
+            </h1>
+            <p className="mt-4 text-sm sm:text-base text-blue-100/90 leading-relaxed max-w-2xl">
+              {lang === "en"
+                ? "A curated collection of industry perspectives, digital transformation case studies, and engineering practices from ASTA Digital Agency."
+                : "Kumpulan artikel, studi kasus transformasi digital, dan panduan teknis dari para praktisi ASTA Digital Agency."}
+            </p>
+          </div>
 
-            {/* Background glowing gradients */}
-            <div className="absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
-            <div className="absolute right-1/3 -top-20 h-60 w-60 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
-          </motion.div>
+          <div className="absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute right-1/3 -top-20 h-60 w-60 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+        </motion.div>
 
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* Toolbar: Search & Filter Tabs */}
           <div ref={listTopRef} className="mb-10 space-y-4">
             <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-xs">
@@ -413,7 +411,7 @@ export function DiscoverListPage() {
           />
 
           {/* Bottom Consultation CTA */}
-          <div className="mt-20 rounded-3xl bg-gradient-to-br from-[#004AAD] via-[#053d86] to-[#02204a] p-8 sm:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="mt-20 rounded-[32px] sm:rounded-[40px] bg-gradient-to-br from-[#004AAD] via-[#053d86] to-[#02204a] p-8 sm:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between">
             <div className="max-w-xl text-center sm:text-left">
               <h3 className="font-display text-2xl sm:text-3xl font-bold">
                 {t("common.cta_similar_title")}

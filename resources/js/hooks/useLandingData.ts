@@ -95,10 +95,13 @@ export interface LandingData {
  * berapa banyak komponen yang menggunakan hook ini.
  */
 export function useLandingData() {
+  const initialLanding = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__?.landing : null;
+
   return useQuery<LandingData>({
     queryKey: ["landing"],
     queryFn: () =>
       axios.get<LandingData>("/api/landing").then((res) => res.data),
+    initialData: initialLanding || undefined,
     staleTime: 60 * 1000,     // 1 menit agar navigasi antar halaman instan
     gcTime: 10 * 60 * 1000,   // 10 menit simpan di memory
     refetchOnWindowFocus: false, // Hindari lag/re-fetch berlebihan saat buka-tutup layar di mobile
