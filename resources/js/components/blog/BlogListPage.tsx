@@ -350,6 +350,7 @@ export function BlogListPage() {
                       className="inline-flex items-center gap-1.5 hover:underline"
                     >
                       <span>{lang === "en" ? "Read Article" : "Baca Artikel"}</span>
+                      <span className="sr-only">: {localize(article.title)}</span>
                       <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>

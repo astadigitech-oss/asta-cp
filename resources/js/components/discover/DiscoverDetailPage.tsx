@@ -632,7 +632,7 @@ export function DiscoverDetailPage() {
                     params={{ lang: lang || "id" }}
                     aria-label={lang === "en" ? "View all stories and case studies" : "Lihat semua studi kasus dan cerita"}
                   >
-                    {t("common.view_all")} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                    {lang === "en" ? "View All Stories" : "Lihat Semua Cerita & Studi"} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                   </Link>
                 </Button>
               </div>
@@ -675,6 +675,7 @@ export function DiscoverDetailPage() {
                       </div>
                       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-[#004AAD]">
                         <span>{t("discover.read_more")}</span>
+                        <span className="sr-only">: {item.name}</span>
                         <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Link>

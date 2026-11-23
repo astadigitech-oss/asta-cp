@@ -352,6 +352,7 @@ export function DiscoverListPage() {
                         className="inline-flex items-center gap-1.5 hover:underline"
                       >
                         <span>{t("discover.read_more")}</span>
+                        <span className="sr-only">: {localize(item.name)}</span>
                         <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </Link>
                       {item.year && <span className="text-gray-400 font-normal">{item.year}</span>}

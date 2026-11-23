@@ -117,7 +117,7 @@ export function Contact() {
               {/* Anti-Spam Honeypot & Timer Fields */}
               <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden opacity-0 absolute -z-10 pointer-events-none h-0 w-0" />
               <input type="hidden" name="_timer" value={mountedAt} />
-              <h3 className="font-display text-2xl font-bold text-primary">{t("contact.form_title")}</h3>
+              <p className="font-display text-2xl font-bold text-primary">{t("contact.form_title")}</p>
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {t("contact.form_description")}
               </p>

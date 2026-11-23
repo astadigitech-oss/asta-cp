@@ -701,6 +701,7 @@ export function BlogDetailPage() {
 
                       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-[#004AAD]">
                         <span>{lang === "en" ? "Read Article" : "Baca Selengkapnya"}</span>
+                        <span className="sr-only">: {localize(rec.title)}</span>
                         <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Link>

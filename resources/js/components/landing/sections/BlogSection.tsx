@@ -90,31 +90,33 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
               >
                 <div>
                   {/* Thumbnail & Category Badge */}
-                  <Link
-                    to="/$lang/$slug"
-                    params={{ slug: localize(article.slug), lang }}
-                    aria-label={localizedTitle}
-                    className="block aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100 relative mb-4 cursor-pointer"
-                  >
-                    {article.thumbnail ? (
-                      <img
-                        src={article.thumbnail}
-                        alt={localizedTitle}
-                        width={640}
-                        height={360}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#004AAD]/10 to-[#38B6FF]/20 text-[#004AAD]">
-                        <BookOpen className="h-10 w-10 opacity-50" />
-                      </div>
-                    )}
-                    <span className="absolute top-3 left-3 rounded-md bg-[#004AAD]/90 backdrop-blur-xs px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs">
+                  <div className="relative mb-4">
+                    <Link
+                      to="/$lang/$slug"
+                      params={{ slug: localize(article.slug), lang }}
+                      aria-label={localizedTitle}
+                      className="block aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100 cursor-pointer"
+                    >
+                      {article.thumbnail ? (
+                        <img
+                          src={article.thumbnail}
+                          alt={localizedTitle}
+                          width={640}
+                          height={360}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#004AAD]/10 to-[#38B6FF]/20 text-[#004AAD]">
+                          <BookOpen className="h-10 w-10 opacity-50" />
+                        </div>
+                      )}
+                    </Link>
+                    <span className="pointer-events-none absolute top-3 left-3 rounded-md bg-[#004AAD]/90 backdrop-blur-xs px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs">
                       {category}
                     </span>
-                  </Link>
+                  </div>
 
                   {/* Metadata (Date & Author) */}
                   <div className="flex items-center gap-3 text-[11px] font-medium text-gray-500 mb-2.5">
@@ -157,6 +159,7 @@ export function BlogSection({ articlesList }: BlogSectionProps) {
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-[#004AAD] group-hover:gap-2.5 transition-all cursor-pointer"
                   >
                     <span>{t("blog.read_more")}</span>
+                    <span className="sr-only">: {localizedTitle}</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>

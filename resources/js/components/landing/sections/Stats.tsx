@@ -31,7 +31,7 @@ export function Stats() {
             >
               <a href={reference.href} className="block">
                 <reference.icon className="h-5 w-5 text-secondary sm:h-6 sm:w-6" />
-                <h3 className="mt-4 font-display font-bold text-primary">{reference.label}</h3>
+                <p className="mt-4 font-display font-bold text-primary">{reference.label}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{reference.description}</p>
               </a>
             </motion.div>

@@ -489,7 +489,7 @@ export function PortfolioDetailPage() {
                       params={{ lang: currentLang }}
                       className="text-xs font-semibold text-[#004AAD] hover:underline"
                     >
-                      {currentLang === "en" ? "View All" : "Lihat Semua"}
+                      {currentLang === "en" ? "View All Portfolios" : "Lihat Semua Portofolio"}
                     </Link>
                   </div>
 
